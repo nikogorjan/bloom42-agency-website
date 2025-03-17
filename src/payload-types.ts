@@ -107,7 +107,7 @@ export interface Config {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
   };
-  locale: null;
+  locale: 'en' | 'sl';
   user: User & {
     collection: 'users';
   };
@@ -148,7 +148,9 @@ export interface Page {
   id: string;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    header?: string | null;
+    description?: string | null;
     richText?: {
       root: {
         type: string;
@@ -989,6 +991,8 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        header?: T;
+        description?: T;
         richText?: T;
         links?:
           | T

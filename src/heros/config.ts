@@ -24,6 +24,10 @@ export const hero: Field = {
           value: 'none',
         },
         {
+          label: 'Landing Hero',
+          value: 'landingHero',
+        },
+        {
           label: 'High Impact',
           value: 'highImpact',
         },
@@ -37,6 +41,26 @@ export const hero: Field = {
         },
       ],
       required: true,
+    },
+    {
+      name: 'header',
+      type: 'text',
+      label: 'Header',
+      localized: true,
+      admin: {
+        // Only show this field if "type" is "landingHero"
+        condition: (_, { type } = {}) => type === 'landingHero',
+      },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      label: 'Description',
+      localized: true,
+      admin: {
+        // Only show this field if "type" is "landingHero"
+        condition: (_, { type } = {}) => type === 'landingHero',
+      },
     },
     {
       name: 'richText',
