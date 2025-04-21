@@ -192,7 +192,15 @@ export interface Page {
       | null;
     media?: (string | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | UncommonServicesBlock
+    | FeaturedProjectsBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -729,6 +737,67 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "UncommonServicesBlock".
+ */
+export interface UncommonServicesBlock {
+  features?:
+    | {
+        number: string;
+        tagline?: string | null;
+        heading?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'uncommonServices';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedProjectsBlock".
+ */
+export interface FeaturedProjectsBlock {
+  tagline?: string | null;
+  heading?: string | null;
+  description?: string | null;
+  button: {
+    title: string;
+    variant?: ('secondary' | 'link' | 'primary') | null;
+    size?: ('link' | 'lg' | 'primary') | null;
+    iconRight?: boolean | null;
+  };
+  projects?:
+    | {
+        title: string;
+        description?: string | null;
+        url?: string | null;
+        image: {
+          src: string;
+          alt?: string | null;
+        };
+        button: {
+          title: string;
+          variant?: ('secondary' | 'link') | null;
+          size?: ('link' | 'lg') | null;
+          iconRight?: boolean | null;
+        };
+        tags?:
+          | {
+              label: string;
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuredProjects';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1019,6 +1088,8 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        uncommonServices?: T | UncommonServicesBlockSelect<T>;
+        featuredProjects?: T | FeaturedProjectsBlockSelect<T>;
       };
   meta?:
     | T
@@ -1115,6 +1186,71 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "UncommonServicesBlock_select".
+ */
+export interface UncommonServicesBlockSelect<T extends boolean = true> {
+  features?:
+    | T
+    | {
+        number?: T;
+        tagline?: T;
+        heading?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedProjectsBlock_select".
+ */
+export interface FeaturedProjectsBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  button?:
+    | T
+    | {
+        title?: T;
+        variant?: T;
+        size?: T;
+        iconRight?: T;
+      };
+  projects?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        url?: T;
+        image?:
+          | T
+          | {
+              src?: T;
+              alt?: T;
+            };
+        button?:
+          | T
+          | {
+              title?: T;
+              variant?: T;
+              size?: T;
+              iconRight?: T;
+            };
+        tags?:
+          | T
+          | {
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

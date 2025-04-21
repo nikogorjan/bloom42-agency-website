@@ -76,6 +76,10 @@ export const hero: Field = {
         },
       }),
       label: false,
+      admin: {
+        // Only show this field if "type" is "landingHero"
+        condition: (_, { type } = {}) => type !== 'landingHero',
+      },
     },
     linkGroup({
       overrides: {
