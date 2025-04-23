@@ -12,6 +12,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { AppLocale } from '@/types/locale'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -39,20 +40,19 @@ export async function generateStaticParams() {
 
 type Args = {
   params: Promise<{
+    locale: AppLocale
     slug?: string
   }>
 }
 
 export default async function Page({ params: paramsPromise }: Args) {
   const { isEnabled: draft } = await draftMode()
-  const { slug = 'home' } = await paramsPromise
+  const { locale, slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
-  page = await queryPageBySlug({
-    slug,
-  })
+  page = await queryPageBySlug({ slug, locale, draft })
 
   // Remove this code once your website is seeded
   if (!page && slug === 'home') {
@@ -80,31 +80,26 @@ export default async function Page({ params: paramsPromise }: Args) {
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
-  const { slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({
-    slug,
-  })
-
+  const { locale, slug = 'home' } = await paramsPromise
+  const page = await queryPageBySlug({ slug, locale, draft: false })
   return generateMeta({ doc: page })
 }
 
-const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
-  const { isEnabled: draft } = await draftMode()
+const queryPageBySlug = cache(
+  async ({ slug, locale, draft }: { slug: string; locale: AppLocale | 'all'; draft: boolean }) => {
+    const payload = await getPayload({ config: configPromise })
 
-  const payload = await getPayload({ config: configPromise })
+    const result = await payload.find({
+      collection: 'pages',
+      draft,
+      limit: 1,
+      pagination: false,
+      overrideAccess: draft,
+      locale,
+      fallbackLocale: 'en',
+      where: { slug: { equals: slug } },
+    })
 
-  const result = await payload.find({
-    collection: 'pages',
-    draft,
-    limit: 1,
-    pagination: false,
-    overrideAccess: draft,
-    where: {
-      slug: {
-        equals: slug,
-      },
-    },
-  })
-
-  return result.docs?.[0] || null
-})
+    return result.docs?.[0] || null
+  },
+)

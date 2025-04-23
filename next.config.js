@@ -1,10 +1,14 @@
+// next.config.js (or .mjs / .ts)
+
 import { withPayload } from '@payloadcms/next/withPayload'
+import createNextIntlPlugin from 'next-intl/plugin' // <-- import the plugin
 import redirects from './redirects.js'
 
 const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : undefined || process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+  : process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
+// 1️⃣  raw config -------------------------------------------------------------
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -20,7 +24,14 @@ const nextConfig = {
   },
   reactStrictMode: true,
   redirects,
-  output: 'standalone', // Add this line to enable standalone output
+  output: 'standalone',
 }
 
-export default withPayload(nextConfig, { devBundleServerPackages: false })
+// 2️⃣  wrap with Payload ------------------------------------------------------
+const configWithPayload = withPayload(nextConfig, {
+  devBundleServerPackages: false,
+})
+
+// 3️⃣  wrap with next-intl -----------------------------------------------------
+const withNextIntl = createNextIntlPlugin() // you can pass options here
+export default withNextIntl(configWithPayload) // final export
