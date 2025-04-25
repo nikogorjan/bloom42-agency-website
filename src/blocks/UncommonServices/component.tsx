@@ -41,14 +41,17 @@ export const UncommonServices: React.FC<UncommonServicesProps> = ({ features }) 
       )
 
   return (
-    <section ref={ref} className="px-[5%] py-16 md:py-24 lg:py-28">
+    <section ref={ref} className="px-[5%] py-16 md:py-24 lg:py-28 bg-black">
       <div className="container">
         <div className="relative grid auto-cols-fr grid-cols-1 items-start gap-x-8 gap-y-12 md:grid-cols-[0.75fr_1fr] md:gap-y-16 lg:grid-cols-[max-content_1fr] lg:gap-x-20">
           <div className="static top-[20%] hidden h-56 overflow-hidden md:sticky md:flex md:items-start">
-            <h1 className="text-[6rem] font-bold leading-[1] md:text-[14rem]">0</h1>
+            <h1 className="text-[6rem] font-bold leading-[1] md:text-[14rem] text-white">0</h1>
             <motion.div className="text-center" style={{ y }}>
               {numbers.map((number, index) => (
-                <h1 key={index} className="text-[6rem] font-bold leading-[1] md:text-[14rem]">
+                <h1
+                  key={index}
+                  className="text-[6rem] font-bold leading-[1] md:text-[14rem] text-white"
+                >
                   {number}
                 </h1>
               ))}
@@ -81,17 +84,19 @@ const FeatureCard = ({ feature }: { feature: Feature }) => {
 
   return (
     <div className="flex flex-col items-start justify-center py-8 md:py-0">
-      <div className="mt-10 flex text-[6rem] font-bold leading-[1] md:mt-0 md:hidden md:text-[14rem]">
+      <div className="mt-10 flex text-[6rem] font-bold leading-[1] md:mt-0 md:hidden md:text-[14rem] text-white">
         {number}
       </div>
       <div ref={ref} className="mb-8 mt-8 h-0.5 w-full bg-neutral-lighter md:mt-0">
         <motion.div className="h-0.5 w-8 bg-neutral-black" style={width} />
       </div>
-      {tagline && <p className="mb-3 font-semibold md:mb-4">{tagline}</p>}
+      {tagline && <p className="mb-3 font-semibold md:mb-4 text-white">{tagline}</p>}
       {heading && (
-        <h2 className="rb-5 mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">{heading}</h2>
+        <h2 className="font-bebas text-white rb-5 mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
+          {heading}
+        </h2>
       )}
-      {description && <p className="md:text-md">{description}</p>}
+      {description && <p className="md:text-md text-white">{description}</p>}
       <div className="mt-6 flex flex-wrap items-center gap-4 md:mt-8"></div>
     </div>
   )

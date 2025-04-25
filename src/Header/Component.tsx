@@ -1,11 +1,21 @@
+// src/Header/Component.tsx
+import { getLocale } from 'next-intl/server'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
 import { HeaderClient } from './Component.client'
-import { getCachedGlobal } from '@/utilities/getGlobals'
-import React from 'react'
-
 import type { Header } from '@/payload-types'
+import type { AppLocale } from '@/types/locale'
 
 export async function Header() {
-  const headerData: Header = await getCachedGlobal('header', 1)()
+  const locale = (await getLocale()) as AppLocale
+  const payload = await getPayload({ config: configPromise })
 
-  return <HeaderClient data={headerData} />
+  const headerData = await payload.findGlobal({
+    slug: 'header',
+    depth: 1,
+    locale,
+    fallbackLocale: 'en',
+  })
+
+  return <HeaderClient data={headerData as Header} />
 }

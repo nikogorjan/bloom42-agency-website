@@ -20,6 +20,7 @@ import { getServerSideURL } from '@/utilities/getURL'
 
 import './globals.css' // one level up from [locale] folder
 import React from 'react'
+import { bebasNeue, figtree } from '../../../fonts/fonts'
 
 // —————————————————————————————————————————————————————
 // STATIC METADATA (works the same as before)
@@ -55,7 +56,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={cn(GeistSans.variable, GeistMono.variable)}
+      className={`${bebasNeue.variable} ${figtree.variable}`}
       suppressHydrationWarning
     >
       <head>

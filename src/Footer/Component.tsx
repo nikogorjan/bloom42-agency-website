@@ -1,4 +1,7 @@
-import { getCachedGlobal } from '@/utilities/getGlobals'
+// src/Footer/Component.tsx
+import { getLocale } from 'next-intl/server'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
 import Link from 'next/link'
 import React from 'react'
 
@@ -9,7 +12,14 @@ import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 
 export async function Footer() {
-  const footerData: Footer = await getCachedGlobal('footer', 1)()
+  const locale = (await getLocale()) as 'en' | 'sl'
+  const payload = await getPayload({ config: configPromise })
+  const footerData = (await payload.findGlobal({
+    slug: 'footer',
+    depth: 1,
+    locale,
+    fallbackLocale: 'en',
+  })) as Footer
 
   const navItems = footerData?.navItems || []
 
@@ -21,11 +31,10 @@ export async function Footer() {
         </Link>
 
         <div className="flex flex-col-reverse items-start md:flex-row gap-4 md:items-center">
-          <ThemeSelector />
           <nav className="flex flex-col md:flex-row gap-4">
-            {navItems.map(({ link }, i) => {
-              return <CMSLink className="text-white" key={i} {...link} />
-            })}
+            {navItems.map(({ link }, i) => (
+              <CMSLink className="text-white" key={i} {...link} />
+            ))}
           </nav>
         </div>
       </div>

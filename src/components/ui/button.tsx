@@ -13,18 +13,19 @@ const buttonVariants = cva(
     variants: {
       size: {
         clear: '',
-        default: 'h-10 px-4 py-2',
+        default: 'h-auto px-6 py-3',
         icon: 'h-10 w-10',
         lg: 'h-11 rounded px-8',
         sm: 'h-9 rounded px-3',
       },
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default: 'bg-black text-white rounded-[32px] border border-2 hover:border-lightGray',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         ghost: 'hover:bg-card hover:text-accent-foreground',
         link: 'text-primary items-start justify-start underline-offset-4 hover:underline',
-        outline: 'border border-border bg-background hover:bg-card hover:text-accent-foreground',
+        outline: 'border border-lightGray bg-transparent rounded-[32px] bg-white',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        animatedArrow: 'border border-lightGray rounded-[32px] bg-white',
       },
     },
   },

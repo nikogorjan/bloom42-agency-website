@@ -1,9 +1,12 @@
-import { Button, type ButtonProps } from '@/components/ui/button'
-import { cn } from '@/utilities/ui'
-import Link from 'next/link'
 import React from 'react'
+import Link from 'next/link'
+
+import { Button, type ButtonProps } from '@/components/ui/button'
+import AnimatedButton from '@/components/ui/animated-button'
+import { cn } from '@/utilities/ui'
 
 import type { Page, Post } from '@/payload-types'
+import LeafButton from '../ui/leaf-button'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -20,19 +23,18 @@ type CMSLinkType = {
   url?: string | null
 }
 
-export const CMSLink: React.FC<CMSLinkType> = (props) => {
-  const {
-    type,
-    appearance = 'inline',
-    children,
-    className,
-    label,
-    newTab,
-    reference,
-    size: sizeFromProps,
-    url,
-  } = props
-
+export const CMSLink: React.FC<CMSLinkType> = ({
+  type,
+  appearance = 'inline',
+  children,
+  className,
+  label,
+  newTab,
+  reference,
+  size,
+  url,
+}) => {
+  /* 1 ─────────── build the final href ─────────── */
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
       ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
@@ -42,24 +44,44 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   if (!href) return null
 
-  const size = appearance === 'link' ? 'clear' : sizeFromProps
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
 
-  /* Ensure we don't break any styles set by richText */
+  /* 2 ─────────── plain inline link ─────────── */
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
-        {children && children}
+      <Link className={cn(className)} href={href} {...newTabProps}>
+        {label}
+        {children}
       </Link>
     )
   }
 
+  /* 3 ─────────── animated default button ────── */
+  if (appearance === 'default') {
+    return (
+      <AnimatedButton href={href} size={size || 'default'} className={className} {...newTabProps}>
+        {label}
+        {children}
+      </AnimatedButton>
+    )
+  }
+
+  /* 3 ─────────── animated leaf button ────── */
+  if (appearance === 'animatedArrow') {
+    return (
+      <LeafButton href={href} size={size || 'default'} className={className} {...newTabProps}>
+        {label}
+        {children}
+      </LeafButton>
+    )
+  }
+
+  /* 4 ─────────── all other variants use <Button> */
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
-        {children && children}
+    <Button asChild size={size} variant={appearance} className={className}>
+      <Link className={cn(className)} href={href} {...newTabProps}>
+        {label}
+        {children}
       </Link>
     </Button>
   )
