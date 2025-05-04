@@ -12,29 +12,42 @@ interface NavDropdownProps {
 
 export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
   const [preview, setPreview] = useState(item.defaultImage)
+  const [open, setOpen] = useState(false)
 
   return (
-    <div className="relative group">
+    <div
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => {
+        setPreview(item.defaultImage)
+        setOpen(false)
+      }}
+    >
       <button className="flex h-10 items-center px-2 text-sm">
         {item.label}
-        <RxChevronDown className="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" />
+        <RxChevronDown
+          className={`ml-1 h-4 w-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+        />
       </button>
 
       <span className="pointer-events-auto absolute inset-x-0 top-full h-2 opacity-0" />
 
-      <div className="fixed left-1/2 top-[4.5rem] z-20 hidden w-[992px] -translate-x-1/2 rounded p-3 shadow-lg group-hover:block">
+      <div
+        className={`
+          fixed left-1/2 top-[4.5rem] z-20 w-[992px] -translate-x-1/2 rounded p-3 shadow-lg
+          transition-all duration-200 ease-out
+          ${open ? 'opacity-100 scale-100 pointer-events-auto' : 'opacity-0 scale-95 pointer-events-none'}
+        `}
+      >
         <div
           className="flex items-start gap-5 bg-white p-5 pl-[10px] rounded-lg border-2 border-lightGray"
           onMouseLeave={() => setPreview(item.defaultImage)}
         >
-          {/* links */}
           <div className="w-full">
             {item.items?.map((sub: any, j: number) => {
               const href =
                 sub.type === 'reference' && sub.reference
-                  ? `/${sub.reference.relationTo !== 'pages' ? sub.reference.relationTo : ''}/${
-                      (sub.reference.value as any).slug
-                    }`
+                  ? `/${sub.reference.relationTo !== 'pages' ? sub.reference.relationTo : ''}/${(sub.reference.value as any).slug}`
                   : sub.url
 
               return (
@@ -42,6 +55,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
                   key={j}
                   href={href || '#'}
                   onMouseEnter={() => setPreview(sub.media || item.defaultImage)}
+                  onClick={() => setOpen(false)}
                   className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded border border-white hover:border-lightGray"
                   {...(sub.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
@@ -81,7 +95,6 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
 
           <div className="self-stretch w-px bg-lightGray flex-shrink-0" />
 
-          {/* preview image */}
           <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded">
             <Media resource={preview} alt="" fill imgClassName="object-cover" priority />
           </div>
