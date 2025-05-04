@@ -40,7 +40,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
         `}
       >
         <div
-          className="flex items-start gap-5 bg-white p-5 pl-[10px] rounded-lg border-2 border-lightGray"
+          className="flex items-start gap-3 bg-white p-3 rounded-lg border-2 border-lightGray"
           onMouseLeave={() => setPreview(item.defaultImage)}
         >
           <div className="w-full">
@@ -59,7 +59,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
                   className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded border border-white hover:border-lightGray"
                   {...(sub.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                 >
-                  <div className="relative size-[62px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-lightGray rounded-sm">
+                  <div className="relative size-[55px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-lightGray rounded-sm">
                     <div className="relative size-[24px]">
                       <Media
                         resource={sub.icon}
@@ -74,7 +74,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
                   <div className="flex justify-between gap-20 w-full">
                     <div className="flex flex-col w-full">
                       <h6 className="text-sm leading-snug">{sub.label}</h6>
-                      <p className="text-sm text-gray-600">{sub.description}</p>
+                      <p className="text-xs text-gray-600">{sub.description}</p>
                     </div>
                     <div className="flex items-center justify-end">
                       <div className="relative size-[14px]">
@@ -93,7 +93,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
             })}
           </div>
 
-          <div className="self-stretch w-px bg-lightGray flex-shrink-0" />
+          <div className="self-stretch w-px bg-lightGray flex-shrink-0 ml-2" />
 
           <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded">
             <Media resource={preview} alt="" fill imgClassName="object-cover" priority />
