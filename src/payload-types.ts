@@ -1696,6 +1696,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Header {
   id: string;
   logo: string | Media;
+  logoUrl?: string | null;
   navItems?:
     | {
         type?: ('reference' | 'custom' | 'dropdown') | null;
@@ -1711,6 +1712,7 @@ export interface Header {
             } | null);
         url?: string | null;
         label?: string | null;
+        defaultImage?: (string | null) | Media;
         items?:
           | {
               type?: ('reference' | 'custom') | null;
@@ -1726,6 +1728,10 @@ export interface Header {
                   } | null);
               url?: string | null;
               label: string;
+              /**
+               * Optional image or icon for this link
+               */
+              icon?: (string | null) | Media;
               /**
                * Optional image or icon for this link
                */
@@ -1802,6 +1808,7 @@ export interface Footer {
  */
 export interface HeaderSelect<T extends boolean = true> {
   logo?: T;
+  logoUrl?: T;
   navItems?:
     | T
     | {
@@ -1810,6 +1817,7 @@ export interface HeaderSelect<T extends boolean = true> {
         reference?: T;
         url?: T;
         label?: T;
+        defaultImage?: T;
         items?:
           | T
           | {
@@ -1818,6 +1826,7 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              icon?: T;
               media?: T;
               description?: T;
               id?: T;

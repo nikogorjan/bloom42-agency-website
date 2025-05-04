@@ -69,7 +69,7 @@ export default async function RootLayout({
         {/* ▼ next-intl now wraps the whole app */}
         <NextIntlClientProvider>
           <Providers>
-            <AdminBar adminBarProps={{ preview: isEnabled }} />
+            {/*<AdminBar adminBarProps={{ preview: isEnabled }} />*/}
             <Header />
             {children}
             <Footer />

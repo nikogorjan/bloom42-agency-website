@@ -10,11 +10,28 @@ export const Header: GlobalConfig = {
   },
   fields: [
     {
-      name: 'logo',
-      label: 'Logo Image',
-      type: 'upload',
-      relationTo: 'media',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'logo',
+          label: 'Logo Image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          admin: {
+            width: '50%',
+          },
+        },
+        {
+          name: 'logoUrl',
+          label: 'Logo URL',
+          type: 'text',
+          required: false,
+          admin: {
+            width: '50%',
+          },
+        },
+      ],
     },
     {
       name: 'navItems',
@@ -84,6 +101,16 @@ export const Header: GlobalConfig = {
 
         // 3) Dropdown items array
         {
+          name: 'defaultImage',
+          type: 'upload',
+          label: 'Default Image',
+          relationTo: 'media',
+          required: false,
+          admin: {
+            condition: (_, data) => data?.type === 'dropdown',
+          },
+        },
+        {
           name: 'items',
           label: 'Dropdown Links',
           type: 'array',
@@ -113,6 +140,7 @@ export const Header: GlobalConfig = {
                 },
               ],
             },
+
             {
               name: 'reference',
               type: 'relationship',
@@ -136,6 +164,16 @@ export const Header: GlobalConfig = {
               required: true,
               label: 'Label',
               admin: { width: '50%' },
+            },
+            {
+              name: 'icon',
+              type: 'upload',
+              label: 'Icon',
+              relationTo: 'media',
+              required: false,
+              admin: {
+                description: 'Optional image or icon for this link',
+              },
             },
             {
               name: 'media',

@@ -92,7 +92,7 @@ const FeatureCard = ({ feature }: { feature: Feature }) => {
       </div>
       {tagline && <p className="mb-3 font-semibold md:mb-4 text-white">{tagline}</p>}
       {heading && (
-        <h2 className="font-bebas text-white rb-5 mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
+        <h2 className="font-figtree font-semibold text-white rb-5 mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
           {heading}
         </h2>
       )}
