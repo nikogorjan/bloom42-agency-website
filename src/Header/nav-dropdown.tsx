@@ -93,9 +93,9 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item }) => {
             })}
           </div>
 
-          <div className="self-stretch w-px bg-lightGray flex-shrink-0 ml-2" />
+          <div className="self-stretch w-px bg-lightGray flex-shrink-0 ml-2 my-2" />
 
-          <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded">
+          <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded m-2">
             <Media resource={preview} alt="" fill imgClassName="object-cover" priority />
           </div>
         </div>
