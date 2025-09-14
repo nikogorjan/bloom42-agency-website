@@ -17,33 +17,26 @@ export function useAnimatedNavigation() {
   return useContext(Ctx)
 }
 
-export default function TransitionProvider({
-  children,
-  backgroundColor = 'black',
-}: {
-  children: React.ReactNode
-  backgroundColor?: string
-}) {
+export default function TransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
   const [phase, setPhase] = useState<Phase>('enter')
   const nextHrefRef = useRef<string | null>(null)
 
   useEffect(() => {
-    setPhase('enter') // after route change, play enter
+    setPhase('enter')
   }, [pathname])
 
   const onNavigate = useCallback(
     (href: string) => {
       if (!href || href === pathname) return
       nextHrefRef.current = href
-      setPhase('exit') // play exit
+      setPhase('exit')
 
       window.setTimeout(() => {
         const to = nextHrefRef.current
         nextHrefRef.current = null
-        if (to) router.push(to) // then navigate
-        // new page mounts -> phase becomes 'enter' in the effect above
+        if (to) router.push(to)
       }, EXIT_MS)
     },
     [pathname, router],
@@ -51,9 +44,7 @@ export default function TransitionProvider({
 
   return (
     <Ctx.Provider value={{ onNavigate }}>
-      <Curve backgroundColor={backgroundColor} phase={phase}>
-        {children}
-      </Curve>
+      <Curve phase={phase}>{children}</Curve>
     </Ctx.Provider>
   )
 }

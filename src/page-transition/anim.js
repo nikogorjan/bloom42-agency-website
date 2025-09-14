@@ -1,7 +1,8 @@
+// src/page-transition/anim.js
+'use client'
+
 export const text = {
-  initial: {
-    opacity: 1,
-  },
+  initial: { opacity: 1 },
   enter: {
     opacity: 0,
     top: -100,
@@ -15,35 +16,31 @@ export const text = {
   },
 }
 
-export const curve = (initialPath, targetPath) => {
-  return {
-    initial: {
-      d: initialPath,
-    },
-    enter: {
-      d: targetPath,
-      transition: { duration: 0.75, delay: 0.35, ease: [0.76, 0, 0.24, 1] },
-    },
-    exit: {
-      d: initialPath,
-      transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
-    },
-  }
-}
-
-export const translate = {
-  initial: {
-    top: '-300px',
+export const curve = (initialPath, targetPath) => ({
+  initial: { d: initialPath },
+  enter: {
+    d: targetPath,
+    transition: { duration: 0.75, delay: 0.35, ease: [0.76, 0, 0.24, 1] },
   },
+  exit: {
+    d: initialPath,
+    transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+  },
+})
+
+/**
+ * Responsive translate variant.
+ * offset = arc height in px (we use the same "arc" value we compute in index.tsx)
+ */
+export const translate = (offset = 300) => ({
+  initial: { top: `-${offset}px` },
   enter: {
     top: '-100vh',
     transition: { duration: 0.75, delay: 0.35, ease: [0.76, 0, 0.24, 1] },
-    transitionEnd: {
-      top: '100vh',
-    },
+    transitionEnd: { top: '100vh' },
   },
   exit: {
-    top: '-300px',
+    top: `-${offset}px`,
     transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
   },
-}
+})

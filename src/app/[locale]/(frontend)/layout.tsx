@@ -56,7 +56,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Providers>
             {/* MOVE THE PROVIDER HERE SO IT WRAPS HEADER, PAGES, AND FOOTER */}
-            <TransitionProvider backgroundColor="black">
+            <TransitionProvider>
               <Header />
               {children}
               <Footer />

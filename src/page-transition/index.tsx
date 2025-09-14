@@ -22,11 +22,9 @@ const anim = (variants: any, phase: 'initial' | 'enter' | 'exit') => ({
 
 export default function Curve({
   children,
-  backgroundColor,
   phase = 'enter',
 }: {
   children: React.ReactNode
-  backgroundColor: string
   phase?: 'initial' | 'enter' | 'exit'
 }) {
   const pathname = usePathname()
@@ -39,17 +37,22 @@ export default function Curve({
     return () => window.removeEventListener('resize', resize)
   }, [])
 
+  // Responsive bend: tweak to taste
+  const minArc = 120
+  const maxArc = 300
+  const factor = 0.18 // 18% of viewport width
+  const arc = Math.round(Math.min(maxArc, Math.max(minArc, dim.width * factor)))
+
   return (
     <motion.div
       {...anim({ initial: { opacity: 1 }, enter: { opacity: 1 }, exit: { opacity: 1 } }, phase)}
       className="page curve"
-      style={{ backgroundColor }}
     >
       <div style={{ opacity: dim.width === 0 ? 1 : 0 }} className="background" />
       <motion.p className="route" {...anim(text, phase)}>
         {routes[pathname] ?? ''}
       </motion.p>
-      {dim.width !== 0 && <SVG width={dim.width} height={dim.height} phase={phase} />}
+      {dim.width !== 0 && <SVG width={dim.width} height={dim.height} phase={phase} arc={arc} />}
       {children}
     </motion.div>
   )
@@ -59,27 +62,30 @@ function SVG({
   width,
   height,
   phase,
+  arc,
 }: {
   width: number
   height: number
   phase: 'initial' | 'enter' | 'exit'
+  arc: number
 }) {
   const initialPath = `
-    M0 300
-    Q${width / 2} 0 ${width} 300
-    L${width} ${height + 300}
-    Q${width / 2} ${height + 600} 0 ${height + 300}
+    M0 ${arc}
+    Q${width / 2} 0 ${width} ${arc}
+    L${width} ${height + arc}
+    Q${width / 2} ${height + 2 * arc} 0 ${height + arc}
     L0 0
   `
   const targetPath = `
-    M0 300
-    Q${width / 2} 0 ${width} 300
+    M0 ${arc}
+    Q${width / 2} 0 ${width} ${arc}
     L${width} ${height}
     Q${width / 2} ${height} 0 ${height}
     L0 0
   `
+
   return (
-    <motion.svg {...anim(translate, phase)}>
+    <motion.svg {...anim(translate(arc), phase)}>
       <motion.path {...anim(curve(initialPath, targetPath), phase)} />
     </motion.svg>
   )
