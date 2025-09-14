@@ -55,10 +55,12 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <Providers>
-            {/* <AdminBar adminBarProps={{ preview: isEnabled }} /> */}
-            <Header />
-            <TransitionProvider backgroundColor="white">{children}</TransitionProvider>
-            <Footer />
+            {/* MOVE THE PROVIDER HERE SO IT WRAPS HEADER, PAGES, AND FOOTER */}
+            <TransitionProvider backgroundColor="black">
+              <Header />
+              {children}
+              <Footer />
+            </TransitionProvider>
           </Providers>
         </NextIntlClientProvider>
       </body>

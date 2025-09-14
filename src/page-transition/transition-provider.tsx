@@ -6,14 +6,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import Curve from '@/page-transition' // default export from src/page-transition/index.tsx
 
 type Phase = 'initial' | 'enter' | 'exit'
+type TransitionContext = { onNavigate: (href: string) => void }
 
-type TransitionContext = {
-  onNavigate: (href: string) => void
-}
+// IMPORTANT: default is null so consumers can detect missing provider
+const Ctx = createContext<TransitionContext | null>(null)
 
-const Ctx = createContext<TransitionContext>({ onNavigate: () => {} })
-
-const EXIT_MS = 750 // match the longest exit transition duration in anim.ts
+const EXIT_MS = 750 // match your longest exit animation
 
 export function useAnimatedNavigation() {
   return useContext(Ctx)
@@ -32,21 +30,20 @@ export default function TransitionProvider({
   const nextHrefRef = useRef<string | null>(null)
 
   useEffect(() => {
-    // when route changes after push, play enter
-    setPhase('enter')
+    setPhase('enter') // after route change, play enter
   }, [pathname])
 
   const onNavigate = useCallback(
     (href: string) => {
       if (!href || href === pathname) return
       nextHrefRef.current = href
-      setPhase('exit') // 1) play exit
+      setPhase('exit') // play exit
 
       window.setTimeout(() => {
         const to = nextHrefRef.current
         nextHrefRef.current = null
-        if (to) router.push(to) // 2) navigate after exit
-        // 3) new page mounts -> effect above sets 'enter'
+        if (to) router.push(to) // then navigate
+        // new page mounts -> phase becomes 'enter' in the effect above
       }, EXIT_MS)
     },
     [pathname, router],

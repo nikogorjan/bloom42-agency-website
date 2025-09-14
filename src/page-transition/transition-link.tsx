@@ -22,7 +22,7 @@ function isHashHref(href: string | URL) {
 
 export const TransitionLink = React.forwardRef<HTMLAnchorElement, TransitionLinkProps>(
   ({ href, onClick, target, rel, ...rest }, ref) => {
-    const { onNavigate } = useAnimatedNavigation()
+    const ctx = useAnimatedNavigation() // may be null if outside provider
 
     const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
       if (onClick) onClick(e)
@@ -30,11 +30,12 @@ export const TransitionLink = React.forwardRef<HTMLAnchorElement, TransitionLink
 
       const hrefStr = typeof href === 'string' ? href : href.toString()
 
-      // Skip transition for new tab, external, or hash links
-      if (target === '_blank' || isExternalHref(href) || isHashHref(href)) return
+      // If no provider, or external/hash/new tab → let the browser/Next handle it
+      if (!ctx || target === '_blank' || isExternalHref(href) || isHashHref(href)) return
 
+      // Intercept and run transition
       e.preventDefault()
-      onNavigate(hrefStr)
+      ctx.onNavigate(hrefStr)
     }
 
     return <Link ref={ref} href={href} target={target} rel={rel} onClick={handleClick} {...rest} />

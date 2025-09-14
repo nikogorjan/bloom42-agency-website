@@ -50,9 +50,8 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   size,
   url,
 }) => {
-  const { onNavigate } = useAnimatedNavigation()
+  const ctx = useAnimatedNavigation() // may be null if rendered outside provider
 
-  // Build href (same logic as you had)
   const href =
     type === 'reference' && typeof reference?.value === 'object' && (reference.value as any).slug
       ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
@@ -65,12 +64,14 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' as const } : {}
 
   const handleButtonClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
-    if (!isInternalNavigable(href, newTab)) return // let default behavior happen
-    e.preventDefault()
-    onNavigate(href)
+    if (!isInternalNavigable(href, newTab)) return
+    if (ctx?.onNavigate) {
+      e.preventDefault() // only prevent if we’ll handle it
+      ctx.onNavigate(href) // exit → push → enter
+    }
+    // else: no provider → allow default navigation
   }
 
-  // Inline links → TransitionLink
   if (appearance === 'inline') {
     return (
       <TransitionLink className={cn(className)} href={href} {...newTabProps}>
@@ -80,7 +81,6 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     )
   }
 
-  // AnimatedButton variant
   if (appearance === 'default') {
     return (
       <AnimatedButton
@@ -96,7 +96,6 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     )
   }
 
-  // LeafButton variant
   if (appearance === 'animatedArrow') {
     return (
       <LeafButton
@@ -112,7 +111,6 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     )
   }
 
-  // Fallback: Button asChild + TransitionLink
   return (
     <Button asChild size={size || undefined} variant={appearance} className={className}>
       <TransitionLink className={cn(className)} href={href} {...newTabProps}>
