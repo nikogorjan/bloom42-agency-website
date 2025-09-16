@@ -7,7 +7,6 @@ export const FeaturedProjects: React.FC<FeaturedProjectsBlock> = ({
   tagline,
   heading,
   description,
-  button,
   projects,
 }) => {
   // Safely default to empty array if `projects` is undefined or null

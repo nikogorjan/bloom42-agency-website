@@ -1,6 +1,5 @@
 // src/app/[locale]/layout.tsx
 import type { Metadata } from 'next'
-import { draftMode } from 'next/headers'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
@@ -38,8 +37,6 @@ export default async function RootLayout({
   const { locale } = await params
   if (!hasLocale(routing.locales, locale)) notFound()
   setRequestLocale(locale)
-
-  const { isEnabled } = await draftMode()
 
   return (
     <html
