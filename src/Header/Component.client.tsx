@@ -17,10 +17,9 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
 
-  // Which dropdown (by index) is open
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const isOpen = openIndex !== null
 
-  // The active dropdown item (if any)
   const activeItem: DropdownItem | null = useMemo(
     () =>
       openIndex != null && data.navItems?.[openIndex]?.type === 'dropdown'
@@ -29,20 +28,17 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
     [openIndex, data.navItems],
   )
 
-  // Right side preview image (resets when active changes or when leaving items)
   const [preview, setPreview] = useState<any>(activeItem?.defaultImage)
   useEffect(() => {
     setPreview(activeItem?.defaultImage)
   }, [activeItem])
 
-  // Reset theme and close menu on route change
   useEffect(() => {
     setHeaderTheme(null)
     setOpenIndex(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
-  // Sync theme from provider
   useEffect(() => {
     if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -52,27 +48,28 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
     <header
       className="fixed inset-x-0 top-5 z-[1000] px-[5%]"
       {...(theme ? { 'data-theme': theme } : {})}
-      // IMPORTANT: no onMouseLeave on <header>; we handle it on the inner container
     >
-      {/* DESKTOP */}
       <div className="hidden lg:block">
-        {/* One container wraps TOP BAR + PANEL so the header grows with the menu */}
+        {/* Outer pill: radius snaps (no radius transition) */}
         <div
-          className="container max-w-[992px] bg-white border-2 border-lightGray rounded-2xl shadow-sm overflow-hidden"
-          // Close when leaving the whole header+panel area to page content
-          onMouseLeave={() => setOpenIndex(null)}
+          className={[
+            'container max-w-[992px] bg-white border-2 border-lightGray shadow-sm overflow-hidden',
+            isOpen ? 'rounded-[28px]' : 'rounded-full',
+            // avoid transition-all here so radius snaps; you can keep shadow transition if you want:
+            'transition-shadow',
+          ].join(' ')}
+          onMouseLeave={() => setOpenIndex(null)} // close when leaving header+panel to page
         >
-          {/* TOP BAR */}
-          <div className="px-3 py-2 min-h-14 rounded-2xl">
+          {/* Top bar (no inner rounding) */}
+          <div className="px-3 py-2 min-h-14">
             <div className="w-full flex items-center justify-between">
-              {/* LEFT: Logo + Primary Nav */}
+              {/* Left: logo + nav */}
               <div className="flex items-center">
-                {/* Logo — close menu on hover */}
                 <div>
                   <TransitionLink
                     href={data.logoUrl || '/'}
                     className="block relative size-8 select-none cursor-pointer"
-                    onMouseEnter={() => setOpenIndex(null)}
+                    onMouseEnter={() => setOpenIndex(null)} // hover logo closes
                   >
                     <Media
                       fill
@@ -87,7 +84,6 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 <div className="ml-8">
                   <div className="relative flex items-center gap-2">
                     {data.navItems?.map((navItem: any, i: number) => {
-                      // Dropdown labels open menu on hover; no per-item mouseleave
                       if (navItem.type === 'dropdown') {
                         return (
                           <NavDropdown
@@ -95,12 +91,11 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             item={navItem}
                             index={i}
                             isOpen={openIndex === i}
-                            onOpen={(idx) => setOpenIndex(idx)}
+                            onOpen={(idx) => setOpenIndex(idx)} // opens on hover
                           />
                         )
                       }
 
-                      // Regular links — close menu on hover
                       const href =
                         navItem.type === 'reference' && navItem.reference
                           ? `/${
@@ -118,9 +113,9 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                         <TransitionLink
                           key={i}
                           href={href}
-                          className="text-base font-medium px-2 h-10 flex items-center "
+                          className="text-base px-2 h-10 flex items-center"
                           {...newTabProps}
-                          onMouseEnter={() => setOpenIndex(null)}
+                          onMouseEnter={() => setOpenIndex(null)} // hover regular link closes
                         >
                           {navItem.label}
                         </TransitionLink>
@@ -130,7 +125,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 </div>
               </div>
 
-              {/* RIGHT: action links — close menu on hover */}
+              {/* Right actions — close on hover */}
               <div
                 className="relative flex items-center gap-4"
                 onMouseEnter={() => setOpenIndex(null)}
@@ -142,18 +137,17 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
             </div>
           </div>
 
-          {/* PANEL (megamenu) — animated natural height via grid rows */}
+          {/* Panel: animate height/opacity only */}
           <div
             className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
-              openIndex != null ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
             }`}
           >
             <div className="overflow-hidden">
               {activeItem && (
                 <div
                   className="p-3 border-t-2 border-lightGray"
-                  // only reset preview on leaving items; do NOT close menu here
-                  onMouseLeave={() => setPreview(activeItem?.defaultImage)}
+                  onMouseLeave={() => setPreview(activeItem?.defaultImage)} // only resets preview
                 >
                   <div className="flex items-start gap-3">
                     {/* LEFT: items */}
@@ -175,12 +169,12 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             key={j}
                             href={href}
                             onMouseEnter={() => setPreview(sub?.media || activeItem?.defaultImage)}
-                            onClick={() => setOpenIndex(null)}
-                            className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded border border-white hover:border-lightGray"
+                            onClick={() => setOpenIndex(null)} // close on click
+                            className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded-[16px] border border-white hover:border-lightGray"
                             {...newTabProps}
                           >
                             {/* icon */}
-                            <div className="relative size-[55px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-lightGray rounded-sm">
+                            <div className="relative size-[55px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-lightGray rounded-[12px]">
                               <div className="relative size-[24px]">
                                 <Media
                                   resource={sub?.icon}
@@ -221,7 +215,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                     <div className="self-stretch w-px bg-lightGray flex-shrink-0 ml-2 my-2" />
 
                     {/* RIGHT: preview */}
-                    <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded m-2">
+                    <div className="relative w-96 aspect-[16/11] flex-shrink-0 overflow-hidden rounded-[16px] m-2">
                       <Media resource={preview} alt="" fill imgClassName="object-cover" priority />
                     </div>
                   </div>
