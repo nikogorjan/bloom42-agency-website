@@ -18,6 +18,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
   links,
   techStack,
   tagline,
+  heroVideo,
 }) => {
   const [squareSize, setSquareSize] = useState(80)
 
@@ -25,7 +26,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
     const updateSize = () => {
       if (window.innerWidth < 768) {
         // Mobile
-        setSquareSize(40)
+        setSquareSize(64)
       } else {
         // Tablet & up
         setSquareSize(80)
@@ -154,14 +155,15 @@ export const LandingHero: React.FC<Page['hero']> = ({
           </div>
 
           <div className="relative flex w-full items-center justify-center">
-            <video
-              src="/videos/dark.webm"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-auto rounded-3xl"
-            />
+            {heroVideo ? (
+              <Media
+                resource={heroVideo}
+                className="w-full"
+                videoClassName="w-full h-auto rounded-3xl"
+              />
+            ) : (
+              <div></div>
+            )}
           </div>
         </div>
       </div>

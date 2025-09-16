@@ -1,30 +1,37 @@
+// src/components/Media/VideoMedia/index.tsx
 'use client'
 
-import { cn } from '@/utilities/ui'
 import React, { useEffect, useRef } from 'react'
-
+import { cn } from '@/utilities/ui'
+import { getClientSideURL } from '@/utilities/getURL'
 import type { Props as MediaProps } from '../types'
 
-import { getClientSideURL } from '@/utilities/getURL'
+const isAbsolute = (u?: string) => !!u && /^(https?:)?\/\//i.test(u)
+const isBad = (u?: string) => !!u && (/^\/undefined\//i.test(u) || /^undefined\//i.test(u))
+const s3Direct = (filename?: string) => {
+  if (!filename) return undefined
+  const b = process.env.NEXT_PUBLIC_S3_BUCKET
+  const r = process.env.NEXT_PUBLIC_S3_REGION
+  return b && r ? `https://${b}.s3.${r}.amazonaws.com/${filename}` : undefined
+}
 
-export const VideoMedia: React.FC<MediaProps> = (props) => {
-  const { onClick, resource, videoClassName } = props
-
-  const videoRef = useRef<HTMLVideoElement>(null)
-  // const [showFallback] = useState<boolean>()
+export const VideoMedia: React.FC<MediaProps> = ({ onClick, resource, videoClassName }) => {
+  const ref = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    const { current: video } = videoRef
-    if (video) {
-      video.addEventListener('suspend', () => {
-        // setShowFallback(true);
-        // console.warn('Video was suspended, rendering fallback image.')
-      })
-    }
+    ref.current?.addEventListener('suspend', () => {})
   }, [])
 
   if (resource && typeof resource === 'object') {
-    const { filename } = resource
+    const { url, filename } = resource as any
+    let src: string | undefined
+
+    if (isAbsolute(url)) src = url
+    else if (url && !isBad(url))
+      src = `${getClientSideURL()}${url.startsWith('/') ? '' : '/'}${url}`
+    else if (filename) src = s3Direct(filename) || `${getClientSideURL()}/media/${filename}`
+
+    if (!src) return null
 
     return (
       <video
@@ -35,9 +42,10 @@ export const VideoMedia: React.FC<MediaProps> = (props) => {
         muted
         onClick={onClick}
         playsInline
-        ref={videoRef}
+        preload="metadata"
+        ref={ref}
       >
-        <source src={`${getClientSideURL()}/media/${filename}`} />
+        <source src={src} />
       </video>
     )
   }

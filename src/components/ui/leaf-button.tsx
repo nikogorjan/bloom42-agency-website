@@ -20,12 +20,10 @@ const leaves = [
   { src: '/media/icons/white-leaf-small.svg', x: 6, y: -40, delay: 0.8 },
   { src: '/media/icons/white-leaf-mid.svg', x: 19, y: -40, delay: 1.0 },
   { src: '/media/icons/white-leaf-mid.svg', x: 27, y: -40, delay: 1.2 },
-
   { src: '/media/icons/orange-leaf.svg', x: 26, y: -40, delay: 1.3 },
   { src: '/media/icons/white-leaf-small.svg', x: 18, y: -40, delay: 1.4 },
   { src: '/media/icons/white-leaf-mid.svg', x: 12, y: -40, delay: 1.5 },
   { src: '/media/icons/white-leaf-mid.svg', x: 8, y: -40, delay: 1.6 },
-
   { src: '/media/icons/orange-leaf.svg', x: 14, y: -40, delay: 1.7 },
   { src: '/media/icons/white-leaf-small.svg', x: 10, y: -40, delay: 1.8 },
   { src: '/media/icons/white-leaf-mid.svg', x: 7, y: -40, delay: 1.9 },
@@ -52,7 +50,6 @@ const LeafButton: React.FC<LeafButtonProps> = ({
     setXY({ x: e.clientX - left, y: e.clientY - top })
   }
 
-  /* hover-in */
   const handleEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
     setCoords(e)
     setOpen(true)
@@ -63,7 +60,6 @@ const LeafButton: React.FC<LeafButtonProps> = ({
     }, 2_600)
   }
 
-  /* hover-out */
   const handleLeave = () => {
     if (timer.current) clearTimeout(timer.current)
     setOpen(false)
@@ -84,11 +80,11 @@ const LeafButton: React.FC<LeafButtonProps> = ({
       )}
       style={{ '--rx': `${xy.x}px`, '--ry': `${xy.y}px` } as React.CSSProperties}
     >
-      {/* ——— ripple (clipped by its own mask) ——— */}
+      {/* ripple (clipped by its own mask) */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden"
-        style={{ borderRadius: 'inherit' }} /* <-- keeps rounded corners */
+        style={{ borderRadius: 'inherit' }}
       >
         <span
           className="absolute top-[var(--ry)] left-[var(--rx)]
@@ -119,21 +115,38 @@ const LeafButton: React.FC<LeafButtonProps> = ({
                 exit={{ opacity: 0 }}
                 transition={{ delay, duration: 0.8, ease: 'easeInOut' }}
               >
-                <Media src={src} alt="" priority fill className="block size-1 object-contain" />
+                {/* positioned + explicit size for fill */}
+                <span className="relative block w-1 h-1">
+                  {' '}
+                  {/* ✅ was size-4 */}
+                  <Media
+                    htmlElement={null}
+                    src={src}
+                    alt=""
+                    priority
+                    fill
+                    imgClassName="object-contain"
+                  />
+                </span>
               </motion.div>
             ))}
         </AnimatePresence>
       </motion.div>
 
       {/* arrow */}
-      <div className="relative z-20 size-[14px]">
-        <Media
-          fill
-          src="/media/icons/right-arrow-alt.svg"
-          alt="arrow"
-          priority
-          imgClassName="object-contain transition duration-300 group-hover:invert"
-        />
+      <div className="relative z-20">
+        <span className="relative block w-[14px] h-[14px]">
+          {' '}
+          {/* ✅ was size-[14px] */}
+          <Media
+            htmlElement={null}
+            fill
+            src="/media/icons/right-arrow-alt.svg"
+            alt="arrow"
+            priority
+            imgClassName="object-contain transition duration-300 group-hover:invert"
+          />
+        </span>
       </div>
     </Link>
   )

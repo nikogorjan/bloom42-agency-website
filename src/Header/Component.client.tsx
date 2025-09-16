@@ -228,11 +228,11 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
       </div>
 
       <div className="lg:hidden">
-        <div className="container bg-white border-2 border-lightGray rounded-full px-3 py-2 min-h-14 flex items-center justify-between">
+        <div className="container bg-white border-2 border-lightGray rounded-full px-2 py-2  flex items-center justify-between">
           {/* Left: logo */}
           <TransitionLink
             href={data.logoUrl || '/'}
-            className="block relative size-8 select-none cursor-pointer"
+            className="block relative size-10 select-none cursor-pointer"
           >
             <Media fill imgClassName="object-contain rounded-[4px]" priority resource={data.logo} />
           </TransitionLink>

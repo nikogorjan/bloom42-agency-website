@@ -50,12 +50,12 @@ body.mobile-menu-open {
 .mobile-curve {
   position: fixed;
   left: 0;
-  top: 0; /* animated via variants: 100vh -> -arc px */
+  top: 0; /* animated by inline style: 100vh -> -arc px */
   width: 100vw;
-  /* height is set inline from the component (viewport + 2*arc) */
   z-index: 940; /* below menu content (950), below header (1000) */
   pointer-events: none;
+
   path {
     fill: white;
-  }
+  } /* or your brand color */
 }

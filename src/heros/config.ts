@@ -127,6 +127,20 @@ export const hero: Field = {
       ],
     },
     {
+      name: 'heroVideo',
+      label: 'Hero Video',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+      admin: {
+        condition: (_, { type } = {}) => type === 'landingHero',
+        description: 'Upload a .mp4 / .webm hero video. It will autoplay & loop (muted).',
+      },
+      filterOptions: {
+        mimeType: { contains: 'video' },
+      },
+    },
+    {
       name: 'media',
       type: 'upload',
       admin: {
