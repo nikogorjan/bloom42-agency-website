@@ -3,13 +3,11 @@
 
 import React, { useEffect, useState } from 'react'
 import type { Page } from '@/payload-types'
-import { Dialog, DialogTrigger } from '@relume_io/relume-ui'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 import { HeroTagline } from '@/components/ui/hero-tagline'
 import Squares from '@/components/ui/squares-background-animation'
-import ThreeMeshoptViewer from '@/components/ui/three-meshtop-viewer'
 
 // This component will receive the `header` and `description` fields
 export const LandingHero: React.FC<Page['hero']> = ({

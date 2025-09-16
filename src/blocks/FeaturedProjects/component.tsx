@@ -1,9 +1,7 @@
 'use client' // if you are on Next.js 13+ app router
 
 import React from 'react'
-import { Button } from '@relume_io/relume-ui'
 import type { FeaturedProjectsBlock } from '@/payload-types'
-import { RxChevronRight } from 'react-icons/rx'
 
 export const FeaturedProjects: React.FC<FeaturedProjectsBlock> = ({
   tagline,

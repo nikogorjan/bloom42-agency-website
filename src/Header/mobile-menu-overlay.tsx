@@ -1,11 +1,10 @@
 // src/Header/MobileMenuOverlay.tsx
 'use client'
 
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
 import { TransitionLink } from '@/page-transition/transition-link'
 import { CMSLink } from '@/components/Link'
-import { curveMenu } from '@/page-transition/anim'
 
 type RelationTo = 'pages' | 'posts'
 interface Reference {
