@@ -1,14 +1,14 @@
 /* app/fonts.ts */
-import { Bebas_Neue, Figtree } from 'next/font/google'
+import { Anton, Figtree } from 'next/font/google'
 
 /**
  * Bebas Neue has only one static weight (400),
  * so we just pull that single file.
  */
-export const bebasNeue = Bebas_Neue({
-  weight: '400', // only option available
+export const anton = Anton({
+  weight: '400',
   subsets: ['latin'],
-  variable: '--font-bebas-neue',
+  variable: '--font-anton',
 })
 
 /**

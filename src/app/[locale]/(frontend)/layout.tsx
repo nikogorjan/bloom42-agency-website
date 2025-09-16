@@ -6,7 +6,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
 
-import { bebasNeue, figtree } from '../../../fonts/fonts'
+import { anton, figtree } from '../../../fonts/fonts'
 import { Providers } from '@/providers'
 import { InitTheme } from '@/providers/Theme/InitTheme'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
@@ -44,7 +44,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${bebasNeue.variable} ${figtree.variable}`}
+      className={`${anton.variable} ${figtree.variable}`}
       suppressHydrationWarning
     >
       <head>

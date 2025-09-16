@@ -79,7 +79,7 @@ const LeafButton: React.FC<LeafButtonProps> = ({
       onMouseLeave={handleLeave}
       className={cn(
         buttonVariants({ size, variant: 'default' }),
-        'relative group bg-white text-black hover:text-white duration-300',
+        'relative group bg-white text-darkGray hover:text-white duration-300',
         className,
       )}
       style={{ '--rx': `${xy.x}px`, '--ry': `${xy.y}px` } as React.CSSProperties}
@@ -92,7 +92,7 @@ const LeafButton: React.FC<LeafButtonProps> = ({
       >
         <span
           className="absolute top-[var(--ry)] left-[var(--rx)]
-                     h-0 w-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black
+                     h-0 w-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-darkGray
                      transition-all duration-300 ease-linear
                      group-hover:h-[300%] group-hover:w-[300%]"
         />

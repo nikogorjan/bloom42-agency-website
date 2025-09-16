@@ -31,7 +31,7 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
       onMouseMove={track}
       className={cn(
         buttonVariants({ size, variant: 'default' }),
-        'relative group bg-black text-white hover:bg-white hover:text-black duration-300',
+        'relative group bg-darkGray text-white hover:bg-white hover:text-darkGray duration-300',
         className,
       )}
       style={{ '--rx': `${xy.x}px`, '--ry': `${xy.y}px` } as React.CSSProperties}

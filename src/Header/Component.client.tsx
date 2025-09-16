@@ -40,7 +40,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     >
       {/* DESKTOP */}
       <div className="hidden lg:flex">
-        <div className="container max-w-[892px] flex items-center justify-center bg-white px-3 py-2 md:top-6 min-h-14 border-2 border-lightGray rounded-full ">
+        <div className="container max-w-[968px] flex items-center justify-center bg-white px-3 py-2 md:top-6 min-h-14 border-2 border-lightGray rounded-full ">
           <div className="w-full flex items-center justify-between ">
             <div className="flex items-center justify-center">
               {/* Logo */}

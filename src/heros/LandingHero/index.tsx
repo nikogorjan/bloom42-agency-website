@@ -1,13 +1,15 @@
 // src/heros/LandingHero.tsx
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import type { Page } from '@/payload-types'
 import { Dialog, DialogTrigger } from '@relume_io/relume-ui'
 import { CMSLink } from '@/components/Link'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 import { HeroTagline } from '@/components/ui/hero-tagline'
+import Squares from '@/components/ui/squares-background-animation'
+import ThreeMeshoptViewer from '@/components/ui/three-meshtop-viewer'
 
 // This component will receive the `header` and `description` fields
 export const LandingHero: React.FC<Page['hero']> = ({
@@ -17,18 +19,63 @@ export const LandingHero: React.FC<Page['hero']> = ({
   techStack,
   tagline,
 }) => {
+  const [squareSize, setSquareSize] = useState(80)
+
+  useEffect(() => {
+    const updateSize = () => {
+      if (window.innerWidth < 768) {
+        // Mobile
+        setSquareSize(40)
+      } else {
+        // Tablet & up
+        setSquareSize(80)
+      }
+    }
+
+    updateSize()
+    window.addEventListener('resize', updateSize)
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+
   return (
     <section
       id="hero-header"
-      className="px-[5%] pb-16 md:pb-24 lg:pb-28 pt-32 md:pt-36 lg:pt-36 bg-eggshell"
+      className="relative overflow-hidden px-[5%] pb-16 md:pb-24 lg:pb-28 pt-32 md:pt-36 lg:pt-36 bg-eggshell"
     >
-      <div className="container">
+      <div className="absolute inset-0 z-0 ">
+        <Squares
+          speed={0.2}
+          squareSize={squareSize}
+          direction="up"
+          borderColor="#EBE9E4"
+          hoverFillColor="#EBE9E4"
+        />
+      </div>
+
+      {/* <div aria-hidden className="pointer-events-none absolute inset-0 z-[5] w-full h-full">
+        <ThreeMeshoptViewer />
+      </div>
+*/}
+      {/* Foreground content */}
+      <div className="relative z-10 container">
         <div className="flex flex-col items-center">
           <div className="relative rb-12 mb-12 text-center md:mb-18 lg:mb-20 max-w-[768px]">
             <div className="relative w-full max-w-lg flex flex-col items-center justify-center z-10">
+              {/* edge-less ambient blur layer */}
+              <span
+                aria-hidden
+                className="
+                    pointer-events-none absolute -z-10 left-1/2 top-1/2
+                    -translate-x-1/2 -translate-y-1/2
+                    w-[80vw] h-[80vh] md:w-[70vw] md:h-[70vh]
+                    backdrop-blur-md bg-eggshell/30
+                    [mask-image:radial-gradient(50%_50%_at_50%_50%,_black_35%,_transparent_70%)]
+                    [mask-repeat:no-repeat]
+                    [mask-size:100%_100%]
+                    "
+              />
               {/* Dynamically render hero tagline */}
               {tagline && <HeroTagline text={tagline} />}
-
               {/* Dynamically render hero header */}
               {header && (
                 <span className="relative inline-block mb-5 md:mb-6">
@@ -46,25 +93,22 @@ export const LandingHero: React.FC<Page['hero']> = ({
                     fill
                     className="z-0 pointer-events-none absolute right-[18px] top-[80px] md:right-[56px] md:top-[110px] lg:right-[0px] lg:top-[130px] -translate-y-1/2 w-[25px] h-[24px] md:w-[32px] md:h-[31px] object-contain"
                   />
-                  <h1 className="relative z-10 text-5xl font-figtree font-semibold md:text-9xl lg:text-10xl max-w-[500px] md:max-w-[690px]">
+                  <h1 className="relative z-10 text-darkGray text-6xl font-anton md:text-10xl lg:text-[72px] max-w-[500px] md:max-w-[690px]">
                     {header}
                   </h1>
                 </span>
               )}
-
               {/* Dynamically render hero description */}
               {description && (
                 <p className="font-figtree font-light md:text-md max-w-[420px] md:max-w-[560px] lg:max-w-[560px]">
                   {description}
                 </p>
               )}
-
               <div className="relative mt-6 flex flex-wrap items-center justify-center gap-4 md:mt-8 mb-5 md:mb-6">
                 {links?.map(({ link }, i) => {
                   return <CMSLink key={i} {...link} />
                 })}
               </div>
-
               <div className="relative flex flex-col items-center justify-center">
                 {/* white leaf to the left of the tech-stack badges */}
                 <Media
@@ -103,22 +147,21 @@ export const LandingHero: React.FC<Page['hero']> = ({
                       </div>
                     ))}
                   </div>
-                  <p className="font-bebas text-base">{techStack?.label}</p>
+                  <p className="font-anton text-darkGray text-base">{techStack?.label}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div>
-            <Dialog>
-              <DialogTrigger className="relative flex w-full items-center justify-center">
-                <img
-                  src="/media/placeholder.webp"
-                  alt="placeholder image"
-                  className="size-full object-cover"
-                />
-              </DialogTrigger>
-            </Dialog>
+          <div className="relative flex w-full items-center justify-center">
+            <video
+              src="/videos/dark.webm"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-auto rounded-3xl"
+            />
           </div>
         </div>
       </div>
