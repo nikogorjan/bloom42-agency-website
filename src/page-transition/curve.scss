@@ -32,3 +32,30 @@
     text-align: center;
   }
 }
+
+html.mobile-menu-open,
+body.mobile-menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+.mobile-curve-bg {
+  position: fixed;
+  inset: 0;
+  background: white; /* must match the curve path fill */
+  z-index: 930; /* below menu content, above page content */
+  opacity: 0;
+}
+
+.mobile-curve {
+  position: fixed;
+  left: 0;
+  top: 0; /* animated via variants: 100vh -> -arc px */
+  width: 100vw;
+  /* height is set inline from the component (viewport + 2*arc) */
+  z-index: 940; /* below menu content (950), below header (1000) */
+  pointer-events: none;
+  path {
+    fill: white;
+  }
+}

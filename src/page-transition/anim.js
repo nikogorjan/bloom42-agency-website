@@ -44,3 +44,26 @@ export const translate = (offset = 300) => ({
     transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
   },
 })
+
+/** ---------------- MENU-SPECIFIC VARIANTS ---------------- */
+/** Menu: path morph that parks flat when open */
+export const curveMenu = (initialPath, targetPath) => ({
+  closed: { d: initialPath },
+  open: {
+    d: targetPath,
+    transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+  },
+})
+
+/** Translate for menu: 100vh -> 0 (park), then 0 -> 100vh on close */
+export const translateMenu = {
+  closed: {
+    top: '100vh',
+    transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+  },
+  open: {
+    top: '0',
+    transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
+    transitionEnd: { top: '0' }, // stay covering the screen while open
+  },
+}
