@@ -21,7 +21,7 @@ export default [
       // General TS tweaks
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
 
       // Disable default unused-vars checks (use plugin instead)
       'no-unused-vars': 'off',
