@@ -1,6 +1,5 @@
 // src/globals/Header.ts
 import type { GlobalConfig } from 'payload'
-import { revalidateHeader } from './hooks/revalidateHeader'
 import { linkGroup } from '@/fields/linkGroup'
 import { revalidateHeaderNow } from '@/utilities/revalidate'
 

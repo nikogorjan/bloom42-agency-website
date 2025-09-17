@@ -9,7 +9,6 @@ import { getHeaderCached } from '@/data/header'
 
 export async function Header() {
   const locale = (await getLocale()) as AppLocale
-  const payload = await getPayload({ config: configPromise })
 
   const headerData = (await getHeaderCached(locale)) as Header
 

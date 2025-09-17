@@ -13,7 +13,6 @@ import { getFooterCached } from '@/data/footer'
 
 export async function Footer() {
   const locale = (await getLocale()) as 'en' | 'sl'
-  const payload = await getPayload({ config: configPromise })
   const footerData = (await getFooterCached(locale)) as Footer
 
   const navItems = footerData?.navItems || []
