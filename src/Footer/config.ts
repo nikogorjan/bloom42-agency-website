@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { link } from '@/fields/link'
-import { revalidateFooter } from './hooks/revalidateFooter'
+import { revalidateFooterNow } from '@/utilities/revalidate'
 
 export const Footer: GlobalConfig = {
   slug: 'footer',
@@ -28,6 +28,10 @@ export const Footer: GlobalConfig = {
     },
   ],
   hooks: {
-    afterChange: [revalidateFooter],
+    afterChange: [
+      async () => {
+        await revalidateFooterNow()
+      },
+    ],
   },
 }
