@@ -1,10 +1,10 @@
 // src/app/[locale]/layout.tsx
-import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { Suspense } from 'react'
 
 import { anton, figtree } from '../../../fonts/fonts'
 import { Providers } from '@/providers'
@@ -33,11 +33,9 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode
-  // Next 15 app router types: params is a Promise you must await
   params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
-
   if (!hasLocale(routing.locales, locale)) notFound()
   setRequestLocale(locale)
 
@@ -55,14 +53,15 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <Providers>
-            {/* ⬇️ Wrap the subtree that contains useSearchParams/usePathname/useRouter */}
-            <Suspense fallback={null}>
-              <TransitionProvider>
+            {/* Keep provider mounted outside Suspense so popstate interception always works */}
+            <TransitionProvider>
+              {/* Satisfy Next’s lint: wrap the subtree that uses router/pathname/search */}
+              <Suspense fallback={null}>
                 <Header />
                 {children}
                 <Footer />
-              </TransitionProvider>
-            </Suspense>
+              </Suspense>
+            </TransitionProvider>
           </Providers>
         </NextIntlClientProvider>
       </body>
