@@ -43,6 +43,15 @@ export const hero: Field = {
       required: true,
     },
     {
+      name: 'tagline',
+      type: 'text',
+      label: 'Tagline',
+      localized: true,
+      admin: {
+        condition: (_, { type } = {}) => type === 'landingHero',
+      },
+    },
+    {
       name: 'header',
       type: 'text',
       label: 'Header',
@@ -86,6 +95,51 @@ export const hero: Field = {
         maxRows: 2,
       },
     }),
+    {
+      name: 'techStack',
+      label: 'Tech Stack',
+      type: 'group',
+      admin: {
+        condition: (_, { type } = {}) => type === 'landingHero',
+      },
+      fields: [
+        {
+          name: 'label',
+          label: 'Section Label',
+          type: 'text',
+          localized: true,
+        },
+        {
+          name: 'items',
+          label: 'Logos',
+          type: 'array',
+
+          fields: [
+            {
+              name: 'logo',
+              label: 'Logo Image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'heroVideo',
+      label: 'Hero Video',
+      type: 'upload',
+      relationTo: 'media',
+      required: false,
+      admin: {
+        condition: (_, { type } = {}) => type === 'landingHero',
+        description: 'Upload a .mp4 / .webm hero video. It will autoplay & loop (muted).',
+      },
+      filterOptions: {
+        mimeType: { contains: 'video' },
+      },
+    },
     {
       name: 'media',
       type: 'upload',

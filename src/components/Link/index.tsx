@@ -1,9 +1,14 @@
-import { Button, type ButtonProps } from '@/components/ui/button'
-import { cn } from '@/utilities/ui'
-import Link from 'next/link'
-import React from 'react'
+// src/components/CMSLink.tsx
+'use client'
 
+import React from 'react'
+import { Button, type ButtonProps } from '@/components/ui/button'
+import AnimatedButton from '@/components/ui/animated-button'
+import LeafButton from '@/components/ui/leaf-button'
+import { cn } from '@/utilities/ui'
 import type { Page, Post } from '@/payload-types'
+import { TransitionLink } from '@/page-transition/transition-link'
+import { useAnimatedNavigation } from '@/page-transition/transition-provider'
 
 type CMSLinkType = {
   appearance?: 'inline' | ButtonProps['variant']
@@ -20,47 +25,98 @@ type CMSLinkType = {
   url?: string | null
 }
 
-export const CMSLink: React.FC<CMSLinkType> = (props) => {
-  const {
-    type,
-    appearance = 'inline',
-    children,
-    className,
-    label,
-    newTab,
-    reference,
-    size: sizeFromProps,
-    url,
-  } = props
+function isExternalHref(href: string) {
+  return /^(?:[a-z][a-z0-9+.-]*:|\/\/|mailto:|tel:)/i.test(href)
+}
+function isHashHref(href: string) {
+  return href.startsWith('#')
+}
+function isInternalNavigable(href: string, newTab?: boolean | null) {
+  if (newTab) return false
+  if (!href) return false
+  if (isHashHref(href)) return false
+  if (isExternalHref(href)) return false
+  return true
+}
+
+export const CMSLink: React.FC<CMSLinkType> = ({
+  type,
+  appearance = 'inline',
+  children,
+  className,
+  label,
+  newTab,
+  reference,
+  size,
+  url,
+}) => {
+  const ctx = useAnimatedNavigation() // may be null if rendered outside provider
 
   const href =
-    type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
+    type === 'reference' && typeof reference?.value === 'object' && (reference.value as any).slug
       ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
+          (reference.value as any).slug
         }`
-      : url
+      : url || ''
 
   if (!href) return null
 
-  const size = appearance === 'link' ? 'clear' : sizeFromProps
-  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
+  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' as const } : {}
 
-  /* Ensure we don't break any styles set by richText */
+  const handleButtonClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
+    if (!isInternalNavigable(href, newTab)) return
+    if (ctx?.onNavigate) {
+      e.preventDefault() // only prevent if we’ll handle it
+      ctx.onNavigate(href) // exit → push → enter
+    }
+    // else: no provider → allow default navigation
+  }
+
   if (appearance === 'inline') {
     return (
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
-        {children && children}
-      </Link>
+      <TransitionLink className={cn(className)} href={href} {...newTabProps}>
+        {label}
+        {children}
+      </TransitionLink>
+    )
+  }
+
+  if (appearance === 'default') {
+    return (
+      <AnimatedButton
+        href={href}
+        size={size || 'default'}
+        className={className}
+        {...newTabProps}
+        onClick={handleButtonClick}
+      >
+        {label}
+        {children}
+      </AnimatedButton>
+    )
+  }
+
+  if (appearance === 'animatedArrow') {
+    return (
+      <LeafButton
+        href={href}
+        size={size || 'default'}
+        className={className}
+        {...newTabProps}
+        onClick={handleButtonClick}
+      >
+        {label}
+        {children}
+      </LeafButton>
     )
   }
 
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
-      <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
-        {children && children}
-      </Link>
+    <Button asChild size={size || undefined} variant={appearance} className={className}>
+      <TransitionLink className={cn(className)} href={href} {...newTabProps}>
+        {label}
+        {children}
+      </TransitionLink>
     </Button>
   )
 }

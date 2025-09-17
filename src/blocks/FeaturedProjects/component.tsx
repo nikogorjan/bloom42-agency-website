@@ -1,24 +1,21 @@
-'use client' // if you are on Next.js 13+ app router
+// src/blocks/FeaturedProjects/component.tsx
+'use client'
 
 import React from 'react'
-import { Button } from '@relume_io/relume-ui'
 import type { FeaturedProjectsBlock } from '@/payload-types'
-import { RxChevronRight } from 'react-icons/rx'
+import { Media } from '@/components/Media'
 
 export const FeaturedProjects: React.FC<FeaturedProjectsBlock> = ({
   tagline,
   heading,
   description,
-  button,
   projects,
 }) => {
-  // Safely default to empty array if `projects` is undefined or null
   const safeProjects = projects ?? []
 
   return (
     <section className="px-[5%] py-16 md:py-24 lg:py-28">
       <div className="container">
-        {/* Header */}
         <header className="mx-auto mb-12 max-w-lg text-center md:mb-18 lg:mb-20">
           {tagline && <p className="mb-3 font-semibold md:mb-4">{tagline}</p>}
           {heading && (
@@ -27,42 +24,38 @@ export const FeaturedProjects: React.FC<FeaturedProjectsBlock> = ({
           {description && <p className="md:text-md">{description}</p>}
         </header>
 
-        {/* Projects Grid */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-16 lg:grid-cols-3">
           {safeProjects.map((project, index) => (
             <ProjectCard key={index} project={project} />
           ))}
         </div>
-
-        {/* Main Button (footer) 
-        {button?.title && (
-          <footer className="mt-12 flex justify-center md:mt-18 lg:mt-20">
-            <Button {...button}>{button.title}</Button>
-          </footer>
-        )}*/}
       </div>
     </section>
   )
 }
 
-// Helper sub-component to render each project
 const ProjectCard: React.FC<{
   project: NonNullable<FeaturedProjectsBlock['projects']>[0]
 }> = ({ project }) => {
   if (!project) return null
-
-  const { title, description, url, image, button, tags } = project
+  const { title, description, url, image, tags } = project
 
   return (
     <article className="border border-border-primary">
       {/* Image */}
-      <div>
-        <a href={url ?? '#'}>
-          {image?.src && (
-            <img src={image.src} alt={image.alt ?? ''} className="w-full object-cover" />
-          )}
-        </a>
-      </div>
+      <a href={url ?? '#'} className="block">
+        {image?.src && (
+          <div className="relative w-full aspect-[16/9] overflow-hidden">
+            <Media
+              src={image.src}
+              alt={image.alt ?? ''}
+              fill
+              imgClassName="object-cover"
+              // no priority for grid items (let LCP focus elsewhere)
+            />
+          </div>
+        )}
+      </a>
 
       {/* Text and details */}
       <div className="px-5 py-6 sm:px-6">
@@ -73,7 +66,6 @@ const ProjectCard: React.FC<{
         )}
         {description && <p>{description}</p>}
 
-        {/* Tags */}
         {tags && tags.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2 md:mt-4">
             {tags.map((tag, i) => (
@@ -88,13 +80,6 @@ const ProjectCard: React.FC<{
             ))}
           </ul>
         )}
-
-        {/* Button 
-        {button?.title && (
-          <Button {...button} asChild className="mt-5 md:mt-6">
-            <a href={url ?? '#'}>{button.title}</a>
-          </Button>
-        )}*/}
       </div>
     </article>
   )

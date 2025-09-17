@@ -54,6 +54,7 @@ export type SupportedTimezones =
   | 'Asia/Singapore'
   | 'Asia/Tokyo'
   | 'Asia/Seoul'
+  | 'Australia/Brisbane'
   | 'Australia/Sydney'
   | 'Pacific/Guam'
   | 'Pacific/Noumea'
@@ -149,6 +150,7 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    tagline?: string | null;
     header?: string | null;
     description?: string | null;
     richText?: {
@@ -185,11 +187,24 @@ export interface Page {
             /**
              * Choose how the link should be rendered.
              */
-            appearance?: ('default' | 'outline') | null;
+            appearance?: ('default' | 'outline' | 'animatedArrow') | null;
           };
           id?: string | null;
         }[]
       | null;
+    techStack?: {
+      label?: string | null;
+      items?:
+        | {
+            logo: string | Media;
+            id?: string | null;
+          }[]
+        | null;
+    };
+    /**
+     * Upload a .mp4 / .webm hero video. It will autoplay & loop (muted).
+     */
+    heroVideo?: (string | null) | Media;
     media?: (string | null) | Media;
   };
   layout: (
@@ -392,6 +407,13 @@ export interface User {
   hash?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
   password?: string | null;
 }
 /**
@@ -483,7 +505,7 @@ export interface ContentBlock {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline') | null;
+          appearance?: ('default' | 'outline' | 'animatedArrow') | null;
         };
         id?: string | null;
       }[]
@@ -634,6 +656,7 @@ export interface Form {
             label?: string | null;
             width?: number | null;
             defaultValue?: string | null;
+            placeholder?: string | null;
             options?:
               | {
                   label: string;
@@ -1060,6 +1083,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        tagline?: T;
         header?: T;
         description?: T;
         richText?: T;
@@ -1078,6 +1102,18 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        techStack?:
+          | T
+          | {
+              label?: T;
+              items?:
+                | T
+                | {
+                    logo?: T;
+                    id?: T;
+                  };
+            };
+        heroVideo?: T;
         media?: T;
       };
   layout?:
@@ -1413,6 +1449,13 @@ export interface UsersSelect<T extends boolean = true> {
   hash?: T;
   loginAttempts?: T;
   lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1495,6 +1538,7 @@ export interface FormsSelect<T extends boolean = true> {
               label?: T;
               width?: T;
               defaultValue?: T;
+              placeholder?: T;
               options?:
                 | T
                 | {
@@ -1673,7 +1717,58 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
+  logo: string | Media;
+  logoUrl?: string | null;
   navItems?:
+    | {
+        type?: ('reference' | 'custom' | 'dropdown') | null;
+        newTab?: boolean | null;
+        reference?:
+          | ({
+              relationTo: 'pages';
+              value: string | Page;
+            } | null)
+          | ({
+              relationTo: 'posts';
+              value: string | Post;
+            } | null);
+        url?: string | null;
+        label?: string | null;
+        defaultImage?: (string | null) | Media;
+        items?:
+          | {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: string | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: string | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+              /**
+               * Optional image or icon for this link
+               */
+              icon?: (string | null) | Media;
+              /**
+               * Optional image or icon for this link
+               */
+              media?: (string | null) | Media;
+              /**
+               * Optional description for this link
+               */
+              description?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  links?:
     | {
         link: {
           type?: ('reference' | 'custom') | null;
@@ -1689,6 +1784,10 @@ export interface Header {
               } | null);
           url?: string | null;
           label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow') | null;
         };
         id?: string | null;
       }[]
@@ -1730,7 +1829,33 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  logo?: T;
+  logoUrl?: T;
   navItems?:
+    | T
+    | {
+        type?: T;
+        newTab?: T;
+        reference?: T;
+        url?: T;
+        label?: T;
+        defaultImage?: T;
+        items?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              icon?: T;
+              media?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  links?:
     | T
     | {
         link?:
@@ -1741,6 +1866,7 @@ export interface HeaderSelect<T extends boolean = true> {
               reference?: T;
               url?: T;
               label?: T;
+              appearance?: T;
             };
         id?: T;
       };

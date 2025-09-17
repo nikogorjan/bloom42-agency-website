@@ -7,4 +7,21 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   presets: [require('@relume_io/relume-tailwind')],
+  theme: {
+    extend: {
+      colors: {
+        coral: '#FD7247',
+        eggshell: '#F4F3ED',
+        lightGray: '#EDEDED',
+        darkGray: '#262423',
+        darkSand: '#201e1d',
+      },
+      fontFamily: {
+        sans: ['var(--font-figtree)', 'ui-sans-serif', 'system-ui'],
+        display: ['var(--font-anton)', 'var(--font-figtree)', 'ui-sans-serif'],
+        figtree: ['var(--font-figtree)'],
+        anton: ['var(--font-anton)'],
+      },
+    },
+  },
 }

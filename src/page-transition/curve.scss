@@ -1,0 +1,61 @@
+.curve {
+  --curve-color: #2a2a2a; // charcoal (swap with coral #FD7247 or sand #D8CBB3)
+  --curve-label: #ffffff; // text stays readable
+  > svg,
+  > .background {
+    position: fixed;
+    height: calc(100vh + 600px);
+    width: 100vw;
+    pointer-events: none;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+  }
+
+  > svg path {
+    fill: var(--curve-color);
+  }
+
+  .background {
+    background-color: var(--curve-color);
+    transition: opacity 0s linear 0.1s;
+  }
+
+  .route {
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    color: var(--curve-label);
+    font-size: 46px;
+    z-index: 3;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+
+html.mobile-menu-open,
+body.mobile-menu-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
+.mobile-curve-bg {
+  position: fixed;
+  inset: 0;
+  background: white; /* must match the curve path fill */
+  z-index: 930; /* below menu content, above page content */
+  opacity: 0;
+}
+
+.mobile-curve {
+  position: fixed;
+  left: 0;
+  top: 0; /* animated by inline style: 100vh -> -arc px */
+  width: 100vw;
+  z-index: 940; /* below menu content (950), below header (1000) */
+  pointer-events: none;
+
+  path {
+    fill: white;
+  } /* or your brand color */
+}

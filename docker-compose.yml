@@ -1,31 +1,25 @@
-version: '3'
+# docker-compose.prod.yml
+version: '3.8'
 
 services:
-  payload:
-    image: node:18-alpine
+  web:
+    build: .
     ports:
       - '3000:3000'
-    volumes:
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-    working_dir: /home/node/app/
-    command: sh -c "yarn install && yarn dev"
-    depends_on:
-      - mongo
     env_file:
       - .env
+    depends_on:
+      - mongo
+    restart: unless-stopped
 
   mongo:
-    image: mongo:latest
+    image: mongo:7
     ports:
       - '27017:27017'
-    command:
-      - --storageEngine=wiredTiger
+    command: ['--storageEngine=wiredTiger']
     volumes:
-      - data:/data/db
-    logging:
-      driver: none
+      - mongo-data:/data/db
+    restart: unless-stopped
 
 volumes:
-  data:
-  node_modules:
+  mongo-data:
