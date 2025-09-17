@@ -2,6 +2,7 @@
 import type { GlobalConfig } from 'payload'
 import { revalidateHeader } from './hooks/revalidateHeader'
 import { linkGroup } from '@/fields/linkGroup'
+import { revalidateHeaderNow } from '@/utilities/revalidate'
 
 export const Header: GlobalConfig = {
   slug: 'header',
@@ -205,6 +206,10 @@ export const Header: GlobalConfig = {
     }),
   ],
   hooks: {
-    afterChange: [revalidateHeader],
+    afterChange: [
+      async () => {
+        await revalidateHeaderNow()
+      },
+    ],
   },
 }

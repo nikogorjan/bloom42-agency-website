@@ -9,16 +9,12 @@ import type { Footer } from '@/payload-types'
 import { CMSLink } from '@/components/Link'
 import { Logo } from '@/components/Logo/Logo'
 import { TransitionLink } from '@/page-transition/transition-link'
+import { getFooterCached } from '@/data/footer'
 
 export async function Footer() {
   const locale = (await getLocale()) as 'en' | 'sl'
   const payload = await getPayload({ config: configPromise })
-  const footerData = (await payload.findGlobal({
-    slug: 'footer',
-    depth: 1,
-    locale,
-    fallbackLocale: 'en',
-  })) as Footer
+  const footerData = (await getFooterCached(locale)) as Footer
 
   const navItems = footerData?.navItems || []
 
