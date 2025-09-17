@@ -42,7 +42,7 @@ export const UncommonServices: React.FC<UncommonServicesProps> = ({ features }) 
       className="
         px-[5%] py-16 md:py-24 lg:py-28
         bg-darkSand
-        bg-[url('/media/images/background/noise.webp')]
+        bg-[url('/images/background/noise.webp')]
         bg-[length:100px]
         bg-center
         bg-repeat
