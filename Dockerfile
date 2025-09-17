@@ -59,4 +59,4 @@ EXPOSE 3000
 ENV PORT=3000
 
 # Next standalone creates server.js
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["node", "server.js"]
