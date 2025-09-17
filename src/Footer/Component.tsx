@@ -1,7 +1,6 @@
 // src/Footer/Component.tsx
 import { getLocale } from 'next-intl/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+
 import React from 'react'
 
 import type { Footer } from '@/payload-types'
