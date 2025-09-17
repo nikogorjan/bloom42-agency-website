@@ -27,3 +27,6 @@ async function post(body: any) {
 export const revalidatePathNow = (path: string) => post({ type: 'path', path })
 export const revalidateHeaderNow = () => post({ type: 'tag', tag: 'header' })
 export const revalidateFooterNow = () => post({ type: 'tag', tag: 'footer' })
+export const revalidateTagNow = (tag: string) => post({ type: 'tag', tag })
+export const revalidatePageTagNow = (locale: string, slug: string) =>
+  revalidateTagNow(`page:${locale}:${slug || 'home'}`)

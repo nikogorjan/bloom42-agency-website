@@ -1,43 +1,34 @@
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
+import { revalidatePageTagNow, revalidatePathNow } from '@/utilities/revalidate'
 
-import { revalidatePath, revalidateTag } from 'next/cache'
+// If you only want to revalidate when the page is published, keep this guard.
+const isPublished = (doc: any) => doc?._status === 'published'
 
-import type { Page } from '../../../payload-types'
+const pathFor = (locale: string, slug: string) =>
+  slug === 'home' ? `/${locale}` : `/${locale}/${slug}`
 
-export const revalidatePage: CollectionAfterChangeHook<Page> = ({
-  doc,
-  previousDoc,
-  req: { payload, context },
-}) => {
-  if (!context.disableRevalidate) {
-    if (doc._status === 'published') {
-      const path = doc.slug === 'home' ? '/' : `/${doc.slug}`
+export const revalidatePage: CollectionAfterChangeHook = async ({ doc, req }) => {
+  // If you need drafts to update live preview, remove this if.
+  if (!isPublished(doc)) return
 
-      payload.logger.info(`Revalidating page at path: ${path}`)
+  const slug = doc.slug || 'home'
 
-      revalidatePath(path)
-      revalidateTag('pages-sitemap')
-    }
+  // Revalidate the specific locale that was edited:
+  const editedLocale = (req?.locale as string) || 'en'
+  await revalidatePageTagNow(editedLocale, slug)
+  await revalidatePathNow(pathFor(editedLocale, slug))
 
-    // If the page was previously published, we need to revalidate the old path
-    if (previousDoc?._status === 'published' && doc._status !== 'published') {
-      const oldPath = previousDoc.slug === 'home' ? '/' : `/${previousDoc.slug}`
-
-      payload.logger.info(`Revalidating old page at path: ${oldPath}`)
-
-      revalidatePath(oldPath)
-      revalidateTag('pages-sitemap')
-    }
-  }
-  return doc
+  // If an edit should reflect across *all locales*, fan out:
+  // for (const loc of routing.locales) {
+  //   await revalidatePageTagNow(loc, slug)
+  //   await revalidatePathNow(pathFor(loc, slug))
+  // }
 }
 
-export const revalidateDelete: CollectionAfterDeleteHook<Page> = ({ doc, req: { context } }) => {
-  if (!context.disableRevalidate) {
-    const path = doc?.slug === 'home' ? '/' : `/${doc?.slug}`
-    revalidatePath(path)
-    revalidateTag('pages-sitemap')
-  }
-
-  return doc
+export const revalidateDelete: CollectionAfterDeleteHook = async ({ doc, req }) => {
+  const slug = doc.slug || 'home'
+  const editedLocale = (req?.locale as string) || 'en'
+  await revalidatePageTagNow(editedLocale, slug)
+  await revalidatePathNow(pathFor(editedLocale, slug))
+  // Optionally fan out to all locales here too.
 }
