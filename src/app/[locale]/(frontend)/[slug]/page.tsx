@@ -4,7 +4,7 @@ import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
 import { draftMode } from 'next/headers'
-import React, { cache } from 'react'
+import React from 'react'
 import { homeStatic } from '@/endpoints/seed/home-static'
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
@@ -13,6 +13,8 @@ import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { AppLocale } from '@/types/locale'
+import { getPageCached } from '@/data/page'
+type PageDoc = RequiredDataFromCollectionSlug<'pages'>
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -50,17 +52,21 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { locale, slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
-  let page: RequiredDataFromCollectionSlug<'pages'> | null
+  let page: PageDoc | null = await getPageCached({ slug, locale, draft })
 
-  page = await queryPageBySlug({ slug, locale, draft })
-
-  // Remove this code once your website is seeded
+  // Remove this after seeding
   if (!page && slug === 'home') {
-    page = homeStatic
+    const now = new Date().toISOString()
+    page = {
+      ...homeStatic,
+      id: 'home-static', // satisfy required field
+      createdAt: now, // satisfy required field
+      updatedAt: now, // satisfy required field
+    } as PageDoc
   }
 
   if (!page) {
-    return <PayloadRedirects url={url} />
+    return <PayloadRedirects url={`/${slug}`} />
   }
 
   const { hero, layout } = page
@@ -80,25 +86,6 @@ export default async function Page({ params: paramsPromise }: Args) {
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
   const { locale, slug = 'home' } = await paramsPromise
-  const page = await queryPageBySlug({ slug, locale, draft: false })
+  const page = await getPageCached({ slug, locale, draft: false })
   return generateMeta({ doc: page })
 }
-
-const queryPageBySlug = cache(
-  async ({ slug, locale, draft }: { slug: string; locale: AppLocale | 'all'; draft: boolean }) => {
-    const payload = await getPayload({ config: configPromise })
-
-    const result = await payload.find({
-      collection: 'pages',
-      draft,
-      limit: 1,
-      pagination: false,
-      overrideAccess: draft,
-      locale,
-      fallbackLocale: 'en',
-      where: { slug: { equals: slug } },
-    })
-
-    return result.docs?.[0] || null
-  },
-)
