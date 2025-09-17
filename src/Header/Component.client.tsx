@@ -198,7 +198,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                               <div className="flex items-center justify-end">
                                 <div className="relative size-[14px]">
                                   <Media
-                                    src="/media/icons/right-arrow-alt.svg"
+                                    src="/icons/right-arrow-alt.svg"
                                     alt="arrow"
                                     fill
                                     priority

@@ -79,14 +79,14 @@ export const LandingHero: React.FC<Page['hero']> = ({
               {header && (
                 <span className="relative inline-block mb-5 md:mb-6">
                   <Media
-                    src="/media/icons/orange-leaf.svg"
+                    src="/icons/orange-leaf.svg"
                     alt="orange-leaf"
                     priority
                     fill
                     className="z-0 pointer-events-none absolute left-[12px] top-[56px] md:left-[32px] md:top-[64px] lg:left-[-0px] lg:top-[80px] -translate-y-1/2 w-[16px] h-[15px] md:w-[25px] md:h-[24px] object-contain"
                   />
                   <Media
-                    src="/media/icons/white-leaf-big.svg"
+                    src="/icons/white-leaf-big.svg"
                     alt="white-leaf"
                     priority
                     fill
@@ -111,7 +111,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
               <div className="relative flex flex-col items-center justify-center">
                 {/* white leaf to the left of the tech-stack badges */}
                 <Media
-                  src="/media/icons/white-leaf-small.svg"
+                  src="/icons/white-leaf-small.svg"
                   alt="white-leaf-small"
                   priority
                   fill
@@ -119,7 +119,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
                 />
 
                 <Media
-                  src="/media/icons/white-leaf-mid.svg"
+                  src="/icons/white-leaf-mid.svg"
                   alt="white-leaf-mid"
                   priority
                   fill

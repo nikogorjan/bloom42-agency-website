@@ -13,21 +13,21 @@ export interface LeafButtonProps extends LinkProps, Pick<ButtonProps, 'size' | '
 }
 
 const leaves = [
-  { src: '/media/icons/white-leaf-small.svg', x: -10, y: -20, delay: 0 },
-  { src: '/media/icons/white-leaf-mid.svg', x: -15, y: -30, delay: 0.2 },
-  { src: '/media/icons/white-leaf-big.svg', x: -20, y: -40, delay: 0.4 },
-  { src: '/media/icons/orange-leaf.svg', x: 14, y: -40, delay: 0.6 },
-  { src: '/media/icons/white-leaf-small.svg', x: 6, y: -40, delay: 0.8 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 19, y: -40, delay: 1.0 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 27, y: -40, delay: 1.2 },
-  { src: '/media/icons/orange-leaf.svg', x: 26, y: -40, delay: 1.3 },
-  { src: '/media/icons/white-leaf-small.svg', x: 18, y: -40, delay: 1.4 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 12, y: -40, delay: 1.5 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 8, y: -40, delay: 1.6 },
-  { src: '/media/icons/orange-leaf.svg', x: 14, y: -40, delay: 1.7 },
-  { src: '/media/icons/white-leaf-small.svg', x: 10, y: -40, delay: 1.8 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 7, y: -40, delay: 1.9 },
-  { src: '/media/icons/white-leaf-mid.svg', x: 10, y: -40, delay: 2.0 },
+  { src: '/icons/white-leaf-small.svg', x: -10, y: -20, delay: 0 },
+  { src: '/icons/white-leaf-mid.svg', x: -15, y: -30, delay: 0.2 },
+  { src: '/icons/white-leaf-big.svg', x: -20, y: -40, delay: 0.4 },
+  { src: '/icons/orange-leaf.svg', x: 14, y: -40, delay: 0.6 },
+  { src: '/icons/white-leaf-small.svg', x: 6, y: -40, delay: 0.8 },
+  { src: '/icons/white-leaf-mid.svg', x: 19, y: -40, delay: 1.0 },
+  { src: '/icons/white-leaf-mid.svg', x: 27, y: -40, delay: 1.2 },
+  { src: '/icons/orange-leaf.svg', x: 26, y: -40, delay: 1.3 },
+  { src: '/icons/white-leaf-small.svg', x: 18, y: -40, delay: 1.4 },
+  { src: '/icons/white-leaf-mid.svg', x: 12, y: -40, delay: 1.5 },
+  { src: '/icons/white-leaf-mid.svg', x: 8, y: -40, delay: 1.6 },
+  { src: '/icons/orange-leaf.svg', x: 14, y: -40, delay: 1.7 },
+  { src: '/icons/white-leaf-small.svg', x: 10, y: -40, delay: 1.8 },
+  { src: '/icons/white-leaf-mid.svg', x: 7, y: -40, delay: 1.9 },
+  { src: '/icons/white-leaf-mid.svg', x: 10, y: -40, delay: 2.0 },
 ]
 
 const LeafButton: React.FC<LeafButtonProps> = ({
@@ -141,7 +141,7 @@ const LeafButton: React.FC<LeafButtonProps> = ({
           <Media
             htmlElement={null}
             fill
-            src="/media/icons/right-arrow-alt.svg"
+            src="/icons/right-arrow-alt.svg"
             alt="arrow"
             priority
             imgClassName="object-contain transition duration-300 group-hover:invert"
