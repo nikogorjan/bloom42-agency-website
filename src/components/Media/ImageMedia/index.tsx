@@ -93,6 +93,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
       .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
       .join(', ')
   const isRemote = typeof src === 'string' && /^(https?:)?\/\//i.test(src)
+
   return (
     <picture
       className={cn(fill ? 'absolute inset-0' : 'block', 'overflow-hidden rounded-[inherit]')}
