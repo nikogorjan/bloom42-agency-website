@@ -1,4 +1,5 @@
 // src/app/[locale]/layout.tsx
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
@@ -32,9 +33,11 @@ export default async function RootLayout({
   params,
 }: {
   children: React.ReactNode
-  params: { locale: string }
+  // Next 15 app router types: params is a Promise you must await
+  params: Promise<{ locale: string }>
 }) {
   const { locale } = await params
+
   if (!hasLocale(routing.locales, locale)) notFound()
   setRequestLocale(locale)
 
@@ -52,12 +55,14 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <Providers>
-            {/* MOVE THE PROVIDER HERE SO IT WRAPS HEADER, PAGES, AND FOOTER */}
-            <TransitionProvider>
-              <Header />
-              {children}
-              <Footer />
-            </TransitionProvider>
+            {/* ⬇️ Wrap the subtree that contains useSearchParams/usePathname/useRouter */}
+            <Suspense fallback={null}>
+              <TransitionProvider>
+                <Header />
+                {children}
+                <Footer />
+              </TransitionProvider>
+            </Suspense>
           </Providers>
         </NextIntlClientProvider>
       </body>
