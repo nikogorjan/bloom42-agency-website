@@ -41,7 +41,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
       id="hero-header"
       className="relative overflow-hidden px-[5%] pb-16 md:pb-24 lg:pb-28 pt-32 md:pt-36 lg:pt-36 bg-eggshell"
     >
-      <div className="absolute inset-0 z-0 ">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Squares
           speed={0.2}
           squareSize={squareSize}

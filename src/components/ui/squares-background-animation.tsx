@@ -14,9 +14,9 @@ interface SquaresProps {
   borderColor?: CanvasStrokeStyle
   squareSize?: number
   hoverFillColor?: CanvasFillStyle | 'transparent'
-  /** Set a solid canvas background. Omit/undefined = transparent (let parent bg show through). */
+  /** Solid canvas background. Omit = transparent. */
   backgroundFill?: CanvasFillStyle
-  /** Toggle the corner shading/vignette. Default false for a clean grid. */
+  /** Corner shading/vignette. */
   vignette?: boolean
 }
 
@@ -31,8 +31,6 @@ const Squares: React.FC<SquaresProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const requestRef = useRef<number | null>(null)
-  const numSquaresX = useRef<number>(0)
-  const numSquaresY = useRef<number>(0)
   const gridOffset = useRef<GridOffset>({ x: 0, y: 0 })
   const hoveredSquareRef = useRef<GridOffset | null>(null)
 
@@ -42,28 +40,41 @@ const Squares: React.FC<SquaresProps> = ({
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const resizeCanvas = () => {
-      // handle HiDPI for crisper lines
-      const dpr = window.devicePixelRatio || 1
-      const { offsetWidth, offsetHeight } = canvas
-      canvas.width = Math.floor(offsetWidth * dpr)
-      canvas.height = Math.floor(offsetHeight * dpr)
-      canvas.style.width = `${offsetWidth}px`
-      canvas.style.height = `${offsetHeight}px`
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    const targetEl = canvas.parentElement ?? canvas
 
-      numSquaresX.current = Math.ceil(offsetWidth / squareSize) + 1
-      numSquaresY.current = Math.ceil(offsetHeight / squareSize) + 1
+    const applySize = (w: number, h: number) => {
+      const dpr = window.devicePixelRatio || 1
+      const cssW = Math.max(1, Math.round(w))
+      const cssH = Math.max(1, Math.round(h))
+      canvas.width = Math.max(1, Math.round(cssW * dpr))
+      canvas.height = Math.max(1, Math.round(cssH * dpr))
+      canvas.style.width = `${cssW}px`
+      canvas.style.height = `${cssH}px`
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
-    window.addEventListener('resize', resizeCanvas, { passive: true })
-    resizeCanvas()
+    const resizeToTarget = () => {
+      const rect = targetEl.getBoundingClientRect()
+      applySize(rect.width, rect.height)
+    }
+
+    // Observe size changes of the container (fonts/video/async content, etc.)
+    const ro = new ResizeObserver(() => {
+      resizeToTarget()
+    })
+    ro.observe(targetEl)
+
+    // Also handle viewport/DPR changes
+    const onWindowResize = () => resizeToTarget()
+    window.addEventListener('resize', onWindowResize, { passive: true })
+
+    // Ensure we size after first layout paint
+    const rafId = requestAnimationFrame(resizeToTarget)
 
     const drawGrid = () => {
       const width = canvas.clientWidth
       const height = canvas.clientHeight
 
-      // background: solid fill OR keep transparent
       if (backgroundFill) {
         ctx.fillStyle = backgroundFill
         ctx.fillRect(0, 0, width, height)
@@ -92,6 +103,7 @@ const Squares: React.FC<SquaresProps> = ({
           }
 
           ctx.strokeStyle = borderColor
+          // 0.5 offsets keep 1px grid lines crisp on DPR displays
           ctx.strokeRect(squareX + 0.5, squareY + 0.5, squareSize - 1, squareSize - 1)
         }
       }
@@ -103,10 +115,10 @@ const Squares: React.FC<SquaresProps> = ({
           0,
           width / 2,
           height / 2,
-          Math.sqrt(width ** 2 + height ** 2) / 2,
+          Math.hypot(width, height) / 2,
         )
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
-        gradient.addColorStop(1, 'rgba(6, 0, 16, 1)')
+        gradient.addColorStop(0, 'rgba(0,0,0,0)')
+        gradient.addColorStop(1, 'rgba(6,0,16,1)')
         ctx.fillStyle = gradient
         ctx.fillRect(0, 0, width, height)
       }
@@ -137,24 +149,19 @@ const Squares: React.FC<SquaresProps> = ({
       requestRef.current = requestAnimationFrame(updateAnimation)
     }
 
-    // --- KEY CHANGE: listen on window, not canvas, so overlaying content doesn't block hover ---
+    // Track hover globally but only while within the canvas box
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
       const mouseX = event.clientX - rect.left
       const mouseY = event.clientY - rect.top
-
-      // Only react while mouse is over the canvas area
       if (mouseX < 0 || mouseY < 0 || mouseX > rect.width || mouseY > rect.height) {
         hoveredSquareRef.current = null
         return
       }
-
       const startX = Math.floor(gridOffset.current.x / squareSize) * squareSize
       const startY = Math.floor(gridOffset.current.y / squareSize) * squareSize
-
       const hoveredSquareX = Math.floor((mouseX + gridOffset.current.x - startX) / squareSize)
       const hoveredSquareY = Math.floor((mouseY + gridOffset.current.y - startY) / squareSize)
-
       if (
         !hoveredSquareRef.current ||
         hoveredSquareRef.current.x !== hoveredSquareX ||
@@ -163,24 +170,24 @@ const Squares: React.FC<SquaresProps> = ({
         hoveredSquareRef.current = { x: hoveredSquareX, y: hoveredSquareY }
       }
     }
-
-    const handleMouseLeave = () => {
-      hoveredSquareRef.current = null
-    }
+    const handleMouseLeave = () => (hoveredSquareRef.current = null)
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true })
     window.addEventListener('mouseleave', handleMouseLeave, { passive: true })
+
     requestRef.current = requestAnimationFrame(updateAnimation)
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas)
+      ro.disconnect()
+      window.removeEventListener('resize', onWindowResize)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseleave', handleMouseLeave)
+      cancelAnimationFrame(rafId)
       if (requestRef.current) cancelAnimationFrame(requestRef.current)
     }
   }, [direction, speed, borderColor, hoverFillColor, squareSize, backgroundFill, vignette])
 
-  // Important: canvas should not block clicks on content above it
+  // Keep it click-through
   return <canvas ref={canvasRef} className="w-full h-full border-none block pointer-events-none" />
 }
 

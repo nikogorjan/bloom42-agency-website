@@ -55,7 +55,6 @@ export default async function RootLayout({
       <body>
         <NextIntlClientProvider>
           <Providers>
-            {/* ⬇️ Wrap the subtree that contains useSearchParams/usePathname/useRouter */}
             <Suspense fallback={null}>
               <TransitionProvider>
                 <Header />
