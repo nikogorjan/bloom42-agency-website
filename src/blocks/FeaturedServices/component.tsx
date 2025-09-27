@@ -2,19 +2,15 @@
 
 import React, { useRef } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
-import NextLink from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import type { FeaturedServicesBlock, Media as MediaDoc } from '@/payload-types'
+import { TransitionLink } from '@/page-transition/transition-link'
+
+// 👇 make the Link motion-capable so variants work on hover
+const MotionTransitionLink = motion(TransitionLink as any)
 
 type Props = FeaturedServicesBlock
 
-/**
- * Safely resolve an href + target from your `link` field.
- * Supports common Payload link field shapes:
- * - { type: 'custom', url, newTab }
- * - { type: 'reference', reference: { relationTo: 'pages' | 'posts' | ..., value }, newTab }
- *   where value may contain a `slug` or `id`.
- */
 function getHrefFromLink(link: any): {
   href: string
   newTab?: boolean | null
@@ -24,23 +20,24 @@ function getHrefFromLink(link: any): {
 
   const { type, url, newTab, reference } = link || {}
 
-  // Custom external or absolute URL
+  // external / absolute
   if (type === 'custom' && typeof url === 'string' && url.trim()) {
-    const isExternal = /^https?:\/\//i.test(url)
+    const isExternal = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(url)
     return { href: url, newTab: !!newTab, isExternal }
   }
 
-  // Reference to a collection doc (common Payload pattern)
-  if (type === 'reference' && reference && reference.value) {
-    const value = reference.value
-    // Prefer slug if present, fall back to id
-    const slug = typeof value === 'object' ? value.slug || value?.doc?.slug : undefined
-    const id = typeof value === 'object' ? value.id || value?._id : value
-    const path = `/${slug || id || ''}`.replace(/\/+$/, '') || '/'
+  // internal reference (include collection segment unless 'pages')
+  if (type === 'reference' && reference?.value) {
+    const rel = String(reference.relationTo || '')
+    const value = reference.value as any
+    const slug = value?.slug ?? value?.doc?.slug
+    const id = value?.id ?? value?._id
+    const seg = rel && rel !== 'pages' ? `/${rel}` : ''
+    const leaf = slug || id || ''
+    const path = `${seg}/${leaf}`.replace(/\/+$/, '') || '/'
     return { href: path, newTab: !!newTab, isExternal: false }
   }
 
-  // Fallback
   return { href: '#', newTab: !!newTab, isExternal: false }
 }
 
@@ -48,10 +45,8 @@ function getHrefFromLink(link: any): {
 function getMediaURL(img: MediaDoc | string | number | null | undefined): string | undefined {
   if (!img) return undefined
   if (typeof img === 'string') return img
-  if (typeof img === 'number') return undefined // unlikely, but avoid crashing
-  // Common Payload media shape includes `url`
+  if (typeof img === 'number') return undefined
   if ('url' in img && typeof (img as any).url === 'string') return (img as any).url
-  // Some setups keep the file at sizes?.card?.url etc. Try a couple:
   const sizes = (img as any).sizes
   if (sizes?.card?.url) return sizes.card.url
   if (sizes?.thumbnail?.url) return sizes.thumbnail.url
@@ -60,11 +55,10 @@ function getMediaURL(img: MediaDoc | string | number | null | undefined): string
 
 export default function FeaturedServicesBlockComponent(props: Props) {
   const { title, items } = props
-
   const safeItems = Array.isArray(items) ? items : []
 
   return (
-    <section className="bg-darkSky px-4 py-6 md:px-6 md:py-10">
+    <section className="px-[5%] py-16 md:py-24 lg:py-28 bg-darkSky">
       <div className="container">
         <div className="mx-auto w-full max-w-5xl">
           {title ? (
@@ -103,35 +97,26 @@ function HoverRow({
 }) {
   const ref = useRef<HTMLAnchorElement | null>(null)
 
+  // cursor-follow preview
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-
   const mouseXSpring = useSpring(x, { stiffness: 200, damping: 20, mass: 0.2 })
   const mouseYSpring = useSpring(y, { stiffness: 200, damping: 20, mass: 0.2 })
-
-  // Move the preview image a bit around the cursor
   const top = useTransform(mouseYSpring, [0.5, -0.5], ['40%', '60%'])
   const left = useTransform(mouseXSpring, [0.5, -0.5], ['60%', '70%'])
 
   function handleMouseMove(e: React.MouseEvent<HTMLAnchorElement>) {
     const rect = ref.current?.getBoundingClientRect()
     if (!rect) return
-    const width = rect.width
-    const height = rect.height
-
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
-
-    const xPct = mouseX / width - 0.5
-    const yPct = mouseY / height - 0.5
-
+    const xPct = (e.clientX - rect.left) / rect.width - 0.5
+    const yPct = (e.clientY - rect.top) / rect.height - 0.5
     x.set(xPct)
     y.set(yPct)
   }
 
-  // Use Next.js Link for internal routes, <a> for external
-  const content = (
-    <motion.a
+  // Use your TransitionLink directly so exit/enter animations run
+  return (
+    <MotionTransitionLink
       ref={ref}
       href={hrefData.href}
       target={hrefData.newTab ? '_blank' : undefined}
@@ -139,7 +124,12 @@ function HoverRow({
       onMouseMove={handleMouseMove}
       initial="initial"
       whileHover="whileHover"
-      className="group relative flex items-center justify-between py-4 transition-colors duration-500 md:py-6"
+      className="
+    group relative z-0 hover:z-50
+    flex items-center justify-between
+    py-4 transition-colors duration-500 md:py-6
+  "
+      aria-label={heading}
     >
       <div className="min-w-0">
         <h3 className="relative z-10 block truncate text-3xl font-bold tracking-tight text-neutral-400 transition-colors duration-500 group-hover:text-neutral-50 md:text-5xl">
@@ -155,14 +145,15 @@ function HoverRow({
 
       {imgSrc ? (
         <motion.img
-          style={{ top, left, translateX: '-50%', translateY: '-50%' }}
+          style={{ top, left, transform: 'translate(-50%, -50%)' }}
           variants={{
             initial: { scale: 0, rotate: '-12.5deg' },
             whileHover: { scale: 1, rotate: '12.5deg' },
           }}
           transition={{ type: 'spring' }}
           src={imgSrc}
-          className="pointer-events-none absolute z-0 h-24 w-32 rounded-xl object-cover shadow-2xl md:h-48 md:w-64"
+          // 2) Ensure the image is above the row’s content & borders
+          className="pointer-events-none absolute z-40 h-24 w-32 rounded-xl object-cover shadow-2xl md:h-48 md:w-64 will-change-transform"
           alt={heading ? `Image for ${heading}` : 'Preview image'}
         />
       ) : null}
@@ -174,17 +165,6 @@ function HoverRow({
       >
         <ArrowRight className="h-8 w-8 text-neutral-50 md:h-10 md:w-10" />
       </motion.div>
-    </motion.a>
+    </MotionTransitionLink>
   )
-
-  // For internal routes, wrap with NextLink to avoid full reloads
-  if (!hrefData.isExternal && hrefData.href.startsWith('/')) {
-    return (
-      <NextLink href={hrefData.href} legacyBehavior passHref>
-        {content}
-      </NextLink>
-    )
-  }
-
-  return content
 }
