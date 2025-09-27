@@ -14,6 +14,11 @@ import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { AppLocale } from '@/types/locale'
 import { getPageCached } from '@/data/page'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'default-no-store'
+
 type PageDoc = RequiredDataFromCollectionSlug<'pages'>
 
 export async function generateStaticParams() {
@@ -52,7 +57,17 @@ export default async function Page({ params: paramsPromise }: Args) {
   const { locale, slug = 'home' } = await paramsPromise
   const url = '/' + slug
 
-  let page: PageDoc | null = await getPageCached({ slug, locale, draft })
+  const payload = await getPayload({ config: configPromise })
+  const res = await payload.find({
+    collection: 'pages',
+    locale,
+    draft, // include drafts in dev/live preview
+    depth: 3, // ensure blocks/relations are populated
+    limit: 1,
+    pagination: false,
+    where: { slug: { equals: slug } },
+  })
+  let page: PageDoc | null = (res.docs?.[0] as PageDoc) ?? null
 
   // Remove this after seeding
   if (!page && slug === 'home') {
