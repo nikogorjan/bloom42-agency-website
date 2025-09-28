@@ -10,6 +10,7 @@ import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import { NavDropdown } from './nav-dropdown'
 import MobileMenu from './mobile-menu'
+import LanguageSwitcher from './language-switcher'
 
 type DropdownItem = any
 
@@ -69,12 +70,18 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 <div>
                   <TransitionLink
                     href={data.logoUrl || '/'}
-                    className="block relative size-8 select-none cursor-pointer"
+                    className="group block relative size-8 select-none cursor-pointer"
                     onMouseEnter={() => setOpenIndex(null)} // hover logo closes
                   >
                     <Media
                       fill
-                      imgClassName="object-contain rounded-[4px] md:rounded-[6px]"
+                      // rotate the actual <img> so rounded corners stay nice
+                      imgClassName="
+        object-contain rounded-[4px] md:rounded-[6px]
+        transition-transform duration-700 ease-out
+        will-change-transform transform-gpu
+        group-hover:rotate-[360deg]
+      "
                       priority
                       resource={data.logo}
                     />
@@ -131,6 +138,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 className="relative flex items-center gap-4"
                 onMouseEnter={() => setOpenIndex(null)}
               >
+                <LanguageSwitcher languages={data.languages} className="-mr-1" />
                 {data.links?.map(({ link }, i) => (
                   <CMSLink key={i} {...link} className="text-sm px-4 h-10" />
                 ))}
@@ -237,8 +245,12 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
             <Media fill imgClassName="object-contain rounded-[4px]" priority resource={data.logo} />
           </TransitionLink>
 
-          {/* Right: Hamburger */}
-          <MobileMenu navItems={data.navItems || []} links={data.links || []} />
+          <div className="flex flex-row items-center justify-center">
+            <LanguageSwitcher languages={data.languages} className=" mr-4" />
+
+            {/* Right: Hamburger */}
+            <MobileMenu navItems={data.navItems || []} links={data.links || []} />
+          </div>
         </div>
       </div>
     </header>

@@ -22,6 +22,7 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { UncommonServices } from '@/blocks/UncommonServices/config'
 import { FeaturedProjects } from '@/blocks/FeaturedProjects/config'
+import { FeaturedServices } from '@/blocks/FeaturedServices/config'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -85,6 +86,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 FormBlock,
                 UncommonServices,
                 FeaturedProjects,
+                FeaturedServices,
               ],
               required: true,
               admin: {

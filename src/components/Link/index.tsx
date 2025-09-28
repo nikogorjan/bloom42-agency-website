@@ -1,4 +1,3 @@
-// src/components/CMSLink.tsx
 'use client'
 
 import React from 'react'
@@ -9,9 +8,11 @@ import { cn } from '@/utilities/ui'
 import type { Page, Post } from '@/payload-types'
 import { TransitionLink } from '@/page-transition/transition-link'
 import { useAnimatedNavigation } from '@/page-transition/transition-provider'
+import { ChevronRight } from 'lucide-react' // 🔽 add
 
 type CMSLinkType = {
-  appearance?: 'inline' | ButtonProps['variant']
+  // 🔽 extend to accept our new appearance
+  appearance?: 'inline' | ButtonProps['variant'] | 'chevronRight'
   children?: React.ReactNode
   className?: string
   label?: string | null
@@ -50,7 +51,7 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   size,
   url,
 }) => {
-  const ctx = useAnimatedNavigation() // may be null if rendered outside provider
+  const ctx = useAnimatedNavigation()
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && (reference.value as any).slug
@@ -62,14 +63,12 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   if (!href) return null
 
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' as const } : {}
-
   const handleButtonClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
     if (!isInternalNavigable(href, newTab)) return
     if (ctx?.onNavigate) {
-      e.preventDefault() // only prevent if we’ll handle it
-      ctx.onNavigate(href) // exit → push → enter
+      e.preventDefault()
+      ctx.onNavigate(href)
     }
-    // else: no provider → allow default navigation
   }
 
   if (appearance === 'inline') {
@@ -111,6 +110,33 @@ export const CMSLink: React.FC<CMSLinkType> = ({
     )
   }
 
+  // 🔽 New “Chevron Right” appearance
+  if (appearance === 'chevronRight') {
+    return (
+      <Button
+        asChild
+        size={size || 'default'}
+        // choose variant you prefer visually: 'outline' or 'default'
+        className={cn('group p-0 border-none bg-transparent text-darkGray', className)}
+      >
+        <TransitionLink
+          href={href}
+          {...newTabProps}
+          onClick={handleButtonClick}
+          className="inline-flex items-center"
+        >
+          {label}
+          <ChevronRight
+            aria-hidden
+            className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5"
+          />
+          {children}
+        </TransitionLink>
+      </Button>
+    )
+  }
+
+  // Fallback to any Button variant name you pass (secondary, ghost, etc.)
   return (
     <Button asChild size={size || undefined} variant={appearance} className={className}>
       <TransitionLink className={cn(className)} href={href} {...newTabProps}>

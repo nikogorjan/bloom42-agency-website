@@ -69,8 +69,10 @@ export interface Config {
   collections: {
     pages: Page;
     posts: Post;
+    projects: Project;
     media: Media;
     categories: Category;
+    'project-categories': ProjectCategory;
     users: User;
     redirects: Redirect;
     forms: Form;
@@ -85,8 +87,10 @@ export interface Config {
   collectionsSelect: {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    projects: ProjectsSelect<false> | ProjectsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
@@ -187,7 +191,7 @@ export interface Page {
             /**
              * Choose how the link should be rendered.
              */
-            appearance?: ('default' | 'outline' | 'animatedArrow') | null;
+            appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
           };
           id?: string | null;
         }[]
@@ -215,6 +219,7 @@ export interface Page {
     | FormBlock
     | UncommonServicesBlock
     | FeaturedProjectsBlock
+    | FeaturedServicesBlock
   )[];
   meta?: {
     title?: string | null;
@@ -505,7 +510,7 @@ export interface ContentBlock {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline' | 'animatedArrow') | null;
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
         };
         id?: string | null;
       }[]
@@ -781,43 +786,140 @@ export interface UncommonServicesBlock {
  * via the `definition` "FeaturedProjectsBlock".
  */
 export interface FeaturedProjectsBlock {
-  tagline?: string | null;
-  heading?: string | null;
-  description?: string | null;
-  button: {
-    title: string;
-    variant?: ('secondary' | 'link' | 'primary') | null;
-    size?: ('link' | 'lg' | 'primary') | null;
-    iconRight?: boolean | null;
-  };
-  projects?:
+  title: string;
+  /**
+   * Pick and drag to reorder.
+   */
+  projects: (string | Project)[];
+  /**
+   * Optional bottom CTA (e.g. “View all”).
+   */
+  cta?:
     | {
-        title: string;
-        description?: string | null;
-        url?: string | null;
-        image: {
-          src: string;
-          alt?: string | null;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
         };
-        button: {
-          title: string;
-          variant?: ('secondary' | 'link') | null;
-          size?: ('link' | 'lg') | null;
-          iconRight?: boolean | null;
-        };
-        tags?:
-          | {
-              label: string;
-              url?: string | null;
-              id?: string | null;
-            }[]
-          | null;
         id?: string | null;
       }[]
     | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'featuredProjects';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: string;
+  image: string | Media;
+  header: string;
+  description?: string | null;
+  /**
+   * Primary CTA button for this project (optional).
+   */
+  links?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  projectCategories?: (string | ProjectCategory)[] | null;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories".
+ */
+export interface ProjectCategory {
+  id: string;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedServicesBlock".
+ */
+export interface FeaturedServicesBlock {
+  /**
+   * Optional section heading
+   */
+  title?: string | null;
+  /**
+   * Add as many as you want. Drag to reorder.
+   */
+  items?:
+    | {
+        heading: string;
+        subheading?: string | null;
+        image: string | Media;
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'featuredServices';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1000,12 +1102,20 @@ export interface PayloadLockedDocument {
         value: string | Post;
       } | null)
     | ({
+        relationTo: 'projects';
+        value: string | Project;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
     | ({
         relationTo: 'categories';
         value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'project-categories';
+        value: string | ProjectCategory;
       } | null)
     | ({
         relationTo: 'users';
@@ -1126,6 +1236,7 @@ export interface PagesSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         uncommonServices?: T | UncommonServicesBlockSelect<T>;
         featuredProjects?: T | FeaturedProjectsBlockSelect<T>;
+        featuredServices?: T | FeaturedServicesBlockSelect<T>;
       };
   meta?:
     | T
@@ -1247,43 +1358,47 @@ export interface UncommonServicesBlockSelect<T extends boolean = true> {
  * via the `definition` "FeaturedProjectsBlock_select".
  */
 export interface FeaturedProjectsBlockSelect<T extends boolean = true> {
-  tagline?: T;
-  heading?: T;
-  description?: T;
-  button?:
+  title?: T;
+  projects?: T;
+  cta?:
     | T
     | {
-        title?: T;
-        variant?: T;
-        size?: T;
-        iconRight?: T;
-      };
-  projects?:
-    | T
-    | {
-        title?: T;
-        description?: T;
-        url?: T;
-        image?:
+        link?:
           | T
           | {
-              src?: T;
-              alt?: T;
-            };
-        button?:
-          | T
-          | {
-              title?: T;
-              variant?: T;
-              size?: T;
-              iconRight?: T;
-            };
-        tags?:
-          | T
-          | {
-              label?: T;
+              type?: T;
+              newTab?: T;
+              reference?: T;
               url?: T;
-              id?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturedServicesBlock_select".
+ */
+export interface FeaturedServicesBlockSelect<T extends boolean = true> {
+  title?: T;
+  items?:
+    | T
+    | {
+        heading?: T;
+        subheading?: T;
+        image?: T;
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
             };
         id?: T;
       };
@@ -1317,6 +1432,37 @@ export interface PostsSelect<T extends boolean = true> {
       };
   slug?: T;
   slugLock?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  image?: T;
+  header?: T;
+  description?: T;
+  links?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  projectCategories?: T;
+  slug?: T;
+  slugLock?: T;
+  publishedAt?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1431,6 +1577,17 @@ export interface CategoriesSelect<T extends boolean = true> {
         label?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories_select".
+ */
+export interface ProjectCategoriesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1768,6 +1925,18 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Languages available in the header switcher. Use short code like "en", "sl".
+   */
+  languages?:
+    | {
+        code: string;
+        title: string;
+        shortTitle: string;
+        languageIcon?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   links?:
     | {
         link: {
@@ -1787,7 +1956,7 @@ export interface Header {
           /**
            * Choose how the link should be rendered.
            */
-          appearance?: ('default' | 'outline' | 'animatedArrow') | null;
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
         };
         id?: string | null;
       }[]
@@ -1855,6 +2024,15 @@ export interface HeaderSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  languages?:
+    | T
+    | {
+        code?: T;
+        title?: T;
+        shortTitle?: T;
+        languageIcon?: T;
+        id?: T;
+      };
   links?:
     | T
     | {
@@ -1913,6 +2091,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'posts';
           value: string | Post;
+        } | null)
+      | ({
+          relationTo: 'projects';
+          value: string | Project;
         } | null);
     global?: string | null;
     user?: (string | null) | User;

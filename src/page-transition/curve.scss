@@ -42,7 +42,7 @@ body.mobile-menu-open {
 .mobile-curve-bg {
   position: fixed;
   inset: 0;
-  background: white; /* must match the curve path fill */
+  background: #fff; /* must match the curve path fill */
   z-index: 930; /* below menu content, above page content */
   opacity: 0;
 }
@@ -56,6 +56,11 @@ body.mobile-menu-open {
   pointer-events: none;
 
   path {
-    fill: white;
+    fill: #fff;
   } /* or your brand color */
+}
+
+html,
+body {
+  background-color: #2a2a2a; /* same as your curve */
 }
