@@ -21,7 +21,7 @@ function getThumbURL() {
   if (fromEnv) return fromEnv
   // Optional: build from bucket/region if you keep admin icons in a known path
   if (process.env.S3_BUCKET && process.env.S3_REGION) {
-    return `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/blocks/creative-growth-scroller.webp`
+    return `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/creative-growth-scroller.webp`
   }
   return FALLBACK_THUMB
 }
