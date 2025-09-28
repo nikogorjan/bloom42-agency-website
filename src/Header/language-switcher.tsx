@@ -28,9 +28,7 @@ export default function LanguageSwitcher({
   light?: boolean
   className?: string
 }) {
-  const langs = Array.isArray(languages) ? languages : []
-  if (!langs.length) return null
-
+  // Hooks: always call first
   const pathname = usePathname()
   const search = useSearchParams()
   const router = useRouter()
@@ -38,30 +36,33 @@ export default function LanguageSwitcher({
 
   const triggerRef = useRef<HTMLButtonElement | null>(null)
   const [open, setOpen] = useState(false)
-
-  const currentLocale = pathname.split('/')[1] || ''
-  const selected =
-    langs.find((l) => (l?.code || '').toLowerCase() === currentLocale.toLowerCase()) || langs[0]
-
-  // ---- CENTERED coords under trigger (fixed + centered) ----
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  // Derive data (do NOT early return yet)
+  const langs = Array.isArray(languages) ? languages : []
+  const currentLocale = (pathname.split('/')[1] || '').toLowerCase()
+  const selected = langs.find((l) => (l?.code || '').toLowerCase() === currentLocale) ?? langs[0]
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   const updateCoords = () => {
     const el = triggerRef.current
     if (!el) return
     const r = el.getBoundingClientRect()
     setCoords({
-      // 2px lower than button
-      top: Math.round(r.bottom + window.scrollY + 2),
-      // center of the button
-      left: Math.round(r.left + r.width / 2),
+      top: Math.round(r.bottom + 2), // 2px below the button
+      left: Math.round(r.left + r.width / 2), // centered
     })
   }
 
-  // Recompute when opening; close on scroll (requested)
+  // Recompute coords on open; close on scroll; keep centered on resize
   useEffect(() => {
     if (!open) return
     updateCoords()
-    const onScroll = () => setOpen(false) // close when scrolling
+    const onScroll = () => setOpen(false)
     const onResize = () => updateCoords()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize)
@@ -89,6 +90,7 @@ export default function LanguageSwitcher({
     const q = search?.toString()
     const path = replaceLocaleInPath(pathname, newCode)
     const href = q ? `${path}?${q}` : path
+    // Keep your transition animation for language changes
     if (nav?.onNavigate) nav.onNavigate(href)
     else router.push(href)
   }
@@ -104,6 +106,9 @@ export default function LanguageSwitcher({
     setOpen((v) => !v)
   }
 
+  // Now it's safe to early return
+  if (langs.length === 0) return null
+
   return (
     <>
       <button
@@ -111,7 +116,7 @@ export default function LanguageSwitcher({
         type="button"
         aria-haspopup="menu"
         aria-expanded={open}
-        onMouseDown={toggleOpen}
+        onClick={toggleOpen}
         className={[pillClasses, className].filter(Boolean).join(' ')}
       >
         {selected?.languageIcon ? (
@@ -122,41 +127,32 @@ export default function LanguageSwitcher({
         <span className="ml-1 uppercase">{selected?.shortTitle}</span>
       </button>
 
-      {/* Portal so it’s never clipped by header overflow */}
-      {typeof window !== 'undefined' &&
+      {mounted &&
         createPortal(
           <AnimatePresence>
             {open && coords ? (
-              // OUTER: fixed + centering transform (no Framer here to avoid transform conflicts)
               <div
                 style={{
                   position: 'fixed',
                   top: coords.top,
                   left: coords.left,
                   transform: 'translateX(-50%)',
-                  zIndex: 1100, // header is 1000
+                  zIndex: 1100,
                 }}
               >
-                {/* INNER: animate only Y/opacity via Framer */}
                 <motion.div
                   role="menu"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.18 }}
-                  className="
-                    rounded-[10px] border border-lightGray bg-white
-                    shadow-[0_15px_35px_rgba(0,0,0,0.08)] p-1 w-48
-                  "
+                  className="rounded-[10px] border border-lightGray bg-white shadow-[0_15px_35px_rgba(0,0,0,0.08)] p-1 w-48"
                 >
                   {langs.map((lang, i) => (
                     <button
                       key={`${lang?.code}-${i}`}
                       type="button"
-                      className="
-                        w-full flex items-center gap-3 rounded-md px-2 py-2
-                        text-sm text-darkGray hover:bg-eggshell transition-colors
-                      "
+                      className="w-full flex items-center gap-3 rounded-md px-2 py-2 text-sm text-darkGray hover:bg-eggshell transition-colors"
                       onClick={() => onPick(lang)}
                     >
                       {lang?.languageIcon ? (
@@ -168,7 +164,6 @@ export default function LanguageSwitcher({
                           />
                         </span>
                       ) : null}
-                      {/* Short code next to flag */}
                       <span className="font-semibold uppercase">{lang?.shortTitle}</span>
                     </button>
                   ))}
