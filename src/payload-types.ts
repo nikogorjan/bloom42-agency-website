@@ -1925,6 +1925,18 @@ export interface Header {
         id?: string | null;
       }[]
     | null;
+  /**
+   * Languages available in the header switcher. Use short code like "en", "sl".
+   */
+  languages?:
+    | {
+        code: string;
+        title: string;
+        shortTitle: string;
+        languageIcon?: (string | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   links?:
     | {
         link: {
@@ -2010,6 +2022,15 @@ export interface HeaderSelect<T extends boolean = true> {
               description?: T;
               id?: T;
             };
+        id?: T;
+      };
+  languages?:
+    | T
+    | {
+        code?: T;
+        title?: T;
+        shortTitle?: T;
+        languageIcon?: T;
         id?: T;
       };
   links?:
