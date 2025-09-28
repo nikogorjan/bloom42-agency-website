@@ -23,6 +23,8 @@ import {
 import { UncommonServices } from '@/blocks/UncommonServices/config'
 import { FeaturedProjects } from '@/blocks/FeaturedProjects/config'
 import { FeaturedServices } from '@/blocks/FeaturedServices/config'
+import { CreativeGrowthScroller } from '@/blocks/CreativeGrowthScroller/config'
+import { TeamSection } from '@/blocks/TeamSection/config'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -87,6 +89,8 @@ export const Pages: CollectionConfig<'pages'> = {
                 UncommonServices,
                 FeaturedProjects,
                 FeaturedServices,
+                CreativeGrowthScroller,
+                TeamSection,
               ],
               required: true,
               admin: {

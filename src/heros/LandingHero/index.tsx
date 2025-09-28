@@ -43,7 +43,7 @@ export const LandingHero: React.FC<Page['hero']> = ({
     >
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Squares
-          speed={0.2}
+          speed={0.1}
           squareSize={squareSize}
           direction="up"
           borderColor="#EBE9E4"

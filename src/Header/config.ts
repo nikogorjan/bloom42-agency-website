@@ -222,6 +222,7 @@ export const Header: GlobalConfig = {
           label: 'Language Name',
           type: 'text',
           required: true,
+          localized: true,
           admin: { width: '33%' }, // e.g. "English", "Slovenščina"
         },
         {

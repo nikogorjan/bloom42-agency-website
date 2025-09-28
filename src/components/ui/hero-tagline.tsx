@@ -8,54 +8,75 @@ interface HeroTaglineProps {
   text: string
 }
 
-export const HeroTagline: React.FC<HeroTaglineProps> = ({ text }) => (
-  <div className="mb-5 md:mb-6 flex items-center justify-center px-4 py-[6px] bg-white border-2 border-lightGray rounded-full gap-2">
-    <p className="font-karla font-medium text-[14px] whitespace-nowrap">{text}</p>
+export const HeroTagline: React.FC<HeroTaglineProps> = ({ text }) => {
+  const scrollToFeatured = () => {
+    const el = document.getElementById('featured-projects')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
-    <div className="w-[2px] h-[14px] bg-lightGray" />
+  const onKeyDown: React.KeyboardEventHandler<SVGSVGElement> = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      scrollToFeatured()
+    }
+  }
 
-    {/* ───────────── animated SVG ───────────── */}
-    <motion.svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 313 96"
-      className="h-[22px] w-auto translate-y-[-0.5px] cursor-pointer"
-      aria-hidden
-      initial="rest"
-      whileHover="hover"
-    >
-      {/* folder group that spins */}
-      <motion.g
-        id="Folder"
-        variants={{ rest: { rotate: 0 }, hover: { rotate: 360 } }}
-        transition={{ duration: 0.8, ease: 'easeInOut' }}
-        style={{ transformOrigin: '50% 50%' }} // center of the group
+  return (
+    <div className="mb-5 md:mb-6 flex items-center justify-center px-4 py-[6px] bg-white border-2 border-lightGray rounded-full gap-2">
+      <p className="font-karla font-medium text-[14px] whitespace-nowrap">{text}</p>
+
+      <div className="w-[2px] h-[14px] bg-lightGray" />
+
+      {/* clickable, accessible, animated SVG */}
+      <motion.svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 313 96"
+        aria-label="Jump to featured projects"
+        role="button"
+        tabIndex={0}
+        initial="rest"
+        whileHover="hover"
+        whileTap={{ scale: 0.98 }}
+        onClick={scrollToFeatured}
+        onKeyDown={onKeyDown}
+        onMouseDown={(e) => e.preventDefault()} // ← prevents mouse-focus, no border on click
+        className="h-[22px] w-auto translate-y-[-0.5px] cursor-pointer select-none
+                   outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0"
       >
-        {(['TL', 'TR', 'BL', 'BR'] as const).map((id, i) => (
+        {/* folder group that spins */}
+        <motion.g
+          id="Folder"
+          variants={{ rest: { rotate: 0 }, hover: { rotate: 360 } }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
+          style={{ transformOrigin: '50% 50%' }}
+        >
+          {(['TL', 'TR', 'BL', 'BR'] as const).map((id, i) => (
+            <motion.path
+              key={id}
+              d={folderPaths[id]}
+              fill={id === 'TR' ? '#FD7247' : '#222124'}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+            />
+          ))}
+        </motion.g>
+
+        {/* second sequence (letters / numbers) */}
+        {(['NUM2', 'NUM4', 'M', 'O2', 'O1', 'L', 'B'] as const).map((id, i) => (
           <motion.path
             key={id}
-            d={folderPaths[id]}
-            fill={id === 'TR' ? '#FD7247' : '#222124'}
+            d={logoPaths[id]}
+            fill="#222124"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4, delay: i * 0.1 }}
           />
         ))}
-      </motion.g>
-
-      {/* second sequence (letters / numbers) */}
-      {(['NUM2', 'NUM4', 'M', 'O2', 'O1', 'L', 'B'] as const).map((id, i) => (
-        <motion.path
-          key={id}
-          d={logoPaths[id]}
-          fill="#222124"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: i * 0.1 }}
-        />
-      ))}
-    </motion.svg>
-  </div>
-)
+      </motion.svg>
+    </div>
+  )
+}
 
 /* ---------- raw path data (extracted from your SVG) ---------- */
 const folderPaths: Record<string, string> = {

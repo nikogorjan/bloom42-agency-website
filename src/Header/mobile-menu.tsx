@@ -49,26 +49,26 @@ export default function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={toggle}
-        className="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-eggshell z-[1001]"
+        className="relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-eggshell z-[1001]"
       >
         <span className="sr-only">Toggle menu</span>
         {/* bars */}
         <span
           className={[
-            'block absolute h-[3px] w-5 bg-darkGray rounded-full transition-transform duration-200',
-            open ? 'rotate-45' : '-translate-y-1.5',
+            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-transform duration-200',
+            open ? 'rotate-45' : '-translate-y-[5px]',
           ].join(' ')}
         />
         <span
           className={[
-            'block absolute h-[3px] w-5 bg-darkGray rounded-full transition-opacity duration-200',
+            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-opacity duration-200',
             open ? 'opacity-0' : 'opacity-100',
           ].join(' ')}
         />
         <span
           className={[
-            'block absolute h-[3px] w-5 bg-darkGray rounded-full transition-transform duration-200',
-            open ? '-rotate-45' : 'translate-y-1.5',
+            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-transform duration-200',
+            open ? '-rotate-45' : 'translate-y-[5px]',
           ].join(' ')}
         />
       </button>

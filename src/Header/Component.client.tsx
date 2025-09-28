@@ -55,7 +55,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
         {/* Outer pill: radius snaps (no radius transition) */}
         <div
           className={[
-            'container max-w-[992px] bg-white border-2 border-lightGray shadow-sm overflow-hidden',
+            'container max-w-[992px] bg-white border-1 border-lightGray shadow-sm overflow-hidden',
             isOpen ? 'rounded-[28px]' : 'rounded-full',
             // avoid transition-all here so radius snaps; you can keep shadow transition if you want:
             'transition-shadow',
@@ -240,7 +240,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
           {/* Left: logo */}
           <TransitionLink
             href={data.logoUrl || '/'}
-            className="block relative size-10 select-none cursor-pointer"
+            className="block relative size-9 select-none cursor-pointer"
           >
             <Media fill imgClassName="object-contain rounded-[4px]" priority resource={data.logo} />
           </TransitionLink>

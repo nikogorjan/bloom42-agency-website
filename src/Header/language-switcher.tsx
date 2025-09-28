@@ -98,7 +98,9 @@ export default function LanguageSwitcher({
   const pillClasses = [
     'inline-flex items-center justify-center font-bold text-[14px]',
     'py-[3px] pl-[6px] pr-[8px] h-9 w-16 rounded-[50px] cursor-pointer',
-    light ? 'bg-white border border-lightGray text-darkGray' : 'bg-[#1A1A1A] border border-glass',
+    light
+      ? 'bg-gray-100 hover:bg-gray-200 transition-bg duration-300 border border-gray-300 text-darkGray'
+      : 'bg-[#1A1A1A] border border-glass',
   ].join(' ')
 
   const toggleOpen: React.MouseEventHandler<HTMLButtonElement> = (e) => {
@@ -121,7 +123,11 @@ export default function LanguageSwitcher({
       >
         {selected?.languageIcon ? (
           <span className="relative w-[24px] h-[24px] overflow-hidden rounded-full">
-            <Media resource={selected.languageIcon} fill imgClassName="object-cover rounded-full" />
+            <Media
+              resource={selected.languageIcon}
+              fill
+              imgClassName="object-cover rounded-full border border-gray-300"
+            />
           </span>
         ) : null}
         <span className="ml-1 uppercase">{selected?.shortTitle}</span>
@@ -146,27 +152,48 @@ export default function LanguageSwitcher({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.18 }}
-                  className="rounded-[10px] border border-lightGray bg-white shadow-[0_15px_35px_rgba(0,0,0,0.08)] p-1 w-48"
+                  className="
+    inline-flex flex-col w-fit whitespace-nowrap
+    rounded-[10px] border border-gray-200 bg-white
+    shadow-[0_15px_35px_rgba(0,0,0,0.08)] p-1
+    max-w-[90vw]
+  "
                 >
-                  {langs.map((lang, i) => (
-                    <button
-                      key={`${lang?.code}-${i}`}
-                      type="button"
-                      className="w-full flex items-center gap-3 rounded-md px-2 py-2 text-sm text-darkGray hover:bg-eggshell transition-colors"
-                      onClick={() => onPick(lang)}
-                    >
-                      {lang?.languageIcon ? (
-                        <span className="relative w-6 h-6 overflow-hidden rounded-full">
-                          <Media
-                            resource={lang.languageIcon}
-                            fill
-                            imgClassName="object-cover rounded-full"
-                          />
-                        </span>
-                      ) : null}
-                      <span className="font-semibold uppercase">{lang?.shortTitle}</span>
-                    </button>
-                  ))}
+                  {langs.map((lang, i) => {
+                    const code = (lang?.code || '').toLowerCase()
+                    const isCurrent = code === currentLocale
+
+                    return (
+                      <button
+                        key={`${code}-${i}`}
+                        type="button"
+                        disabled={isCurrent}
+                        aria-current={isCurrent ? 'true' : undefined}
+                        // do NOTHING if it's the current language
+                        onClick={() => {
+                          if (!isCurrent) onPick(lang)
+                        }}
+                        className={[
+                          'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                          isCurrent
+                            ? 'text-gray-400 cursor-default bg-transparent'
+                            : 'text-darkGray hover:bg-gray-100',
+                        ].join(' ')}
+                      >
+                        {lang?.languageIcon ? (
+                          <span className="relative w-6 h-6 overflow-hidden rounded-full border border-gray-300">
+                            <Media
+                              resource={lang.languageIcon}
+                              fill
+                              imgClassName="object-cover rounded-full"
+                            />
+                          </span>
+                        ) : null}
+                        {/* short code next to flag */}
+                        <span className="font-semibold uppercase">{lang?.shortTitle}</span>
+                      </button>
+                    )
+                  })}
                 </motion.div>
               </div>
             ) : null}

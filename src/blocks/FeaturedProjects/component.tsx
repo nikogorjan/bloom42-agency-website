@@ -49,7 +49,7 @@ export const FeaturedProjectsBlockComponent: React.FC<Props> = ({ title, project
   if (!items.length) return null
 
   return (
-    <section className="px-[5%] py-16 md:py-24 lg:py-28 bg-darkSky">
+    <section className="px-[5%] py-16 md:py-24 lg:py-28 bg-darkSky" id="featured-projects">
       <div className="container">
         {title ? (
           <h2 className="text-center font-anton text-white text-4xl sm:text-6xl md:text-10xl mb-10 sm:mb-12 md:mb-20">
@@ -131,7 +131,7 @@ export const FeaturedProjectsBlockComponent: React.FC<Props> = ({ title, project
                   <h3 className="font-anton text-xl md:text-2xl text-darkGray mb-2">{p.header}</h3>
 
                   {p.description ? (
-                    <p className="text-sm md:text-base text-muted-foreground mb-6">
+                    <p className="text-base md:text-md text-muted-foreground mb-6">
                       {p.description}
                     </p>
                   ) : null}

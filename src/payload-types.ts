@@ -220,6 +220,8 @@ export interface Page {
     | UncommonServicesBlock
     | FeaturedProjectsBlock
     | FeaturedServicesBlock
+    | CreativeGrowthScrollerBlock
+    | TeamSectionBlock
   )[];
   meta?: {
     title?: string | null;
@@ -923,6 +925,131 @@ export interface FeaturedServicesBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CreativeGrowthScrollerBlock".
+ */
+export interface CreativeGrowthScrollerBlock {
+  items: {
+    image: string | Media;
+    heading: string;
+    /**
+     * Short lead-in (1–3 sentences).
+     */
+    description?: string | null;
+    richText?: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+    /**
+     * Optional bullet groups with a small header.
+     */
+    bullets?:
+      | {
+          header: string;
+          items?:
+            | {
+                text: string;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'creativeGrowthScroller';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSectionBlock".
+ */
+export interface TeamSectionBlock {
+  /**
+   * Optional small line above the heading.
+   */
+  tagline?: string | null;
+  /**
+   * Section title (e.g. “Our team”).
+   */
+  heading: string;
+  /**
+   * Short description under the heading.
+   */
+  description?: string | null;
+  teamMembers?:
+    | {
+        image: string | Media;
+        name: string;
+        jobTitle?: string | null;
+        description?: string | null;
+        /**
+         * Optional social links for this member.
+         */
+        socials?: {
+          linkedin?: string | null;
+          x?: string | null;
+          facebook?: string | null;
+          instagram?: string | null;
+          website?: string | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Optional block at the bottom (e.g. “About us” or “We’re hiring”).
+   */
+  footer?: {
+    /**
+     * Footer heading (e.g. “About us”).
+     */
+    heading?: string | null;
+    description?: string | null;
+    /**
+     * Optional bottom CTA (e.g. “About us”).
+     */
+    cta?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: string | Post;
+                } | null);
+            url?: string | null;
+            label: string;
+            /**
+             * Choose how the link should be rendered.
+             */
+            appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+          };
+          id?: string | null;
+        }[]
+      | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1237,6 +1364,8 @@ export interface PagesSelect<T extends boolean = true> {
         uncommonServices?: T | UncommonServicesBlockSelect<T>;
         featuredProjects?: T | FeaturedProjectsBlockSelect<T>;
         featuredServices?: T | FeaturedServicesBlockSelect<T>;
+        creativeGrowthScroller?: T | CreativeGrowthScrollerBlockSelect<T>;
+        teamSection?: T | TeamSectionBlockSelect<T>;
       };
   meta?:
     | T
@@ -1401,6 +1530,85 @@ export interface FeaturedServicesBlockSelect<T extends boolean = true> {
               appearance?: T;
             };
         id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CreativeGrowthScrollerBlock_select".
+ */
+export interface CreativeGrowthScrollerBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        image?: T;
+        heading?: T;
+        description?: T;
+        richText?: T;
+        bullets?:
+          | T
+          | {
+              header?: T;
+              items?:
+                | T
+                | {
+                    text?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSectionBlock_select".
+ */
+export interface TeamSectionBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  teamMembers?:
+    | T
+    | {
+        image?: T;
+        name?: T;
+        jobTitle?: T;
+        description?: T;
+        socials?:
+          | T
+          | {
+              linkedin?: T;
+              x?: T;
+              facebook?: T;
+              instagram?: T;
+              website?: T;
+            };
+        id?: T;
+      };
+  footer?:
+    | T
+    | {
+        heading?: T;
+        description?: T;
+        cta?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                    appearance?: T;
+                  };
+              id?: T;
+            };
       };
   id?: T;
   blockName?: T;
