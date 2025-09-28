@@ -1,5 +1,6 @@
 /* app/fonts.ts */
 import { Anton, Figtree } from 'next/font/google'
+import localFont from 'next/font/local'
 
 /**
  * Bebas Neue has only one static weight (400),
@@ -28,4 +29,10 @@ export const figtree = Figtree({
   style: ['normal', 'italic'], // omit if you don’t need italics
   subsets: ['latin'],
   variable: '--font-figtree',
+})
+
+export const ivyPresto = localFont({
+  src: '../../public/fonts/Ivy-Presto-Headline.otf',
+  variable: '--font-ivypresto',
+  display: 'swap',
 })

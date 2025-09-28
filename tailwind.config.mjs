@@ -22,6 +22,10 @@ module.exports = {
         display: ['var(--font-anton)', 'var(--font-figtree)', 'ui-sans-serif'],
         figtree: ['var(--font-figtree)'],
         anton: ['var(--font-anton)'],
+        ivypresto: ['var(--font-ivypresto)', 'serif'],
+      },
+      screens: {
+        '2xl': '1440px',
       },
     },
   },

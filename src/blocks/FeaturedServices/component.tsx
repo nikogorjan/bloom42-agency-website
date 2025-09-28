@@ -137,12 +137,12 @@ function HoverRow({
         aria-label={heading}
       >
         <div className="min-w-0 relative z-10">
-          <h3 className="block truncate text-3xl font-bold tracking-tight text-neutral-400 transition-colors duration-500 group-hover:text-neutral-50 md:text-5xl">
+          <h3 className="block truncate text-3xl font-anton tracking-tight text-neutral-400 transition-colors duration-500 group-hover:text-neutral-50 md:text-5xl">
             {heading}
           </h3>
 
           {subheading ? (
-            <span className="mt-2 block truncate text-sm text-neutral-500 transition-colors duration-500 group-hover:text-neutral-200 md:text-base">
+            <span className="mt-2 block truncate text-base md:text-md text-neutral-500 transition-colors duration-500 group-hover:text-neutral-200">
               {subheading}
             </span>
           ) : null}

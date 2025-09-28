@@ -10,6 +10,7 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { UncommonServices } from '@/blocks/UncommonServices/component'
 import { FeaturedProjectsBlockComponent } from '@/blocks/FeaturedProjects/component'
 import FeaturedServicesBlockComponent from './FeaturedServices/component'
+import CreativeGrowthScrollerComponent from './CreativeGrowthScroller/component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -20,6 +21,7 @@ const blockComponents = {
   uncommonServices: UncommonServices,
   featuredProjects: FeaturedProjectsBlockComponent,
   featuredServices: FeaturedServicesBlockComponent,
+  creativeGrowthScroller: CreativeGrowthScrollerComponent,
 }
 
 export const RenderBlocks: React.FC<{

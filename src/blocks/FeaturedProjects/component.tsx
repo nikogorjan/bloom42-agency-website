@@ -131,7 +131,7 @@ export const FeaturedProjectsBlockComponent: React.FC<Props> = ({ title, project
                   <h3 className="font-anton text-xl md:text-2xl text-darkGray mb-2">{p.header}</h3>
 
                   {p.description ? (
-                    <p className="text-sm md:text-base text-muted-foreground mb-6">
+                    <p className="text-base md:text-md text-muted-foreground mb-6">
                       {p.description}
                     </p>
                   ) : null}

@@ -4,7 +4,6 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import { motion } from 'motion/react'
 import { TransitionLink } from '@/page-transition/transition-link'
-import { CMSLink } from '@/components/Link'
 
 type RelationTo = 'pages' | 'posts'
 interface Reference {
@@ -56,7 +55,7 @@ const MobileMenuOverlay = forwardRef<
     links?: MobileLinkWrapper[]
     onRequestClose: () => void
   }
->(({ open, navItems, links, onRequestClose }, ref) => {
+>(({ open, navItems, onRequestClose }, ref) => {
   const [dim, setDim] = useState({ width: 0, height: 0 })
 
   useEffect(() => {
