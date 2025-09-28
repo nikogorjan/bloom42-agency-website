@@ -70,12 +70,18 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 <div>
                   <TransitionLink
                     href={data.logoUrl || '/'}
-                    className="block relative size-8 select-none cursor-pointer"
+                    className="group block relative size-8 select-none cursor-pointer"
                     onMouseEnter={() => setOpenIndex(null)} // hover logo closes
                   >
                     <Media
                       fill
-                      imgClassName="object-contain rounded-[4px] md:rounded-[6px]"
+                      // rotate the actual <img> so rounded corners stay nice
+                      imgClassName="
+        object-contain rounded-[4px] md:rounded-[6px]
+        transition-transform duration-700 ease-out
+        will-change-transform transform-gpu
+        group-hover:rotate-[360deg]
+      "
                       priority
                       resource={data.logo}
                     />
