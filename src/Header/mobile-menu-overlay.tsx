@@ -123,11 +123,71 @@ const MobileMenuOverlay = forwardRef<
 
   // main list + subpanel slide container
   // We keep them stacked; subpanel slides over the main list.
-  const panelWrapStyle = 'relative w-full max-w-[520px] h-[75vh] overflow-hidden'
+  const panelWrapStyle = 'relative w-full h-[75vh] overflow-hidden'
 
   const subVariants = {
     hidden: { x: '100%', transition: { duration: SUB_D, ease: E } },
     visible: { x: '0%', transition: { duration: SUB_D, ease: E } },
+  }
+
+  function IconChevronRight({
+    size = 28,
+    stroke = 2,
+    className = '',
+  }: {
+    size?: number
+    stroke?: number
+    className?: string
+  }) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        className={className}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M9 6l6 6-6 6"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
+  }
+
+  function IconChevronLeft({
+    size = 28,
+    stroke = 2,
+    className = '',
+  }: {
+    size?: number
+    stroke?: number
+    className?: string
+  }) {
+    return (
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        className={className}
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path
+          d="M15 18l-6-6 6-6"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    )
   }
 
   return (
@@ -151,14 +211,14 @@ const MobileMenuOverlay = forwardRef<
 
       {/* Content */}
       <motion.div
-        className="fixed inset-0 z-[950] flex flex-col items-center justify-start pt-28 pb-16 px-6 gap-6"
+        className="fixed inset-0 z-[950] flex flex-col items-center justify-start pt-28 pb-16 px-[5%] gap-6"
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={contentVariants}
       >
         <div className={panelWrapStyle}>
           {/* MAIN LIST (stays underneath) */}
-          <div className="absolute inset-0 overflow-y-auto pr-2">
+          <div className="absolute inset-0 overflow-y-auto">
             <ul className="flex flex-col gap-2">
               {navItems?.map((navItem: NavItem, i: number) => {
                 if (navItem.type === 'dropdown') {
@@ -167,19 +227,13 @@ const MobileMenuOverlay = forwardRef<
                       <button
                         type="button"
                         onClick={() => openSub(i)}
-                        className="w-full text-left text-2xl py-3 px-4 rounded-xl hover:bg-gray-50 flex items-center justify-between"
+                        className="w-full text-left text-darkSky font-anton uppercase text-2xl py-3 px-2 rounded-xl hover:bg-gray-50 flex items-center justify-between"
                       >
                         <span>{navItem.label}</span>
                         {/* chevron right */}
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                          <path
-                            d="M7 4l6 6-6 6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <div className="flex items-center gap-1 py-2 px-2 rounded-md hover:bg-gray-50">
+                          <IconChevronRight className="shrink-0" />
+                        </div>
                       </button>
                     </li>
                   )
@@ -199,7 +253,7 @@ const MobileMenuOverlay = forwardRef<
                   <li key={`ln-${i}`}>
                     <TransitionLink
                       href={href}
-                      className="block w-full text-2xl py-3 px-4 rounded-xl hover:bg-gray-50"
+                      className="block w-full text-2xl text-darkSky font-anton uppercase py-3 px-2 rounded-xl hover:bg-gray-50"
                       {...newTabProps}
                       onClick={onRequestClose}
                     >
@@ -219,26 +273,18 @@ const MobileMenuOverlay = forwardRef<
             variants={subVariants}
           >
             {/* Subpanel header with back chevron */}
-            <div className="flex items-center justify-between px-2 pb-2">
+            <div className="flex items-center justify-between  pb-2">
               <button
                 type="button"
                 onClick={closeSub}
                 className="flex items-center gap-1 py-2 px-2 rounded-md hover:bg-gray-50"
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path
-                    d="M13 16l-6-6 6-6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <IconChevronLeft className="shrink-0" />
               </button>
             </div>
 
             {/* Subpanel list */}
-            <div className="overflow-y-auto h-[calc(75vh-44px)] pr-2">
+            <div className="overflow-y-auto h-[calc(75vh-44px)]">
               <ul className="flex flex-col gap-2">
                 {activeDropdown?.items?.map((sub: SubItem, j: number) => {
                   const href =
@@ -252,7 +298,7 @@ const MobileMenuOverlay = forwardRef<
                     <li key={`sub-${activeDropdownIndex}-${j}`}>
                       <TransitionLink
                         href={href}
-                        className="block w-full text-2xl py-3 px-4 rounded-xl hover:bg-gray-50"
+                        className="block w-full text-2xl text-darkSky font-anton uppercase py-3 px-2 rounded-xl hover:bg-gray-50"
                         {...newTabProps}
                         onClick={onRequestClose}
                       >
@@ -265,21 +311,6 @@ const MobileMenuOverlay = forwardRef<
             </div>
           </motion.div>
         </div>
-
-        {/* CTA buttons under links */}
-        {!!links?.length && (
-          <div className="w-full max-w-[520px]">
-            <div className="flex flex-col gap-3 mt-2">
-              {links!.map(({ link }: MobileLinkWrapper, i: number) => (
-                <CMSLink
-                  key={i}
-                  {...(link as any)}
-                  className="w-full justify-center text-base py-3 rounded-xl"
-                />
-              ))}
-            </div>
-          </div>
-        )}
       </motion.div>
     </>
   )
