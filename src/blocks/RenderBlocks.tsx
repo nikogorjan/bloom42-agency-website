@@ -12,6 +12,7 @@ import { FeaturedProjectsBlockComponent } from '@/blocks/FeaturedProjects/compon
 import FeaturedServicesBlockComponent from './FeaturedServices/component'
 import CreativeGrowthScrollerComponent from './CreativeGrowthScroller/component'
 import TeamSectionComponent from './TeamSection/component'
+import VideoTestimonialComponent from './VideoTestimonial/component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -24,6 +25,7 @@ const blockComponents = {
   featuredServices: FeaturedServicesBlockComponent,
   creativeGrowthScroller: CreativeGrowthScrollerComponent,
   teamSection: TeamSectionComponent,
+  videoTestimonial: VideoTestimonialComponent,
 }
 
 export const RenderBlocks: React.FC<{
