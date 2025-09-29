@@ -222,6 +222,7 @@ export interface Page {
     | FeaturedServicesBlock
     | CreativeGrowthScrollerBlock
     | TeamSectionBlock
+    | VideoTestimonialBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1050,6 +1051,70 @@ export interface TeamSectionBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoTestimonialBlock".
+ */
+export interface VideoTestimonialBlock {
+  /**
+   * Testimonial text or short story (supports headings, bold, links, etc.)
+   */
+  richText?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Upload a vertical (9:16) clip for best results.
+   */
+  video: string | Media;
+  /**
+   * Optional CTA under the text (e.g. “See more stories”).
+   */
+  cta?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Autoplay video on load (recommended).
+   */
+  autoplay?: boolean | null;
+  loop?: boolean | null;
+  mutedByDefault?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'videoTestimonial';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1366,6 +1431,7 @@ export interface PagesSelect<T extends boolean = true> {
         featuredServices?: T | FeaturedServicesBlockSelect<T>;
         creativeGrowthScroller?: T | CreativeGrowthScrollerBlockSelect<T>;
         teamSection?: T | TeamSectionBlockSelect<T>;
+        videoTestimonial?: T | VideoTestimonialBlockSelect<T>;
       };
   meta?:
     | T
@@ -1610,6 +1676,34 @@ export interface TeamSectionBlockSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "VideoTestimonialBlock_select".
+ */
+export interface VideoTestimonialBlockSelect<T extends boolean = true> {
+  richText?: T;
+  video?: T;
+  cta?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  autoplay?: T;
+  loop?: T;
+  mutedByDefault?: T;
   id?: T;
   blockName?: T;
 }

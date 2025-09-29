@@ -64,3 +64,21 @@ html,
 body {
   background-color: #2a2a2a; /* same as your curve */
 }
+
+.payload-richtext span[style*='text-decoration: underline'],
+.payload-richtext span[style*='text-decoration:underline'],
+.payload-richtext span[style*='text-decoration-line: underline'],
+.payload-richtext span[style*='text-decoration-line:underline'] {
+  text-decoration: none !important; /* kill underline, beat inline style */
+  background-color: #fd7247;
+  color: #262423;
+  padding: 0 0.15em;
+}
+
+/* If an <a> wraps that underlined span, remove the link underline too (modern browsers) */
+@supports selector(a:has(span)) {
+  .payload-richtext a:has(span[style*='text-decoration']),
+  .payload-richtext a:has(span[style*='text-decoration-line']) {
+    text-decoration: none !important;
+  }
+}
