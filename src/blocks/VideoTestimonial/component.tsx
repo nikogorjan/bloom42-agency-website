@@ -5,6 +5,7 @@ import type { VideoTestimonialBlock, Media as MediaDoc } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import RichText from '@/components/RichText'
+import { RichTextCustom } from '@/components/common/rich-text/rich-text'
 
 type Props = VideoTestimonialBlock
 
@@ -32,10 +33,9 @@ export default function VideoTestimonialComponent(props: Props) {
           {/* LEFT: Rich text + CTA */}
           <div>
             {richText ? (
-              <RichText
-                className="text-eggshell font-anton font-normal uppercase"
-                data={richText}
-                enableGutter={false}
+              <RichTextCustom
+                text={richText}
+                className="text-6xl font-anton text-eggshell uppercase"
               />
             ) : null}
 
