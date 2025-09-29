@@ -4,7 +4,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import type { VideoTestimonialBlock, Media as MediaDoc } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
-import RichText from '@/components/RichText'
 import { RichTextCustom } from '@/components/common/rich-text/rich-text'
 
 type Props = VideoTestimonialBlock

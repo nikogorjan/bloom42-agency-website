@@ -4,6 +4,7 @@ import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   HeadingFeature,
+  TextStateFeature,
 } from '@payloadcms/richtext-lexical'
 import { linkGroup } from '@/fields/linkGroup'
 
@@ -42,6 +43,16 @@ export const VideoTestimonial: Block = {
           HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
+          TextStateFeature({
+            state: {
+              bg: {
+                highlight: {
+                  label: 'Highlight',
+                  css: { 'background-color': '#FD7247', color: '#262423' },
+                },
+              },
+            },
+          }),
         ],
       }),
       admin: {
