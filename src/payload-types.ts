@@ -1109,6 +1109,25 @@ export interface VideoTestimonialBlock {
   autoplay?: boolean | null;
   loop?: boolean | null;
   mutedByDefault?: boolean | null;
+  /**
+   * Shown under the text & video.
+   */
+  testimonials?:
+    | {
+        quote: string;
+        /**
+         * Optional headshot.
+         */
+        avatar?: (string | null) | Media;
+        name: string;
+        position?: string | null;
+        /**
+         * 1–5
+         */
+        numberOfStars: number;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'videoTestimonial';
@@ -1704,6 +1723,16 @@ export interface VideoTestimonialBlockSelect<T extends boolean = true> {
   autoplay?: T;
   loop?: T;
   mutedByDefault?: T;
+  testimonials?:
+    | T
+    | {
+        quote?: T;
+        avatar?: T;
+        name?: T;
+        position?: T;
+        numberOfStars?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }

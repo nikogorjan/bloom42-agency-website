@@ -92,5 +92,43 @@ export const VideoTestimonial: Block = {
       defaultValue: true,
       label: 'Muted by default',
     },
+
+    {
+      name: 'testimonials',
+      type: 'array',
+      labels: { singular: 'Testimonial', plural: 'Testimonials' },
+      admin: {
+        description: 'Shown under the text & video.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'quote',
+          type: 'textarea',
+          required: true,
+          localized: true,
+          admin: { placeholder: '“Short testimonial quote…”' },
+        },
+        {
+          name: 'avatar',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+          admin: { description: 'Optional headshot.' },
+        },
+
+        { name: 'name', type: 'text', required: true },
+        { name: 'position', type: 'text' },
+        {
+          name: 'numberOfStars',
+          type: 'number',
+          required: true,
+          defaultValue: 5,
+          min: 1,
+          max: 5,
+          admin: { step: 1, description: '1–5' },
+        },
+      ],
+    },
   ],
 }

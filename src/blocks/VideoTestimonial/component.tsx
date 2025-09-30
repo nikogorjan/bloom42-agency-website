@@ -9,9 +9,17 @@ import { RichTextCustom } from '@/components/common/rich-text/rich-text'
 type Props = VideoTestimonialBlock
 
 export default function VideoTestimonialComponent(props: Props) {
-  const { richText, video, cta, autoplay = true, loop = true, mutedByDefault = true } = props
+  const {
+    richText,
+    video,
+    cta,
+    autoplay = true,
+    loop = true,
+    mutedByDefault = true,
+    testimonials = [],
+  } = props
 
-  // Normalize CTA coming from linkGroup (can be array or single object depending on your helper)
+  // Normalize CTA as before
   let ctaLink: any | undefined
   const rawCTA = cta as any
   if (rawCTA) {
@@ -27,40 +35,111 @@ export default function VideoTestimonialComponent(props: Props) {
       id="video-testimonial"
       className="relative overflow-hidden bg-darkSky px-[5%] py-12 md:py-20"
     >
-      <div className="container max-w-[992px]">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-center">
-          {/* LEFT: Rich text + CTA */}
-          <div>
-            {richText ? (
-              <RichTextCustom
-                text={richText}
-                className="text-6xl font-anton text-eggshell uppercase"
+      <div className="container">
+        {/* TOP ROW: text + video */}
+        <div className="max-w-[992px] mx-auto">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-center">
+            <div>
+              {richText ? (
+                <RichTextCustom
+                  text={richText}
+                  className="text-6xl font-anton text-eggshell uppercase"
+                />
+              ) : null}
+
+              {ctaLink ? (
+                <div className="mt-8 flex flex-col items-start justify-center sm:flex-row md:items-start md:justify-start md:mt-10">
+                  <CMSLink {...ctaLink} />
+                </div>
+              ) : null}
+            </div>
+
+            <div className="relative w-full md:w-[366px]">
+              <VideoWithMuteToggle
+                media={video}
+                autoplay={autoplay ?? true}
+                loop={loop ?? true}
+                mutedByDefault={mutedByDefault ?? true}
               />
-            ) : null}
-
-            {ctaLink ? (
-              <div className="mt-8 flex flex-col items-start justify-center sm:flex-row md:items-start md:justify-start md:mt-10">
-                <CMSLink {...ctaLink} />
-              </div>
-            ) : null}
-          </div>
-
-          {/* RIGHT: Video (9/16), autoplay, loop, muted with toggle */}
-          <div className="relative w-full md:w-[366px]">
-            <VideoWithMuteToggle
-              media={video}
-              autoplay={autoplay ?? true}
-              loop={loop ?? true}
-              mutedByDefault={mutedByDefault ?? true}
-            />
+            </div>
           </div>
         </div>
+        {/* TESTIMONIALS GRID */}
+        {Array.isArray(testimonials) && testimonials.length > 0 ? (
+          <div className="mt-12 md:mt-16">
+            {/* Masonry-like columns (simple) */}
+            <div className="columns-1 gap-x-6 md:columns-2 lg:columns-3">
+              {testimonials.map((t, idx) => (
+                <article
+                  key={idx}
+                  className="mb-6 inline-block w-full break-inside-avoid rounded-2xl border border-eggshell/15 bg-white/5 p-6 md:p-7"
+                >
+                  {/* Stars */}
+                  <div className="mb-4 flex">
+                    {Array.from({ length: clampStars(t?.numberOfStars) }).map((_, i) => (
+                      <StarIcon key={i} />
+                    ))}
+                  </div>
+
+                  {/* Quote */}
+                  {t?.quote ? (
+                    <blockquote className="text-eggshell/90">{smartQuotes(t.quote)}</blockquote>
+                  ) : null}
+
+                  {/* Person */}
+                  <div className="mt-5 flex w-full flex-col items-start gap-4 md:mt-6 md:w-fit md:flex-row md:items-center">
+                    {t?.avatar ? (
+                      <div className="size-12 min-h-12 min-w-12 overflow-hidden rounded-full">
+                        <Media
+                          resource={t.avatar as MediaDoc}
+                          imgClassName="h-12 w-12 object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="size-12 min-h-12 min-w-12 rounded-full bg-eggshell/20" />
+                    )}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   )
 }
 
-/* ---------------- video with mute toggle ---------------- */
+/* ---------------- helpers ---------------- */
+
+function clampStars(n?: number) {
+  if (typeof n !== 'number') return 5
+  if (n < 1) return 1
+  if (n > 5) return 5
+  return Math.round(n)
+}
+
+function smartQuotes(text: string) {
+  // If the editor text isn’t already quoted, add nice quotes
+  const trimmed = (text || '').trim()
+  const hasQuotes = /^["“].*["”]$/.test(trimmed)
+  return hasQuotes ? trimmed : `“${trimmed}”`
+}
+
+/* a tiny star svg to avoid extra deps */
+function StarIcon() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="#FACC15" // warm yellow-gold
+      aria-hidden="true"
+      className="h-5 w-5"
+    >
+      <path d="M10 2.5l2.472 5.29 5.81.516-4.393 3.86 1.303 5.684L10 14.95l-5.192 2.9 1.303-5.684L1.718 8.306l5.81-.516L10 2.5z" />
+    </svg>
+  )
+}
+
+/* ---------------- video with mute toggle (unchanged) ---------------- */
 
 function VideoWithMuteToggle({
   media,
@@ -75,36 +154,29 @@ function VideoWithMuteToggle({
   const wrapperRef = useRef<HTMLDivElement>(null)
   const [muted, setMuted] = useState<boolean>(mutedByDefault)
 
-  // Keep the underlying <video> element in sync when user toggles
   useEffect(() => {
     const videoEl = wrapperRef.current?.querySelector('video')
     if (videoEl) {
       videoEl.muted = muted
       if (autoplay && videoEl.paused) {
-        // Try to play after user gesture; browsers may block autoplay until gesture
         videoEl.play().catch(() => {})
       }
     }
   }, [muted, autoplay])
 
-  // We rely on your <Media> VideoMedia defaults (autoPlay, loop, muted, playsInline, controls=false)
-  // We just provide sizing and a toggle overlay.
   return (
     <div
       ref={wrapperRef}
       className="relative overflow-hidden rounded-2xl border border-eggshell/10"
     >
-      {/* Aspect 9/16 box */}
       <div className="relative aspect-[9/16] w-full">
         <Media
           resource={media}
-          // Fill the aspect-ratio box and round the video itself
           className="absolute inset-0"
           videoClassName="absolute inset-0 h-full w-full object-cover rounded-2xl"
         />
       </div>
 
-      {/* Mute/Unmute button */}
       <button
         type="button"
         onClick={() => setMuted((m) => !m)}
