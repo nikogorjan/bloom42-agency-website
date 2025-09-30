@@ -59,8 +59,6 @@ interface WorldProps {
   onReady?: () => void
 }
 
-let numbersOfRings = [0]
-
 export function Globe({ globeConfig, data, onReady }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null)
   const groupRef = useRef<Group | null>(null)

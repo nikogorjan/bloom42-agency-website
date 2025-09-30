@@ -190,7 +190,7 @@ export default function VideoTestimonialComponent(props: Props) {
       <div
         aria-hidden
         className="
-          pointer-events-none absolute left-[-15vw] top-1/2 hidden -translate-y-1/2 md:block
+          pointer-events-none absolute left-[-10vw] top-1/2 hidden -translate-y-1/2 md:block
           z-0
         "
         // size & responsiveness of the background globe
