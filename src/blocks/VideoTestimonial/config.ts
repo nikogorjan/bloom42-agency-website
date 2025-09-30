@@ -7,6 +7,7 @@ import {
   TextStateFeature,
 } from '@payloadcms/richtext-lexical'
 import { linkGroup } from '@/fields/linkGroup'
+import { CoralHighlightFeature } from '@/components/common/rich-text/lexical-features/coralHighlight/feature.server'
 
 const FALLBACK_THUMB = `data:image/svg+xml;utf8,${encodeURIComponent(`
   <svg xmlns='http://www.w3.org/2000/svg' width='160' height='120' viewBox='0 0 160 120' fill='none'>
@@ -38,21 +39,12 @@ export const VideoTestimonial: Block = {
       type: 'richText',
       localized: true,
       editor: lexicalEditor({
-        features: ({ rootFeatures }) => [
-          ...rootFeatures,
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          CoralHighlightFeature(),
           HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
-          TextStateFeature({
-            state: {
-              bg: {
-                highlight: {
-                  label: 'Highlight',
-                  css: { 'background-color': '#FD7247', color: '#262423' },
-                },
-              },
-            },
-          }),
         ],
       }),
       admin: {

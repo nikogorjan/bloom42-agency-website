@@ -13,6 +13,7 @@ import type {
 } from '@/components/common/rich-text/utils'
 import { cn } from '@/utilities/ui'
 import type { ReactNode } from 'react'
+import { CoralHighlightRenderer } from './renderers/coral-highlight'
 
 const richTextRenderers: RichTextRenderer[] = [
   TextRenderer,
@@ -24,6 +25,7 @@ const richTextRenderers: RichTextRenderer[] = [
   QuoteRenderer,
   UnknownRenderer,
   ListItemRenderer,
+  CoralHighlightRenderer,
   /// TODO: Add more renderers here (for example: UnderlineRenderer, etc.)
 ]
 

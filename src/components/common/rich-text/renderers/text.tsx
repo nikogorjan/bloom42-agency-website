@@ -107,8 +107,19 @@ export const TextRenderer: RichTextRenderer<any> = {
     if (node.format & NodeFormat.IS_SUPERSCRIPT) {
       return <sup>{text}</sup>
     }
-    if (isTextStateHighlighted(node)) {
-      return <HighlightText>{text}</HighlightText>
+    if (node.format & NodeFormat.IS_HIGHLIGHT) {
+      return (
+        <span
+          style={{
+            backgroundColor: '#FD7247',
+            color: '#262423',
+            borderRadius: '0.25rem',
+            padding: '0 0.15em',
+          }}
+        >
+          {text}
+        </span>
+      )
     }
 
     return text
