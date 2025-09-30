@@ -190,7 +190,7 @@ export default function LanguageSwitcher({
                           </span>
                         ) : null}
                         {/* short code next to flag */}
-                        <span className="font-semibold uppercase">{lang?.shortTitle}</span>
+                        <span className="font-semibold">{lang?.title}</span>
                       </button>
                     )
                   })}
