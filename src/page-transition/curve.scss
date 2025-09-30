@@ -1,5 +1,5 @@
 .curve {
-  --curve-color: #2a2a2a; // charcoal (swap with coral #FD7247 or sand #D8CBB3)
+  --curve-color: #ffffff; // charcoal (swap with coral #FD7247 or sand #D8CBB3)
   --curve-label: #ffffff; // text stays readable
   > svg,
   > .background {
@@ -62,7 +62,7 @@ body.mobile-menu-open {
 
 html,
 body {
-  background-color: #2a2a2a; /* same as your curve */
+  background-color: #ffffff; /* same as your curve */
 }
 
 .payload-richtext span[style*='text-decoration: underline'],

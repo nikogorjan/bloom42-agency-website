@@ -5,8 +5,145 @@ import type { VideoTestimonialBlock, Media as MediaDoc } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import { RichTextCustom } from '@/components/common/rich-text/rich-text'
+import dynamic from 'next/dynamic'
+
+// Render <Canvas/> only on client
+const World = dynamic(() => import('@/components/ui/globe').then((m) => m.World), {
+  ssr: false,
+})
 
 type Props = VideoTestimonialBlock
+
+/* ---------------- globe config + demo arcs ---------------- */
+
+const globeConfig = {
+  pointSize: 4,
+  globeColor: '#0f1115',
+  showAtmosphere: true,
+  atmosphereColor: '#FFFFFF',
+  atmosphereAltitude: 0.1,
+  emissive: '#062056',
+  emissiveIntensity: 0.1,
+  shininess: 0.9,
+  polygonColor: 'rgba(255,255,255,0.7)',
+  directionalLeftLight: '#ffffff',
+  directionalTopLight: '#ffffff',
+  arcTime: 1200,
+  arcLength: 0.9,
+  rings: 1,
+  maxRings: 3,
+  initialPosition: { lat: 22.3193, lng: 114.1694 },
+  autoRotate: true,
+  autoRotateSpeed: 0.5,
+}
+
+const colors = ['#9CA3AF', '#A8AFB7', '#8B919B'] as const // muted grays
+const pickOne = <T,>(arr: readonly T[]): T => arr[(Math.random() * arr.length) | 0] ?? arr[0]!
+
+// lightweight sample arcs (trim if you want)
+const sampleArcs = [
+  {
+    order: 1,
+    startLat: -19.885592,
+    startLng: -43.951191,
+    endLat: -22.9068,
+    endLng: -43.1729,
+    arcAlt: 0.1,
+    color: pickOne(colors),
+  },
+  {
+    order: 1,
+    startLat: 28.6139,
+    startLng: 77.209,
+    endLat: 3.139,
+    endLng: 101.6869,
+    arcAlt: 0.2,
+    color: pickOne(colors),
+  },
+  {
+    order: 2,
+    startLat: 1.3521,
+    startLng: 103.8198,
+    endLat: 35.6762,
+    endLng: 139.6503,
+    arcAlt: 0.2,
+    color: pickOne(colors),
+  },
+  {
+    order: 2,
+    startLat: 51.5072,
+    startLng: -0.1276,
+    endLat: 3.139,
+    endLng: 101.6869,
+    arcAlt: 0.3,
+    color: pickOne(colors),
+  },
+  {
+    order: 3,
+    startLat: -33.8688,
+    startLng: 151.2093,
+    endLat: 22.3193,
+    endLng: 114.1694,
+    arcAlt: 0.3,
+    color: pickOne(colors),
+  },
+  {
+    order: 3,
+    startLat: 21.3099,
+    startLng: -157.8581,
+    endLat: 40.7128,
+    endLng: -74.006,
+    arcAlt: 0.3,
+    color: pickOne(colors),
+  },
+  {
+    order: 4,
+    startLat: 11.986597,
+    startLng: 8.571831,
+    endLat: -15.595412,
+    endLng: -56.05918,
+    arcAlt: 0.5,
+    color: pickOne(colors),
+  },
+  {
+    order: 5,
+    startLat: 34.0522,
+    startLng: -118.2437,
+    endLat: 48.8566,
+    endLng: -2.3522,
+    arcAlt: 0.2,
+    color: pickOne(colors),
+  },
+  {
+    order: 6,
+    startLat: 22.3193,
+    startLng: 114.1694,
+    endLat: 51.5072,
+    endLng: -0.1276,
+    arcAlt: 0.3,
+    color: pickOne(colors),
+  },
+  {
+    order: 7,
+    startLat: 52.52,
+    startLng: 13.405,
+    endLat: 34.0522,
+    endLng: -118.2437,
+    arcAlt: 0.2,
+    color: pickOne(colors),
+  },
+  {
+    order: 8,
+    startLat: 1.3521,
+    startLng: 103.8198,
+    endLat: 40.7128,
+    endLng: -74.006,
+    arcAlt: 0.5,
+    color: pickOne(colors),
+  },
+]
+
+/* ---------------- component ---------------- */
 
 export default function VideoTestimonialComponent(props: Props) {
   const {
@@ -19,36 +156,51 @@ export default function VideoTestimonialComponent(props: Props) {
     testimonials = [],
   } = props
 
-  // Normalize CTA as before
+  // Normalize CTA from linkGroup (array vs single)
   let ctaLink: any | undefined
   const rawCTA = cta as any
   if (rawCTA) {
-    if (Array.isArray(rawCTA) && rawCTA.length > 0 && rawCTA[0]?.link) {
-      ctaLink = rawCTA[0].link
-    } else if (!Array.isArray(rawCTA) && rawCTA.link) {
-      ctaLink = rawCTA.link
-    }
+    if (Array.isArray(rawCTA) && rawCTA.length > 0 && rawCTA[0]?.link) ctaLink = rawCTA[0].link
+    else if (!Array.isArray(rawCTA) && rawCTA.link) ctaLink = rawCTA.link
   }
 
   return (
     <section
       id="video-testimonial"
-      className="relative overflow-hidden bg-darkSky px-[5%] py-12 md:py-20"
+      className="relative overflow-visible bg-darkSky px-[5%] py-12 md:py-20"
     >
-      <div className="container">
+      {/* DESKTOP BACKGROUND GLOBE (right side, half visible) */}
+      <div
+        aria-hidden
+        className="
+          pointer-events-none absolute left-[-25vw] top-1/2 hidden -translate-y-1/2 md:block
+          z-0
+        "
+        // size & responsiveness of the background globe
+        style={{
+          width: '130vh',
+          height: '130vh',
+          maxWidth: '1800px',
+          maxHeight: '1800px',
+        }}
+      >
+        <World globeConfig={globeConfig} data={sampleArcs} />
+      </div>
+
+      <div className="container relative z-10">
         {/* TOP ROW: text + video */}
-        <div className="max-w-[992px] mx-auto">
+        <div className="mx-auto max-w-[992px]">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-center">
             <div>
               {richText ? (
                 <RichTextCustom
                   text={richText}
-                  className="text-6xl font-anton text-eggshell uppercase"
+                  className="text-5xl md:text-6xl font-anton text-eggshell uppercase"
                 />
               ) : null}
 
               {ctaLink ? (
-                <div className="mt-8 flex flex-col items-start justify-center sm:flex-row md:items-start md:justify-start md:mt-10">
+                <div className="mt-8 md:mt-10 flex flex-col items-start justify-center sm:flex-row md:items-start md:justify-start">
                   <CMSLink {...ctaLink} />
                 </div>
               ) : null}
@@ -64,15 +216,15 @@ export default function VideoTestimonialComponent(props: Props) {
             </div>
           </div>
         </div>
+
         {/* TESTIMONIALS GRID */}
         {Array.isArray(testimonials) && testimonials.length > 0 ? (
           <div className="mt-12 md:mt-16">
-            {/* Masonry-like columns (simple) */}
             <div className="columns-1 gap-x-6 md:columns-2 lg:columns-3">
               {testimonials.map((t, idx) => (
                 <article
                   key={idx}
-                  className="mb-6 inline-block w-full break-inside-avoid rounded-2xl border border-eggshell/15 bg-white/5 p-6 md:p-7"
+                  className="mb-6 inline-block w-full break-inside-avoid rounded-2xl border border-eggshell/15 bg-darkPaper p-6 md:p-7 backdrop-blur-[2px]"
                 >
                   {/* Stars */}
                   <div className="mb-4 flex">
@@ -100,12 +252,12 @@ export default function VideoTestimonialComponent(props: Props) {
                     )}
                     <div className="text-eggshell">
                       {t?.name ? <p className="font-semibold">{t.name}</p> : null}
-                      {t?.position ? (
+                      {t?.position && (
                         <p className="text-eggshell/80">
                           <span>{t?.position}</span>
                           {t?.position}
                         </p>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </article>
@@ -128,27 +280,21 @@ function clampStars(n?: number) {
 }
 
 function smartQuotes(text: string) {
-  // If the editor text isn’t already quoted, add nice quotes
   const trimmed = (text || '').trim()
   const hasQuotes = /^["“].*["”]$/.test(trimmed)
   return hasQuotes ? trimmed : `“${trimmed}”`
 }
 
-/* a tiny star svg to avoid extra deps */
+/* fixed-color star */
 function StarIcon() {
   return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="#FACC15" // warm yellow-gold
-      aria-hidden="true"
-      className="h-5 w-5"
-    >
+    <svg viewBox="0 0 20 20" fill="#FACC15" aria-hidden="true" className="h-5 w-5">
       <path d="M10 2.5l2.472 5.29 5.81.516-4.393 3.86 1.303 5.684L10 14.95l-5.192 2.9 1.303-5.684L1.718 8.306l5.81-.516L10 2.5z" />
     </svg>
   )
 }
 
-/* ---------------- video with mute toggle (unchanged) ---------------- */
+/* ---------------- video with mute toggle ---------------- */
 
 function VideoWithMuteToggle({
   media,
@@ -182,7 +328,7 @@ function VideoWithMuteToggle({
         <Media
           resource={media}
           className="absolute inset-0"
-          videoClassName="absolute inset-0 h-full w-full object-cover rounded-2xl"
+          videoClassName="absolute inset-0 h-full w-full rounded-2xl object-cover"
         />
       </div>
 

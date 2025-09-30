@@ -16,6 +16,7 @@ module.exports = {
         darkGray: '#262423',
         darkSand: '#201e1d',
         darkSky: '#101014',
+        darkPaper: '#1c1c20',
       },
       fontFamily: {
         sans: ['var(--font-figtree)', 'ui-sans-serif', 'system-ui'],
