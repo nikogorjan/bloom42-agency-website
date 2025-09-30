@@ -56,11 +56,12 @@ export type GlobeConfig = {
 interface WorldProps {
   globeConfig: GlobeConfig
   data: Position[]
+  onReady?: () => void
 }
 
 let numbersOfRings = [0]
 
-export function Globe({ globeConfig, data }: WorldProps) {
+export function Globe({ globeConfig, data, onReady }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null)
   const groupRef = useRef<Group | null>(null)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -226,6 +227,19 @@ export function Globe({ globeConfig, data }: WorldProps) {
     return () => clearInterval(interval)
   }, [isInitialized, data])
 
+  const readySent = useRef(false)
+  useEffect(() => {
+    if (!isInitialized) return
+    if (readySent.current) return
+    const id = requestAnimationFrame(() => {
+      if (!readySent.current) {
+        readySent.current = true
+        onReady?.() // signal to the transition provider
+      }
+    })
+    return () => cancelAnimationFrame(id)
+  }, [isInitialized, onReady])
+
   return <group ref={groupRef} />
 }
 
@@ -240,7 +254,7 @@ export function WebGLRendererConfig() {
 }
 
 export function World(props: WorldProps) {
-  const { globeConfig } = props
+  const { globeConfig, onReady } = props
   const scene = new Scene()
   scene.fog = new Fog(0xffffff, 400, 2000)
 
@@ -261,11 +275,11 @@ export function World(props: WorldProps) {
         position={new Vector3(-200, 500, 200)}
         intensity={0.8}
       />
-      <Globe {...props} />
+      <Globe {...props} onReady={onReady} />
       <OrbitControls
         enablePan={false}
         enableZoom={false}
-        enableRotate={false}
+        enableRotate={true}
         minDistance={cameraZ}
         maxDistance={cameraZ}
         autoRotateSpeed={0.5}

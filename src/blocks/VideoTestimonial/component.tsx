@@ -6,6 +6,7 @@ import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import { RichTextCustom } from '@/components/common/rich-text/rich-text'
 import dynamic from 'next/dynamic'
+import { useAnimatedNavigation } from '@/page-transition/transition-provider'
 
 // Render <Canvas/> only on client
 const World = dynamic(() => import('@/components/ui/globe').then((m) => m.World), {
@@ -164,6 +165,22 @@ export default function VideoTestimonialComponent(props: Props) {
     else if (!Array.isArray(rawCTA) && rawCTA.link) ctaLink = rawCTA.link
   }
 
+  const nav = useAnimatedNavigation()
+  const fired = useRef(false)
+
+  // Opt in to waiting for THIS page load only
+  useEffect(() => {
+    nav?.setShouldWait(true)
+    // (Optional) if component unmounts early, clean up:
+    return () => nav?.setShouldWait(false)
+  }, [nav])
+
+  const handleWorldReady = () => {
+    if (fired.current) return
+    fired.current = true
+    nav?.setPageReady?.()
+  }
+
   return (
     <section
       id="video-testimonial"
@@ -173,18 +190,18 @@ export default function VideoTestimonialComponent(props: Props) {
       <div
         aria-hidden
         className="
-          pointer-events-none absolute left-[-25vw] top-1/2 hidden -translate-y-1/2 md:block
+          pointer-events-none absolute left-[-15vw] top-1/2 hidden -translate-y-1/2 md:block
           z-0
         "
         // size & responsiveness of the background globe
         style={{
-          width: '130vh',
-          height: '130vh',
+          width: '90vh',
+          height: '90vh',
           maxWidth: '1800px',
           maxHeight: '1800px',
         }}
       >
-        <World globeConfig={globeConfig} data={sampleArcs} />
+        <World globeConfig={globeConfig} data={sampleArcs} onReady={handleWorldReady} />
       </div>
 
       <div className="container relative z-10">
