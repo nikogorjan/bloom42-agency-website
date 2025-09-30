@@ -1,5 +1,6 @@
 // src/components/common/rich-text/lexical-features/coralHighlight/feature.server.ts
-import { createServerFeature } from '@payloadcms/richtext-lexical'
+import { createServerFeature, createNode } from '@payloadcms/richtext-lexical'
+import { CoralTextNode } from './nodes/CoralTextNode'
 
 export const CoralHighlightFeature = createServerFeature({
   key: 'coralHighlight',
@@ -8,6 +9,7 @@ export const CoralHighlightFeature = createServerFeature({
       en: { label: 'Coral highlight' },
       sl: { label: 'Koralno ozadje' },
     },
+    nodes: [createNode({ node: CoralTextNode })],
     ClientFeature:
       'src/components/common/rich-text/lexical-features/coralHighlight/feature.client#CoralHighlightClientFeature',
   },

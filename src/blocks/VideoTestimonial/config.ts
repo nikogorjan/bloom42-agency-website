@@ -4,7 +4,6 @@ import {
   FixedToolbarFeature,
   InlineToolbarFeature,
   HeadingFeature,
-  TextStateFeature,
 } from '@payloadcms/richtext-lexical'
 import { linkGroup } from '@/fields/linkGroup'
 import { CoralHighlightFeature } from '@/components/common/rich-text/lexical-features/coralHighlight/feature.server'

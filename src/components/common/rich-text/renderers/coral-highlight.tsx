@@ -3,7 +3,7 @@ import type { RichTextRenderer } from '@/components/common/rich-text/utils'
 
 export const CoralHighlightRenderer: RichTextRenderer = {
   nodeTypes: ['coral-highlight'],
-  render: ({ node, renderers, parent, childIndex, submissionData }) => {
+  render: ({ node, renderers, childIndex, submissionData }) => {
     // Render children inside a styled span
     const children = (node.children || []) as any[]
     return (
@@ -12,8 +12,6 @@ export const CoralHighlightRenderer: RichTextRenderer = {
         style={{
           backgroundColor: '#FD7247',
           color: '#262423',
-          borderRadius: '0.25rem',
-          padding: '0 0.15em',
         }}
       >
         {children.map((child, i) => {
