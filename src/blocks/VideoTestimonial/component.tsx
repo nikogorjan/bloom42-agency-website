@@ -98,6 +98,15 @@ export default function VideoTestimonialComponent(props: Props) {
                     ) : (
                       <div className="size-12 min-h-12 min-w-12 rounded-full bg-eggshell/20" />
                     )}
+                    <div className="text-eggshell">
+                      {t?.name ? <p className="font-semibold">{t.name}</p> : null}
+                      {t?.position ? (
+                        <p className="text-eggshell/80">
+                          <span>{t?.position}</span>
+                          {t?.position}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
                 </article>
               ))}
