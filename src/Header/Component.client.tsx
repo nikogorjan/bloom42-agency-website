@@ -243,7 +243,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
         <div
           className="
       w-full bg-white border-b border-lightGray
-      px-3 py-3 min-h-14
+      px-[5%] py-4 min-h-14
       flex items-center justify-between
       relative z-[1300]                /* keep the whole bar above overlay */
     "

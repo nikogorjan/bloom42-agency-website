@@ -18,7 +18,7 @@ type TransitionContext = {
 const Ctx = createContext<TransitionContext | null>(null)
 
 const EXIT_MS = 750
-const ENTER_FALLBACK_MS = 2000
+const ENTER_FALLBACK_MS = 750
 
 export function useAnimatedNavigation() {
   return useContext(Ctx)

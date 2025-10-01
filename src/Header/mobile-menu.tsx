@@ -66,19 +66,19 @@ export default function MobileMenu({
         {/* bars */}
         <span
           className={[
-            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-transform duration-200',
+            'block absolute h-[2px] w-5 bg-darkSky rounded-full transition-transform duration-200',
             open ? 'rotate-45' : '-translate-y-[5px]',
           ].join(' ')}
         />
         <span
           className={[
-            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-opacity duration-200',
+            'block absolute h-[2px] w-5 bg-darkSky rounded-full transition-opacity duration-200',
             open ? 'opacity-0' : 'opacity-100',
           ].join(' ')}
         />
         <span
           className={[
-            'block absolute h-[2px] w-4 bg-darkSky rounded-full transition-transform duration-200',
+            'block absolute h-[2px] w-5 bg-darkSky rounded-full transition-transform duration-200',
             open ? '-rotate-45' : 'translate-y-[5px]',
           ].join(' ')}
         />
