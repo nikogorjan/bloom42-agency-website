@@ -2468,7 +2468,63 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  navItems?:
+  logo: string | Media;
+  /**
+   * Defaults to home (/) if empty.
+   */
+  logoHref?: string | null;
+  contact: {
+    label: string;
+    phone: string;
+    email: string;
+  };
+  columns?:
+    | {
+        header: string;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: string | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?:
+    | {
+        platform:
+          | 'facebook'
+          | 'instagram'
+          | 'x'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'github'
+          | 'dribbble'
+          | 'behance'
+          | 'threads';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  companyImage?: (string | null) | Media;
+  companyImageHref?: string | null;
+  footerText?: string | null;
+  footerLinks?:
     | {
         link: {
           type?: ('reference' | 'custom') | null;
@@ -2555,7 +2611,46 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  logo?: T;
+  logoHref?: T;
+  contact?:
+    | T
+    | {
+        label?: T;
+        phone?: T;
+        email?: T;
+      };
+  columns?:
+    | T
+    | {
+        header?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  companyImage?: T;
+  companyImageHref?: T;
+  footerText?: T;
+  footerLinks?:
     | T
     | {
         link?:
