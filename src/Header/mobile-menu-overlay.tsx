@@ -194,7 +194,7 @@ const MobileMenuOverlay = forwardRef<
       {/* SVG sweep — beneath header (z-1000), above content background */}
       {dim.width !== 0 && (
         <motion.svg
-          className="mobile-curve"
+          className="mobile-curve fixed inset-x-0 top-0 z-[1000] pointer-events-none" // ⬅️ key bits
           style={{ height: svgHeight }}
           initial={{ top: '100vh' }}
           animate={open ? { top: `-${arc}px` } : { top: '100vh' }}
@@ -210,11 +210,17 @@ const MobileMenuOverlay = forwardRef<
 
       {/* Content */}
       <motion.div
-        className="fixed inset-0 z-[950] flex flex-col items-center justify-start pt-20 pb-16 px-[5%] gap-6"
+        className="fixed inset-0 z-[1100] flex flex-col items-center justify-start pt-20 pb-16 px-[5%] gap-6"
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={contentVariants}
       >
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={onRequestClose}
+          className="absolute inset-0"
+        />
         <div className={panelWrapStyle}>
           {/* MAIN LIST (stays underneath) */}
           <div className="absolute inset-0 overflow-y-auto">

@@ -143,7 +143,7 @@ export default function LanguageSwitcher({
                   top: coords.top,
                   left: coords.left,
                   transform: 'translateX(-50%)',
-                  zIndex: 1100,
+                  zIndex: 1400,
                 }}
               >
                 <motion.div

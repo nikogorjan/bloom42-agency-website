@@ -51,8 +51,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
 
   return (
     <header
-      role="banner"
-      className="fixed inset-x-0 top-0 lg:top-5 z-[1000] px-0 lg:px-[5%]"
+      className="fixed inset-x-0 top-0 lg:top-5 z-[1300] px-0 lg:px-[5%]" // was z-[1000]
       {...(theme ? { 'data-theme': theme } : {})}
     >
       {/* DESKTOP (floating pill, centered container) */}
@@ -243,17 +242,16 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
       <div className="lg:hidden">
         <div
           className="
-            w-full bg-white border-b border-lightGray
-            px-3
-            py-3
-            min-h-14
-            flex items-center justify-between
-          "
+      w-full bg-white border-b border-lightGray
+      px-3 py-3 min-h-14
+      flex items-center justify-between
+      relative z-[1300]                /* keep the whole bar above overlay */
+    "
         >
           {/* Left: logo */}
           <TransitionLink
             href={data.logoUrl || '/'}
-            className="block relative size-9 select-none cursor-pointer"
+            className="block relative size-9 select-none cursor-pointer z-[1300]" // add z
             aria-label="Home"
             onMouseEnter={() => setOpenIndex(null)}
           >
@@ -262,12 +260,11 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
 
           {/* Right: language + menu */}
           <div className="flex flex-row items-center justify-center">
-            <LanguageSwitcher languages={data.languages} className="mr-3" />
+            <LanguageSwitcher languages={data.languages} className="mr-3 relative z-[1300]" />{' '}
+            {/* add z */}
             <MobileMenu navItems={data.navItems || []} links={data.links || []} />
           </div>
         </div>
-
-        {/* Spacer so page content isn't hidden behind fixed header */}
       </div>
     </header>
   )
