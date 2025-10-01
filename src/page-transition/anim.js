@@ -1,4 +1,3 @@
-// src/page-transition/anim.js
 'use client'
 
 export const text = {
@@ -28,10 +27,6 @@ export const curve = (initialPath, targetPath) => ({
   },
 })
 
-/**
- * Responsive translate variant.
- * offset = arc height in px (we use the same "arc" value we compute in index.tsx)
- */
 export const translate = (offset = 300) => ({
   initial: { top: `-${offset}px` },
   enter: {
@@ -45,8 +40,7 @@ export const translate = (offset = 300) => ({
   },
 })
 
-/** ---------------- MENU-SPECIFIC VARIANTS ---------------- */
-/** Menu: path morph that parks flat when open */
+/** ---------------- MENU VARIANTS (unchanged) ---------------- */
 export const curveMenu = (initialPath, targetPath) => ({
   closed: { d: initialPath },
   open: {
@@ -55,7 +49,6 @@ export const curveMenu = (initialPath, targetPath) => ({
   },
 })
 
-/** Translate for menu: 100vh -> 0 (park), then 0 -> 100vh on close */
 export const translateMenu = {
   closed: {
     top: '100vh',
@@ -64,6 +57,6 @@ export const translateMenu = {
   open: {
     top: '0',
     transition: { duration: 0.75, ease: [0.76, 0, 0.24, 1] },
-    transitionEnd: { top: '0' }, // stay covering the screen while open
+    transitionEnd: { top: '0' },
   },
 }

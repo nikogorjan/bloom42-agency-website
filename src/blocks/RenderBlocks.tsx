@@ -13,6 +13,7 @@ import FeaturedServicesBlockComponent from './FeaturedServices/component'
 import CreativeGrowthScrollerComponent from './CreativeGrowthScroller/component'
 import TeamSectionComponent from './TeamSection/component'
 import VideoTestimonialComponent from './VideoTestimonial/component'
+import FaqAccordionComponent from './FaqSection/component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -26,6 +27,7 @@ const blockComponents = {
   creativeGrowthScroller: CreativeGrowthScrollerComponent,
   teamSection: TeamSectionComponent,
   videoTestimonial: VideoTestimonialComponent,
+  faqAccordion: FaqAccordionComponent,
 }
 
 export const RenderBlocks: React.FC<{

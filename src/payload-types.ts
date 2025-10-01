@@ -223,6 +223,7 @@ export interface Page {
     | CreativeGrowthScrollerBlock
     | TeamSectionBlock
     | VideoTestimonialBlock
+    | FaqAccordionBlock
   )[];
   meta?: {
     title?: string | null;
@@ -571,6 +572,46 @@ export interface ArchiveBlock {
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
+  tagline?: string | null;
+  heading: string;
+  /**
+   * Shown to the left of the form (supports rich formatting).
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Shown under the description.
+   */
+  contacts?:
+    | {
+        /**
+         * Upload a small square icon (SVG/PNG recommended).
+         */
+        icon: string | Media;
+        label: string;
+        /**
+         * Phone number, email address, or URL. Used to build the link (tel:, mailto:, or https://).
+         */
+        value: string;
+        type: 'auto' | 'phone' | 'email' | 'link';
+        url?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  formHeading: string;
   form: string | Form;
   enableIntro?: boolean | null;
   introContent?: {
@@ -588,6 +629,12 @@ export interface FormBlock {
     };
     [k: string]: unknown;
   } | null;
+  serviceLabel?: string | null;
+  /**
+   * Pick which services to display as selectable buttons on the form.
+   */
+  serviceCategories?: (string | ProjectCategory)[] | null;
+  allowMultipleServices?: boolean | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'formBlock';
@@ -706,6 +753,23 @@ export interface Form {
             blockName?: string | null;
             blockType: 'textarea';
           }
+        | {
+            name: string;
+            label?: string | null;
+            width?: number | null;
+            defaultValue?: string | null;
+            options?:
+              | {
+                  label: string;
+                  value: string;
+                  id?: string | null;
+                }[]
+              | null;
+            required?: boolean | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'radio';
+          }
       )[]
     | null;
   submitButtonLabel?: string | null;
@@ -763,6 +827,18 @@ export interface Form {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project-categories".
+ */
+export interface ProjectCategory {
+  id: string;
+  title: string;
+  slug?: string | null;
+  slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -868,18 +944,6 @@ export interface Project {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "project-categories".
- */
-export interface ProjectCategory {
-  id: string;
-  title: string;
-  slug?: string | null;
-  slugLock?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1109,9 +1173,78 @@ export interface VideoTestimonialBlock {
   autoplay?: boolean | null;
   loop?: boolean | null;
   mutedByDefault?: boolean | null;
+  /**
+   * Shown under the text & video.
+   */
+  testimonials?:
+    | {
+        quote: string;
+        /**
+         * Optional headshot.
+         */
+        avatar?: (string | null) | Media;
+        name: string;
+        position?: string | null;
+        /**
+         * 1–5
+         */
+        numberOfStars: number;
+        id?: string | null;
+      }[]
+    | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'videoTestimonial';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqAccordionBlock".
+ */
+export interface FaqAccordionBlock {
+  heading: string;
+  /**
+   * Optional short description under the heading.
+   */
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Add question & answer items. Answers support rich text (bold, links, highlight, etc).
+   */
+  questions: {
+    title: string;
+    answer: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faqAccordion';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1432,6 +1565,7 @@ export interface PagesSelect<T extends boolean = true> {
         creativeGrowthScroller?: T | CreativeGrowthScrollerBlockSelect<T>;
         teamSection?: T | TeamSectionBlockSelect<T>;
         videoTestimonial?: T | VideoTestimonialBlockSelect<T>;
+        faqAccordion?: T | FaqAccordionBlockSelect<T>;
       };
   meta?:
     | T
@@ -1525,9 +1659,26 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
  * via the `definition` "FormBlock_select".
  */
 export interface FormBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  contacts?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        value?: T;
+        type?: T;
+        url?: T;
+        id?: T;
+      };
+  formHeading?: T;
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  serviceLabel?: T;
+  serviceCategories?: T;
+  allowMultipleServices?: T;
   id?: T;
   blockName?: T;
 }
@@ -1704,6 +1855,33 @@ export interface VideoTestimonialBlockSelect<T extends boolean = true> {
   autoplay?: T;
   loop?: T;
   mutedByDefault?: T;
+  testimonials?:
+    | T
+    | {
+        quote?: T;
+        avatar?: T;
+        name?: T;
+        position?: T;
+        numberOfStars?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqAccordionBlock_select".
+ */
+export interface FaqAccordionBlockSelect<T extends boolean = true> {
+  heading?: T;
+  description?: T;
+  questions?:
+    | T
+    | {
+        title?: T;
+        answer?: T;
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -2041,6 +2219,24 @@ export interface FormsSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        radio?:
+          | T
+          | {
+              name?: T;
+              label?: T;
+              width?: T;
+              defaultValue?: T;
+              options?:
+                | T
+                | {
+                    label?: T;
+                    value?: T;
+                    id?: T;
+                  };
+              required?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   submitButtonLabel?: T;
   confirmationType?: T;
@@ -2272,7 +2468,63 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  navItems?:
+  logo: string | Media;
+  /**
+   * Defaults to home (/) if empty.
+   */
+  logoHref?: string | null;
+  contact: {
+    label: string;
+    phone: string;
+    email: string;
+  };
+  columns?:
+    | {
+        header: string;
+        links?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: string | Post;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  socialLinks?:
+    | {
+        platform:
+          | 'facebook'
+          | 'instagram'
+          | 'x'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'github'
+          | 'dribbble'
+          | 'behance'
+          | 'threads';
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  companyImage?: (string | null) | Media;
+  companyImageHref?: string | null;
+  footerText?: string | null;
+  footerLinks?:
     | {
         link: {
           type?: ('reference' | 'custom') | null;
@@ -2359,7 +2611,46 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  logo?: T;
+  logoHref?: T;
+  contact?:
+    | T
+    | {
+        label?: T;
+        phone?: T;
+        email?: T;
+      };
+  columns?:
+    | T
+    | {
+        header?: T;
+        links?:
+          | T
+          | {
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
+            };
+        id?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        platform?: T;
+        url?: T;
+        id?: T;
+      };
+  companyImage?: T;
+  companyImageHref?: T;
+  footerText?: T;
+  footerLinks?:
     | T
     | {
         link?:

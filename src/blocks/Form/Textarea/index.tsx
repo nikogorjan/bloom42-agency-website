@@ -1,40 +1,40 @@
-import type { TextField } from '@payloadcms/plugin-form-builder/types'
-import type { FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
+// src/blocks/FormBlock/fields/Textarea.tsx
+import * as React from 'react'
+import type { FieldErrors } from 'react-hook-form'
 
-import { Label } from '@/components/ui/label'
-import { Textarea as TextAreaComponent } from '@/components/ui/textarea'
-import React from 'react'
+type Props = {
+  name: string
+  label?: string
+  required?: boolean
+  placeholder?: string
+  register: any
+  errors: FieldErrors
+}
 
-import { Error } from '../Error'
-import { Width } from '../Width'
-
-export const Textarea: React.FC<
-  TextField & {
-    errors: Partial<FieldErrorsImpl>
-    register: UseFormRegister<FieldValues>
-    rows?: number
-  }
-> = ({ name, defaultValue, errors, label, register, required, rows = 3, width }) => {
+export const Textarea: React.FC<Props> = ({
+  name,
+  label,
+  required,
+  placeholder,
+  register,
+  errors,
+}) => {
+  const invalid = Boolean(errors?.[name])
   return (
-    <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-
-      <TextAreaComponent
-        defaultValue={defaultValue}
+    <div>
+      {label && (
+        <label htmlFor={name} className={`label-base ${required ? 'label-required' : ''}`}>
+          {label}
+        </label>
+      )}
+      <textarea
         id={name}
-        rows={rows}
-        {...register(name, { required: required })}
+        aria-invalid={invalid}
+        placeholder={placeholder}
+        className="textarea-base"
+        {...register(name, { required })}
       />
-
-      {errors[name] && <Error name={name} />}
-    </Width>
+      {invalid && <p className="mt-1 text-sm text-coral">This field is required.</p>}
+    </div>
   )
 }

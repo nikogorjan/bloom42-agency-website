@@ -26,6 +26,7 @@ import { FeaturedServices } from '@/blocks/FeaturedServices/config'
 import { CreativeGrowthScroller } from '@/blocks/CreativeGrowthScroller/config'
 import { TeamSection } from '@/blocks/TeamSection/config'
 import { VideoTestimonial } from '@/blocks/VideoTestimonial/config'
+import { FaqAccordion } from '@/blocks/FaqSection/config'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -93,6 +94,7 @@ export const Pages: CollectionConfig<'pages'> = {
                 CreativeGrowthScroller,
                 TeamSection,
                 VideoTestimonial,
+                FaqAccordion,
               ],
               required: true,
               admin: {

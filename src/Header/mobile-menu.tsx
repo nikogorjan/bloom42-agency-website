@@ -41,6 +41,17 @@ export default function MobileMenu({
     }
   }, [open])
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        overlayRef.current?.prepareClose().finally(() => setOpen(false))
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
+
   return (
     <>
       {/* Button (hamburger ↔ X). This sits in your header, above overlay. */}
@@ -49,7 +60,7 @@ export default function MobileMenu({
         aria-expanded={open}
         aria-controls="mobile-menu"
         onClick={toggle}
-        className="relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-eggshell z-[1001]"
+        className="relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-gray-200 bg-eggshell z-[1500]" // was 1001
       >
         <span className="sr-only">Toggle menu</span>
         {/* bars */}

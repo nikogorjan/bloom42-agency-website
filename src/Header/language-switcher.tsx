@@ -143,7 +143,7 @@ export default function LanguageSwitcher({
                   top: coords.top,
                   left: coords.left,
                   transform: 'translateX(-50%)',
-                  zIndex: 1100,
+                  zIndex: 1400,
                 }}
               >
                 <motion.div
@@ -190,7 +190,7 @@ export default function LanguageSwitcher({
                           </span>
                         ) : null}
                         {/* short code next to flag */}
-                        <span className="font-semibold uppercase">{lang?.shortTitle}</span>
+                        <span className="font-semibold">{lang?.title}</span>
                       </button>
                     )
                   })}

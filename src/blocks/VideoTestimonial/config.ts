@@ -6,6 +6,7 @@ import {
   HeadingFeature,
 } from '@payloadcms/richtext-lexical'
 import { linkGroup } from '@/fields/linkGroup'
+import { CoralHighlightFeature } from '@/components/common/rich-text/lexical-features/coralHighlight/feature.server'
 
 const FALLBACK_THUMB = `data:image/svg+xml;utf8,${encodeURIComponent(`
   <svg xmlns='http://www.w3.org/2000/svg' width='160' height='120' viewBox='0 0 160 120' fill='none'>
@@ -37,8 +38,9 @@ export const VideoTestimonial: Block = {
       type: 'richText',
       localized: true,
       editor: lexicalEditor({
-        features: ({ rootFeatures }) => [
-          ...rootFeatures,
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          CoralHighlightFeature(),
           HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
           FixedToolbarFeature(),
           InlineToolbarFeature(),
@@ -89,6 +91,44 @@ export const VideoTestimonial: Block = {
       type: 'checkbox',
       defaultValue: true,
       label: 'Muted by default',
+    },
+
+    {
+      name: 'testimonials',
+      type: 'array',
+      labels: { singular: 'Testimonial', plural: 'Testimonials' },
+      admin: {
+        description: 'Shown under the text & video.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'quote',
+          type: 'textarea',
+          required: true,
+          localized: true,
+          admin: { placeholder: '“Short testimonial quote…”' },
+        },
+        {
+          name: 'avatar',
+          type: 'upload',
+          relationTo: 'media',
+          required: false,
+          admin: { description: 'Optional headshot.' },
+        },
+
+        { name: 'name', type: 'text', required: true },
+        { name: 'position', type: 'text' },
+        {
+          name: 'numberOfStars',
+          type: 'number',
+          required: true,
+          defaultValue: 5,
+          min: 1,
+          max: 5,
+          admin: { step: 1, description: '1–5' },
+        },
+      ],
     },
   ],
 }
