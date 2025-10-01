@@ -210,7 +210,7 @@ const MobileMenuOverlay = forwardRef<
 
       {/* Content */}
       <motion.div
-        className="fixed inset-0 z-[950] flex flex-col items-center justify-start pt-28 pb-16 px-[5%] gap-6"
+        className="fixed inset-0 z-[950] flex flex-col items-center justify-start pt-20 pb-16 px-[5%] gap-6"
         initial="closed"
         animate={open ? 'open' : 'closed'}
         variants={contentVariants}
@@ -218,7 +218,7 @@ const MobileMenuOverlay = forwardRef<
         <div className={panelWrapStyle}>
           {/* MAIN LIST (stays underneath) */}
           <div className="absolute inset-0 overflow-y-auto">
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               {navItems?.map((navItem: NavItem, i: number) => {
                 if (navItem.type === 'dropdown') {
                   return (

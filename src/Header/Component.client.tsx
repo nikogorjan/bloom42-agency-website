@@ -31,16 +31,19 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
   )
 
   const [preview, setPreview] = useState<any>(activeItem?.defaultImage)
+
   useEffect(() => {
     setPreview(activeItem?.defaultImage)
   }, [activeItem])
 
+  // Close/open state + theme reset on route change
   useEffect(() => {
     setHeaderTheme(null)
     setOpenIndex(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
+  // Sync theme from provider
   useEffect(() => {
     if (headerTheme && headerTheme !== theme) setTheme(headerTheme)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -48,21 +51,21 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
 
   return (
     <header
-      className="fixed inset-x-0 top-5 z-[1000] px-[5%]"
+      role="banner"
+      className="fixed inset-x-0 top-0 lg:top-5 z-[1000] px-0 lg:px-[5%]"
       {...(theme ? { 'data-theme': theme } : {})}
     >
+      {/* DESKTOP (floating pill, centered container) */}
       <div className="hidden lg:block">
-        {/* Outer pill: radius snaps (no radius transition) */}
         <div
           className={[
             'container max-w-[992px] bg-white border-1 border-lightGray shadow-sm overflow-hidden',
             isOpen ? 'rounded-[28px]' : 'rounded-full',
-            // avoid transition-all here so radius snaps; you can keep shadow transition if you want:
             'transition-shadow',
           ].join(' ')}
-          onMouseLeave={() => setOpenIndex(null)} // close when leaving header+panel to page
+          onMouseLeave={() => setOpenIndex(null)}
         >
-          {/* Top bar (no inner rounding) */}
+          {/* Top bar */}
           <div className="px-3 py-2 min-h-14">
             <div className="w-full flex items-center justify-between">
               {/* Left: logo + nav */}
@@ -71,17 +74,17 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                   <TransitionLink
                     href={data.logoUrl || '/'}
                     className="group block relative size-8 select-none cursor-pointer"
-                    onMouseEnter={() => setOpenIndex(null)} // hover logo closes
+                    onMouseEnter={() => setOpenIndex(null)}
+                    aria-label="Home"
                   >
                     <Media
                       fill
-                      // rotate the actual <img> so rounded corners stay nice
                       imgClassName="
-        object-contain rounded-[4px] md:rounded-[6px]
-        transition-transform duration-700 ease-out
-        will-change-transform transform-gpu
-        group-hover:rotate-[360deg]
-      "
+                        object-contain rounded-[4px] md:rounded-[6px]
+                        transition-transform duration-700 ease-out
+                        will-change-transform transform-gpu
+                        group-hover:rotate-[360deg]
+                      "
                       priority
                       resource={data.logo}
                     />
@@ -89,7 +92,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                 </div>
 
                 {/* Primary nav */}
-                <div className="ml-8">
+                <nav className="ml-8" aria-label="Primary">
                   <div className="relative flex items-center gap-2">
                     {data.navItems?.map((navItem: any, i: number) => {
                       if (navItem.type === 'dropdown') {
@@ -99,7 +102,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             item={navItem}
                             index={i}
                             isOpen={openIndex === i}
-                            onOpen={(idx) => setOpenIndex(idx)} // opens on hover
+                            onOpen={(idx) => setOpenIndex(idx)}
                           />
                         )
                       }
@@ -123,17 +126,17 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                           href={href}
                           className="text-base px-2 h-10 flex items-center"
                           {...newTabProps}
-                          onMouseEnter={() => setOpenIndex(null)} // hover regular link closes
+                          onMouseEnter={() => setOpenIndex(null)}
                         >
                           {navItem.label}
                         </TransitionLink>
                       )
                     })}
                   </div>
-                </div>
+                </nav>
               </div>
 
-              {/* Right actions — close on hover */}
+              {/* Right actions */}
               <div
                 className="relative flex items-center gap-4"
                 onMouseEnter={() => setOpenIndex(null)}
@@ -146,17 +149,18 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
             </div>
           </div>
 
-          {/* Panel: animate height/opacity only */}
+          {/* Dropdown panel (height/opacity only) */}
           <div
             className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
               isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
             }`}
+            aria-hidden={!isOpen}
           >
             <div className="overflow-hidden">
               {activeItem && (
                 <div
                   className="p-3 border-t-2 border-lightGray"
-                  onMouseLeave={() => setPreview(activeItem?.defaultImage)} // only resets preview
+                  onMouseLeave={() => setPreview(activeItem?.defaultImage)}
                 >
                   <div className="flex items-start gap-3">
                     {/* LEFT: items */}
@@ -178,7 +182,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             key={j}
                             href={href}
                             onMouseEnter={() => setPreview(sub?.media || activeItem?.defaultImage)}
-                            onClick={() => setOpenIndex(null)} // close on click
+                            onClick={() => setOpenIndex(null)}
                             className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded-[16px] border border-white hover:border-lightGray"
                             {...newTabProps}
                           >
@@ -235,23 +239,35 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
         </div>
       </div>
 
+      {/* MOBILE (full-width top bar) */}
       <div className="lg:hidden">
-        <div className="container bg-white border-2 border-lightGray rounded-full px-2 py-2  flex items-center justify-between">
+        <div
+          className="
+            w-full bg-white border-b border-lightGray
+            px-3
+            py-3
+            min-h-14
+            flex items-center justify-between
+          "
+        >
           {/* Left: logo */}
           <TransitionLink
             href={data.logoUrl || '/'}
             className="block relative size-9 select-none cursor-pointer"
+            aria-label="Home"
+            onMouseEnter={() => setOpenIndex(null)}
           >
             <Media fill imgClassName="object-contain rounded-[4px]" priority resource={data.logo} />
           </TransitionLink>
 
+          {/* Right: language + menu */}
           <div className="flex flex-row items-center justify-center">
-            <LanguageSwitcher languages={data.languages} className=" mr-4" />
-
-            {/* Right: Hamburger */}
+            <LanguageSwitcher languages={data.languages} className="mr-3" />
             <MobileMenu navItems={data.navItems || []} links={data.links || []} />
           </div>
         </div>
+
+        {/* Spacer so page content isn't hidden behind fixed header */}
       </div>
     </header>
   )
