@@ -255,7 +255,7 @@ export const FormBlock: React.FC<{ id?: string } & FormBlockType> = (props) => {
                 {tagline ? (
                   <div className="flex items-center gap-3 text-sm leading-relaxed mb-6">
                     <BulletIcon className="md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
-                    <span className="text-xl md:text-2xl font-semibold">{tagline}</span>
+                    <span className="text-2xl font-semibold">{tagline}</span>
                   </div>
                 ) : null}
                 {heading ? (
