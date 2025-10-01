@@ -13,26 +13,6 @@ const World = dynamic(() => import('@/components/ui/globe').then((m) => m.World)
   ssr: false,
 })
 
-function useIsDesktop(minWidth = 768) {
-  const [isDesktop, setIsDesktop] = useState(false)
-  useEffect(() => {
-    const mql = window.matchMedia(`(min-width: ${minWidth}px)`)
-    const onChange = (e: MediaQueryListEvent | MediaQueryList) =>
-      setIsDesktop('matches' in e ? e.matches : (e as MediaQueryList).matches)
-
-    // init + subscribe
-    setIsDesktop(mql.matches)
-    if (mql.addEventListener) mql.addEventListener('change', onChange as any)
-    else mql.addListener(onChange as any)
-
-    return () => {
-      if (mql.removeEventListener) mql.removeEventListener('change', onChange as any)
-      else mql.removeListener(onChange as any)
-    }
-  }, [minWidth])
-  return isDesktop
-}
-
 type Props = VideoTestimonialBlock
 
 /* ---------------- globe config + demo arcs ---------------- */
@@ -187,18 +167,13 @@ export default function VideoTestimonialComponent(props: Props) {
 
   const nav = useAnimatedNavigation()
   const fired = useRef(false)
-  const isDesktop = useIsDesktop(768)
+
   // Opt in to waiting for THIS page load only
   useEffect(() => {
-    if (!nav) return
-    if (isDesktop) {
-      nav.setShouldWait(true)
-      return () => nav.setShouldWait(false)
-    } else {
-      // make sure we never wait on mobile
-      nav.setShouldWait(false)
-    }
-  }, [isDesktop, nav])
+    nav?.setShouldWait(true)
+    // (Optional) if component unmounts early, clean up:
+    return () => nav?.setShouldWait(false)
+  }, [nav])
 
   const handleWorldReady = () => {
     if (fired.current) return
