@@ -1,38 +1,48 @@
-import type { EmailField } from '@payloadcms/plugin-form-builder/types'
-import type { FieldErrorsImpl, FieldValues, UseFormRegister } from 'react-hook-form'
+// src/blocks/FormBlock/fields/Email.tsx
+import * as React from 'react'
+import type { FieldErrors } from 'react-hook-form'
 
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import React from 'react'
+type Props = {
+  name: string
+  label?: string
+  required?: boolean
+  placeholder?: string
+  register: any
+  errors: FieldErrors
+}
 
-import { Error } from '../Error'
-import { Width } from '../Width'
-
-export const Email: React.FC<
-  EmailField & {
-    errors: Partial<FieldErrorsImpl>
-    register: UseFormRegister<FieldValues>
-  }
-> = ({ name, defaultValue, errors, label, register, required, width }) => {
+export const Email: React.FC<Props> = ({
+  name,
+  label,
+  required,
+  placeholder,
+  register,
+  errors,
+}) => {
+  const invalid = Boolean(errors?.[name])
   return (
-    <Width width={width}>
-      <Label htmlFor={name}>
-        {label}
-
-        {required && (
-          <span className="required">
-            * <span className="sr-only">(required)</span>
-          </span>
-        )}
-      </Label>
-      <Input
-        defaultValue={defaultValue}
+    <div>
+      {label && (
+        <label htmlFor={name} className={`label-base ${required ? 'label-required' : ''}`}>
+          {label}
+        </label>
+      )}
+      <input
         id={name}
-        type="text"
-        {...register(name, { pattern: /^\S[^\s@]*@\S+$/, required })}
+        type="email"
+        aria-invalid={invalid}
+        placeholder={placeholder}
+        className="input-base"
+        {...register(name, {
+          required,
+          pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' },
+        })}
       />
-
-      {errors[name] && <Error name={name} />}
-    </Width>
+      {invalid && (
+        <p className="mt-1 text-sm text-coral">
+          {(errors?.[name]?.message as string) || 'This field is required.'}
+        </p>
+      )}
+    </div>
   )
 }

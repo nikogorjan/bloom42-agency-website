@@ -1,3 +1,75 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === Form system tokens === */
+@layer components {
+  /* Base label */
+  .label-base {
+    @apply mb-2 block text-sm font-medium text-darkGray;
+  }
+
+  /* Add a coral '*' automatically when the field is required */
+  .label-required::after {
+    content: ' *';
+    color: #fd7247; /* coral */
+  }
+
+  /* Base input (text, email, number, etc.) */
+  .input-base {
+    @apply w-full rounded-xl border border-gray50 bg-eggshell/50 text-darkGray
+           placeholder-darkGray/50 h-12 px-4 text-base md:text-[17px] leading-6
+           outline-none transition-colors duration-200
+           focus:border-gray100;
+  }
+
+  .textarea-base {
+    @apply w-full rounded-xl border border-gray50 bg-eggshell/50 text-darkGray
+           placeholder-darkGray/50 min-h-32 p-4 text-base md:text-[17px] leading-6
+           outline-none transition-colors duration-200
+           focus:border-gray100;
+  }
+
+  .select-base {
+    @apply w-full rounded-xl border border-gray50 bg-eggshell/50 text-darkGray
+           h-12 px-4 pr-10 text-base md:text-[17px] leading-6
+           outline-none transition-colors duration-200
+           focus:border-gray100;
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #262423 50%),
+      linear-gradient(135deg, #262423 50%, transparent 50%),
+      linear-gradient(to right, transparent, transparent);
+    background-position:
+      calc(100% - 18px) calc(1em + 2px),
+      calc(100% - 13px) calc(1em + 2px),
+      calc(100% - 2.5rem) 0.5rem;
+    background-size:
+      5px 5px,
+      5px 5px,
+      1px 1.25rem;
+    background-repeat: no-repeat;
+  }
+
+  /* Checkbox / radio accent color (for modern browsers) */
+  .control-accent {
+    accent-color: #fd7247; /* coral */
+  }
+
+  /* Error state via aria-invalid */
+  .input-base[aria-invalid='true'],
+  .textarea-base[aria-invalid='true'],
+  .select-base[aria-invalid='true'] {
+    @apply border-coral ring-2 ring-coral/30;
+  }
+}
+
+/* Make Chrome autofill not yellow + keep rounded corners consistent */
+input.input-base:-webkit-autofill,
+textarea.textarea-base:-webkit-autofill,
+select.select-base:-webkit-autofill {
+  -webkit-text-fill-color: #262423; /* darkGray */
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+  box-shadow: 0 0 0px 1000px #fff inset;
+  border-radius: 0.75rem; /* ~rounded-xl */
+}

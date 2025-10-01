@@ -2,7 +2,12 @@ import type { Field, GroupField } from 'payload'
 
 import deepMerge from '@/utilities/deepMerge'
 
-export type LinkAppearances = 'default' | 'outline' | 'animatedArrow' | 'chevronRight'
+export type LinkAppearances =
+  | 'default'
+  | 'outline'
+  | 'animatedArrow'
+  | 'chevronRight'
+  | 'animatedInverted'
 
 export const appearanceOptions: Record<LinkAppearances, { label: string; value: string }> = {
   default: {
@@ -18,6 +23,7 @@ export const appearanceOptions: Record<LinkAppearances, { label: string; value: 
     value: 'animatedArrow',
   },
   chevronRight: { label: 'Chevron Right', value: 'chevronRight' },
+  animatedInverted: { label: 'Animated (White → Dark)', value: 'animatedInverted' },
 }
 
 type LinkType = (options?: {

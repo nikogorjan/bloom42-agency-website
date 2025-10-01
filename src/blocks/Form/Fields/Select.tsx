@@ -1,21 +1,24 @@
-// src/blocks/FormBlock/fields/Textarea.tsx
+// src/blocks/FormBlock/fields/Select.tsx
 import * as React from 'react'
 import type { FieldErrors } from 'react-hook-form'
 
+type Option = { label: string; value: string }
 type Props = {
   name: string
   label?: string
   required?: boolean
   placeholder?: string
+  options?: Option[]
   register: any
   errors: FieldErrors
 }
 
-export const Textarea: React.FC<Props> = ({
+export const Select: React.FC<Props> = ({
   name,
   label,
   required,
   placeholder,
+  options = [],
   register,
   errors,
 }) => {
@@ -27,13 +30,22 @@ export const Textarea: React.FC<Props> = ({
           {label}
         </label>
       )}
-      <textarea
+      <select
         id={name}
         aria-invalid={invalid}
-        placeholder={placeholder}
-        className="textarea-base"
+        className="select-base"
+        defaultValue=""
         {...register(name, { required })}
-      />
+      >
+        <option value="" disabled hidden>
+          {placeholder || 'Select…'}
+        </option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
       {invalid && <p className="mt-1 text-sm text-coral">This field is required.</p>}
     </div>
   )

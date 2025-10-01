@@ -12,7 +12,7 @@ import { ChevronRight } from 'lucide-react' // 🔽 add
 
 type CMSLinkType = {
   // 🔽 extend to accept our new appearance
-  appearance?: 'inline' | ButtonProps['variant'] | 'chevronRight'
+  appearance?: 'inline' | ButtonProps['variant'] | 'chevronRight' | 'animatedInverted'
   children?: React.ReactNode
   className?: string
   label?: string | null
@@ -24,6 +24,8 @@ type CMSLinkType = {
   size?: ButtonProps['size'] | null
   type?: 'custom' | 'reference' | null
   url?: string | null
+  active?: boolean
+  onClick?: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement>
 }
 
 function isExternalHref(href: string) {
@@ -50,6 +52,8 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   reference,
   size,
   url,
+  active,
+  onClick,
 }) => {
   const ctx = useAnimatedNavigation()
 
@@ -63,7 +67,12 @@ export const CMSLink: React.FC<CMSLinkType> = ({
   if (!href) return null
 
   const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' as const } : {}
+
   const handleButtonClick: React.MouseEventHandler<HTMLAnchorElement | HTMLButtonElement> = (e) => {
+    // let parent toggle selection first if provided
+    onClick?.(e)
+    if (e.defaultPrevented) return
+
     if (!isInternalNavigable(href, newTab)) return
     if (ctx?.onNavigate) {
       e.preventDefault()
@@ -86,6 +95,23 @@ export const CMSLink: React.FC<CMSLinkType> = ({
         href={href}
         size={size || 'default'}
         className={className}
+        {...newTabProps}
+        onClick={handleButtonClick}
+      >
+        {label}
+        {children}
+      </AnimatedButton>
+    )
+  }
+
+  if (appearance === 'animatedInverted') {
+    return (
+      <AnimatedButton
+        href={href}
+        size={size || 'default'}
+        variant="inverted"
+        active={!!active}
+        className={cn('rounded-full', className)}
         {...newTabProps}
         onClick={handleButtonClick}
       >

@@ -97,7 +97,7 @@ function TeamMemberCard({ member }: { member: NonNullable<Props['teamMembers']>[
       </div>
 
       {/* Text */}
-      <div className=" p-4 bg-gray-50 border border-gray-200 rounded-[14px]">
+      <div className=" p-4 bg-gray-50 border border-gray-50 rounded-[14px]">
         <div className="mb-3 md:mb-4">
           {member?.name ? (
             <h5 className="text-md font-semibold md:text-lg">{member.name}</h5>
