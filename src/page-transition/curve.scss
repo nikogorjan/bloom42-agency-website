@@ -1,6 +1,11 @@
 .curve {
-  --curve-color: #ffffff; // charcoal (swap with coral #FD7247 or sand #D8CBB3)
-  --curve-label: #ffffff; // text stays readable
+  --curve-color: #ffffff; // swap to #FD7247 (coral) or #D8CBB3 (sand)
+  --curve-label: #ffffff;
+
+  /* Create a consistent stacking context so z-indices act the same on all routes */
+  position: relative;
+  isolation: isolate;
+
   > svg,
   > .background {
     position: fixed;
@@ -9,7 +14,7 @@
     pointer-events: none;
     left: 0;
     top: 0;
-    z-index: 9999;
+    z-index: 9999; // curve layer
   }
 
   > svg path {
@@ -21,18 +26,35 @@
     transition: opacity 0s linear 0.1s;
   }
 
-  .route {
-    position: absolute;
+  /* Logo: FIXED instead of absolute so its top/opacity animation is viewport-relative
+     and unaffected by page layout/scroll/overflow contexts. */
+  .logo {
+    position: fixed; /* <-- was absolute */
     left: 50%;
     top: 40%;
-    color: var(--curve-label);
-    font-size: 46px;
-    z-index: 3;
     transform: translateX(-50%);
-    text-align: center;
+    z-index: 10000; /* above the curve (9999) */
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: clamp(120px, 20vw, 220px);
+    height: auto;
+
+    /* Help the browser animate smoothly across routes */
+    will-change: top, opacity, transform;
+
+    img,
+    svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
   }
 }
 
+/* menu helpers (unchanged) */
 html.mobile-menu-open,
 body.mobile-menu-open {
   overflow: hidden;
@@ -42,40 +64,40 @@ body.mobile-menu-open {
 .mobile-curve-bg {
   position: fixed;
   inset: 0;
-  background: #fff; /* must match the curve path fill */
-  z-index: 930; /* below menu content, above page content */
+  background: #fff;
+  z-index: 930;
   opacity: 0;
 }
 
 .mobile-curve {
   position: fixed;
   left: 0;
-  top: 0; /* animated by inline style: 100vh -> -arc px */
+  top: 0;
   width: 100vw;
-  z-index: 940; /* below menu content (950), below header (1000) */
+  z-index: 940;
   pointer-events: none;
 
   path {
     fill: #fff;
-  } /* or your brand color */
+  }
 }
 
 html,
 body {
-  background-color: #ffffff; /* same as your curve */
+  background-color: #ffffff; /* match the curve color */
 }
 
+/* underline→highlight override (kept) */
 .payload-richtext span[style*='text-decoration: underline'],
 .payload-richtext span[style*='text-decoration:underline'],
 .payload-richtext span[style*='text-decoration-line: underline'],
 .payload-richtext span[style*='text-decoration-line:underline'] {
-  text-decoration: none !important; /* kill underline, beat inline style */
+  text-decoration: none !important;
   background-color: #fd7247;
   color: #262423;
   padding: 0 0.15em;
 }
 
-/* If an <a> wraps that underlined span, remove the link underline too (modern browsers) */
 @supports selector(a:has(span)) {
   .payload-richtext a:has(span[style*='text-decoration']),
   .payload-richtext a:has(span[style*='text-decoration-line']) {

@@ -1,16 +1,10 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { motion } from 'motion/react'
-import { usePathname } from 'next/navigation'
 import { text, curve, translate } from './anim'
 import './curve.scss'
-
-const routes: Record<string, string> = {
-  '/': 'Home',
-  '/portfolio': 'About',
-  '/contact': 'Contact',
-}
 
 const anim = (variants: any, phase: 'initial' | 'enter' | 'exit') => ({
   variants,
@@ -26,7 +20,6 @@ export default function Curve({
   children: React.ReactNode
   phase?: 'initial' | 'enter' | 'exit'
 }) {
-  const pathname = usePathname()
   const [dim, setDim] = useState({ width: 0, height: 0 })
 
   useEffect(() => {
@@ -36,7 +29,7 @@ export default function Curve({
     return () => window.removeEventListener('resize', resize)
   }, [])
 
-  // Responsive bend: tweak to taste
+  // Responsive bend height
   const minArc = 120
   const maxArc = 300
   const factor = 0.18 // 18% of viewport width
@@ -47,11 +40,24 @@ export default function Curve({
       {...anim({ initial: { opacity: 1 }, enter: { opacity: 1 }, exit: { opacity: 1 } }, phase)}
       className="page curve"
     >
+      {/* solid background that covers between path moves */}
       <div style={{ opacity: dim.width === 0 ? 1 : 0 }} className="background" />
-      <motion.p className="route" {...anim(text, phase)}>
-        {routes[pathname] ?? ''}
-      </motion.p>
+
+      {/* centered logo; follows the same timing as the old route text */}
+      <motion.div className="logo" aria-hidden {...anim(text, phase)}>
+        <Image
+          src="/images/logo.svg"
+          alt="Site logo"
+          width={220}
+          height={220}
+          priority
+          draggable={false}
+        />
+      </motion.div>
+
+      {/* morphing curve */}
       {dim.width !== 0 && <SVG width={dim.width} height={dim.height} phase={phase} arc={arc} />}
+
       {children}
     </motion.div>
   )
