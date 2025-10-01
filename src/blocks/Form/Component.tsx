@@ -255,11 +255,11 @@ export const FormBlock: React.FC<{ id?: string } & FormBlockType> = (props) => {
                 {tagline ? (
                   <div className="flex items-center gap-3 text-sm leading-relaxed mb-6">
                     <BulletIcon className="md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
-                    <span className="text-2xl font-semibold">{tagline}</span>
+                    <span className="text-2xl font-semibold text-darkGray">{tagline}</span>
                   </div>
                 ) : null}
                 {heading ? (
-                  <h2 className="mb-5 text-6xl font-anton leading-tight text-neutral-900 md:mb-6 md:text-8xl lg:text-[72px]">
+                  <h2 className="mb-5 text-6xl font-anton leading-tight text-darkGray md:mb-6 md:text-8xl lg:text-[72px]">
                     {heading}
                   </h2>
                 ) : null}

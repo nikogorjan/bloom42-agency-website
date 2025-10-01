@@ -32,7 +32,7 @@ export const Email: React.FC<Props> = ({
         type="email"
         aria-invalid={invalid}
         placeholder={placeholder}
-        className="input-base"
+        className="input-base rounded-md"
         {...register(name, {
           required,
           pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' },

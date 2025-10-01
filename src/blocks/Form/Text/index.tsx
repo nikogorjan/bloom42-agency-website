@@ -26,7 +26,7 @@ export const Text: React.FC<Props> = ({ name, label, required, placeholder, regi
         type="text"
         aria-invalid={invalid}
         placeholder={placeholder}
-        className="input-base"
+        className="input-base rounded-md"
         {...register(name, { required })}
       />
       {invalid && <p className="mt-1 text-sm text-coral">This field is required.</p>}

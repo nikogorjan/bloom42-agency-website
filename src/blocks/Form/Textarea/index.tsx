@@ -31,7 +31,7 @@ export const Textarea: React.FC<Props> = ({
         id={name}
         aria-invalid={invalid}
         placeholder={placeholder}
-        className="textarea-base"
+        className="textarea-base rounded-md"
         {...register(name, { required })}
       />
       {invalid && <p className="mt-1 text-sm text-coral">This field is required.</p>}
