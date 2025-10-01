@@ -42,18 +42,36 @@ export const seed = async ({
 
   // clear the database
   await Promise.all(
-    globals.map((global) =>
-      payload.updateGlobal({
-        slug: global,
-        data: {
-          navItems: [],
-        },
-        depth: 0,
-        context: {
-          disableRevalidate: true,
-        },
-      }),
-    ),
+    globals.map((global) => {
+      if (global === 'header') {
+        return payload.updateGlobal({
+          slug: 'header',
+          data: { navItems: [] },
+          depth: 0,
+          context: { disableRevalidate: true },
+        })
+      }
+
+      if (global === 'footer') {
+        return payload.updateGlobal({
+          slug: 'footer',
+          data: {
+            // contact: omitted (becomes undefined)
+            columns: [],
+            socialLinks: [],
+            // companyImage: omit if your type doesn’t allow null
+            companyImageHref: '',
+            footerText: '',
+            footerLinks: [],
+          },
+          depth: 0,
+          context: { disableRevalidate: true },
+        })
+      }
+
+      // default noop
+      return Promise.resolve()
+    }),
   )
 
   await Promise.all(
@@ -305,33 +323,56 @@ export const seed = async ({
         ],
       },
     }),
+
     payload.updateGlobal({
       slug: 'footer',
       data: {
-        navItems: [
+        // simple contact block
+        contact: {
+          label: 'Contact',
+          phone: '+386 40 000 000',
+          email: 'info@bloom42.agency',
+        },
+
+        // right-side columns with headers + links
+        columns: [
           {
-            link: {
-              type: 'custom',
-              label: 'Admin',
-              url: '/admin',
-            },
+            header: 'Company',
+            links: [
+              { link: { type: 'custom', label: 'About', url: '/about' } },
+              { link: { type: 'custom', label: 'Work', url: '/work' } },
+              { link: { type: 'custom', label: 'Contact', url: '/contact' } },
+            ],
           },
           {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/main/templates/website',
-            },
+            header: 'Resources',
+            links: [
+              { link: { type: 'custom', label: 'Blog', url: '/posts' } },
+              { link: { type: 'custom', label: 'Privacy Policy', url: '/privacy' } },
+              { link: { type: 'custom', label: 'Terms', url: '/terms' } },
+            ],
           },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
-            },
-          },
+        ],
+
+        // social icons (platform must match your component’s map)
+        socialLinks: [
+          { platform: 'facebook', url: 'https://facebook.com/yourpage' },
+          { platform: 'instagram', url: 'https://instagram.com/yourpage' },
+          { platform: 'x', url: 'https://x.com/yourpage' },
+          { platform: 'linkedin', url: 'https://linkedin.com/company/yourpage' },
+          { platform: 'youtube', url: 'https://youtube.com/@yourpage' },
+        ],
+
+        // optional company image strip
+        companyImage: imageHomeDoc.id, // or null if you don't want it
+        companyImageHref: '/',
+
+        // bottom row
+        footerText: '© 2025 Bloom42. All rights reserved.',
+        footerLinks: [
+          { link: { type: 'custom', label: 'Privacy Policy', url: '/privacy' } },
+          { link: { type: 'custom', label: 'Terms of Service', url: '/terms' } },
+          { link: { type: 'custom', label: 'Cookies', url: '/cookies' } },
         ],
       },
     }),
