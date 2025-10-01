@@ -359,6 +359,7 @@ export const FormBlock: React.FC<{ id?: string } & FormBlockType> = (props) => {
                                 className="rounded-full"
                                 onClick={(e) => {
                                   e.preventDefault()
+                                  ;(e.currentTarget as HTMLAnchorElement).blur()
                                   toggleService(svc.id)
                                 }}
                               />

@@ -73,3 +73,11 @@ select.select-base:-webkit-autofill {
   box-shadow: 0 0 0px 1000px #fff inset;
   border-radius: 0.75rem; /* ~rounded-xl */
 }
+
+@media (hover: hover) and (pointer: fine) {
+  .inverted-chip[data-active='false'][data-hover='true'] {
+    /* temporary hover darken (desktop only) */
+    background-color: #1f2937; /* darkGray */
+    color: #fff;
+  }
+}

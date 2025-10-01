@@ -1,4 +1,4 @@
-/* components/ui/animated-button.tsx */
+// components/ui/animated-button.tsx
 'use client'
 
 import * as React from 'react'
@@ -8,9 +8,9 @@ import { buttonVariants, type ButtonProps } from '@/components/ui/button'
 
 export interface AnimatedButtonProps extends LinkProps, Pick<ButtonProps, 'size' | 'className'> {
   children: React.ReactNode
-  /** default = dark→light (current behavior); inverted = white→dark */
+  /** default = dark→light; inverted = white→dark */
   variant?: 'default' | 'inverted'
-  /** keeps the button in its “hovered/dark” state (for selected service) */
+  /** keeps the button in its “selected/dark” look */
   active?: boolean
 }
 
@@ -24,48 +24,78 @@ const AnimatedButton: React.FC<AnimatedButtonProps> = ({
   ...linkProps
 }) => {
   const [xy, setXY] = React.useState({ x: 0, y: 0 })
-  const track = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const { left, top } = e.currentTarget.getBoundingClientRect()
-    setXY({ x: e.clientX - left, y: e.clientY - top })
+  const [hovered, setHovered] = React.useState(false)
+
+  const trackMouse = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const r = e.currentTarget.getBoundingClientRect()
+    setXY({ x: e.clientX - r.left, y: e.clientY - r.top })
   }
 
-  // base palette
-  const base =
-    variant === 'inverted'
-      ? 'bg-white text-darkGray hover:bg-darkGray hover:text-white'
-      : 'bg-darkGray text-white hover:bg-white hover:text-darkGray'
+  const trackTouch = (e: React.TouchEvent<HTMLAnchorElement>) => {
+    const t = e.touches[0]
+    if (!t) return
+    const r = e.currentTarget.getBoundingClientRect()
+    setXY({ x: t.clientX - r.left, y: t.clientY - r.top })
+  }
 
-  // when active + inverted, keep dark bg/text even without hover
-  const activeFix = variant === 'inverted' && active ? 'bg-darkGray text-white' : ''
+  // ---- Visual state -------------------------------------------------
+  const inverted = variant === 'inverted'
 
-  // ripple color matches the “hovered” background
-  const ripple = variant === 'inverted' ? 'bg-darkGray' : 'bg-white'
+  // Dark state logic:
+  // - inverted: dark when active OR hovered
+  // - default:  dark when NOT(active OR hovered)
+  const wantsDark = inverted ? active || hovered : !(active || hovered)
+
+  const bgText = wantsDark ? 'bg-darkGray text-white' : 'bg-white text-darkGray'
+
+  // Ripple color equals the “hovered/active” background tint
+  const ripple = inverted ? 'bg-darkGray' : 'bg-white'
+
+  // ---- Events -------------------------------------------------------
+  const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    linkProps.onClick?.(e)
+    // kill sticky hover/focus on touch
+    setHovered(false)
+    ;(e.currentTarget as HTMLAnchorElement).blur()
+  }
 
   return (
     <Link
+      role="button"
+      aria-pressed={active}
       href={href}
       {...linkProps}
-      onMouseEnter={track}
-      onMouseMove={track}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseMove={trackMouse}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={(e) => {
+        setHovered(true)
+        trackTouch(e)
+      }}
+      onTouchEnd={() => setHovered(false)}
       className={cn(
         buttonVariants({ size, variant: 'default' }),
-        'relative group duration-300',
-        base,
-        activeFix,
+        'relative group duration-300 rounded-full select-none focus:outline-none',
+        bgText,
         className,
       )}
+      data-active={active ? 'true' : 'false'}
+      data-hover={hovered ? 'true' : 'false'}
       style={{ '--rx': `${xy.x}px`, '--ry': `${xy.y}px` } as React.CSSProperties}
     >
-      {/* ripple mask */}
+      {/* ripple layer */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
-        style={{ borderRadius: 'inherit' }}
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]"
       >
         <span
           className={cn(
-            'absolute top-[var(--ry)] left-[var(--rx)] h-0 w-0 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300 ease-linear group-hover:h-[300%] group-hover:w-[300%]',
+            'absolute top-[var(--ry)] left-[var(--rx)] h-0 w-0 -translate-x-1/2 -translate-y-1/2 rounded-full transition-[width,height] duration-300 ease-linear will-change-[width,height]',
             ripple,
+            // expand when hovered OR active — listen to parent data attrs
+            'group-data-[hover=true]:h-[300%] group-data-[hover=true]:w-[300%]',
+            'group-data-[active=true]:h-[300%] group-data-[active=true]:w-[300%]',
           )}
         />
       </span>
