@@ -130,7 +130,7 @@ const MobileMenuOverlay = forwardRef<
   }
 
   function IconChevronRight({
-    size = 28,
+    size = 24,
     stroke = 2,
     className = '',
   }: {
@@ -160,7 +160,7 @@ const MobileMenuOverlay = forwardRef<
   }
 
   function IconChevronLeft({
-    size = 28,
+    size = 24,
     stroke = 2,
     className = '',
   }: {
@@ -232,7 +232,7 @@ const MobileMenuOverlay = forwardRef<
                       <button
                         type="button"
                         onClick={() => openSub(i)}
-                        className="w-full text-left text-darkSky font-anton uppercase text-2xl py-3 px-2 rounded-xl hover:bg-gray-50 flex items-center justify-between"
+                        className="w-full text-left text-darkSky font-medium  text-2xl py-3 px-2 rounded-xl hover:bg-gray-50 flex items-center justify-between"
                       >
                         <span>{navItem.label}</span>
                         {/* chevron right */}
@@ -258,7 +258,7 @@ const MobileMenuOverlay = forwardRef<
                   <li key={`ln-${i}`}>
                     <TransitionLink
                       href={href}
-                      className="block w-full text-2xl text-darkSky font-anton uppercase py-3 px-2 rounded-xl hover:bg-gray-50"
+                      className="block w-full text-2xl text-darkSky font-medium  py-3 px-2 rounded-xl hover:bg-gray-50"
                       {...newTabProps}
                       onClick={onRequestClose}
                     >
@@ -303,7 +303,7 @@ const MobileMenuOverlay = forwardRef<
                     <li key={`sub-${activeDropdownIndex}-${j}`}>
                       <TransitionLink
                         href={href}
-                        className="block w-full text-2xl text-darkSky font-anton uppercase py-3 px-2 rounded-xl hover:bg-gray-50"
+                        className="block w-full text-2xl text-darkSky font-medium  py-3 px-2 rounded-xl hover:bg-gray-50"
                         {...newTabProps}
                         onClick={onRequestClose}
                       >
