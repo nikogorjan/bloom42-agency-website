@@ -7,9 +7,28 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+const FALLBACK_THUMB = `data:image/svg+xml;utf8,${encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' width='160' height='120' viewBox='0 0 160 120' fill='none'>
+    <rect x='10' y='10' width='140' height='100' rx='10' stroke='#CFCFCF' stroke-width='2'/>
+    <path d='M40 60h80' stroke='#CFCFCF' stroke-width='2' />
+    <polygon points='58,50 80,60 58,70' fill='#CFCFCF'/>
+    <rect x='22' y='82' width='116' height='10' rx='5' fill='#EDEDED'/>
+  </svg>
+`)}`
+
+function getThumbURL() {
+  const fromEnv = (process.env.VIDEO_TESTIMONIAL_ICON_URL || '').trim()
+  if (fromEnv) return fromEnv
+  if (process.env.S3_BUCKET && process.env.S3_REGION) {
+    return `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/form-block.webp`
+  }
+  return FALLBACK_THUMB
+}
+
 export const FormBlock: Block = {
   slug: 'formBlock',
   interfaceName: 'FormBlock',
+  imageURL: getThumbURL(),
   fields: [
     {
       name: 'tagline',
