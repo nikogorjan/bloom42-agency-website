@@ -139,7 +139,7 @@ function Slide({
   description: any
 }) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-eggshell bg-white shadow-sm p-3">
+    <article className="overflow-hidden rounded-2xl border border-eggshell bg-white shadow-sm p-2 md:p-3">
       <div className="relative aspect-[16/12] w-full overflow-hidden rounded-[14px]">
         {image ? (
           <Media resource={image} fill imgClassName="object-cover" />
