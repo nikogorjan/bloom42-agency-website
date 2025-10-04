@@ -7,9 +7,28 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
+const FALLBACK_THUMB = `data:image/svg+xml;utf8,${encodeURIComponent(`
+  <svg xmlns='http://www.w3.org/2000/svg' width='160' height='120' viewBox='0 0 160 120' fill='none'>
+    <rect x='12' y='12' width='60' height='40' rx='6' stroke='#CFCFCF' stroke-width='2'/>
+    <rect x='88' y='12' width='60' height='40' rx='6' stroke='#CFCFCF' stroke-width='2'/>
+    <rect x='12' y='68' width='60' height='40' rx='6' stroke='#CFCFCF' stroke-width='2'/>
+    <rect x='88' y='68' width='60' height='40' rx='6' stroke='#CFCFCF' stroke-width='2'/>
+  </svg>
+`)}`
+function getThumbURL() {
+  const fromEnv = (process.env.FEATURED_PROJECTS_ICON_URL || '').trim()
+  if (fromEnv) return fromEnv
+  // optional: build from bucket/region if you follow a fixed path
+  if (process.env.S3_BUCKET && process.env.S3_REGION) {
+    return `https://${process.env.S3_BUCKET}.s3.${process.env.S3_REGION}.amazonaws.com/form-block.webp`
+  }
+  return FALLBACK_THUMB
+}
+
 export const FormBlock: Block = {
   slug: 'formBlock',
   interfaceName: 'FormBlock',
+  imageURL: getThumbURL(),
   fields: [
     {
       name: 'tagline',

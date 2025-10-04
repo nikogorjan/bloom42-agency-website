@@ -153,7 +153,7 @@ export interface Page {
   id: string;
   title: string;
   hero: {
-    type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'aboutHeader';
     tagline?: string | null;
     header?: string | null;
     description?: string | null;
@@ -196,6 +196,49 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    aboutHeader?: {
+      image: string | Media;
+      heading?: string | null;
+      description?: {
+        root: {
+          type: string;
+          children: {
+            type: string;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      links?:
+        | {
+            link: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: string | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: string | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+              /**
+               * Choose how the link should be rendered.
+               */
+              appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+            };
+            id?: string | null;
+          }[]
+        | null;
+    };
     techStack?: {
       label?: string | null;
       items?:
@@ -224,6 +267,8 @@ export interface Page {
     | TeamSectionBlock
     | VideoTestimonialBlock
     | FaqAccordionBlock
+    | BrandExplainerBlock
+    | TimelineBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1248,6 +1293,97 @@ export interface FaqAccordionBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandExplainerBlock".
+ */
+export interface BrandExplainerBlock {
+  tagline?: string | null;
+  heading: string;
+  /**
+   * Rich text shown on the left.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Optional bottom CTA (e.g. “View all”).
+   */
+  cta?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Displayed on the right.
+   */
+  image: string | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'brandExplainer';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock".
+ */
+export interface TimelineBlock {
+  /**
+   * Add entries (drag to reorder).
+   */
+  items: {
+    date: string;
+    description: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1537,6 +1673,28 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        aboutHeader?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              description?: T;
+              links?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                          appearance?: T;
+                        };
+                    id?: T;
+                  };
+            };
         techStack?:
           | T
           | {
@@ -1566,6 +1724,8 @@ export interface PagesSelect<T extends boolean = true> {
         teamSection?: T | TeamSectionBlockSelect<T>;
         videoTestimonial?: T | VideoTestimonialBlockSelect<T>;
         faqAccordion?: T | FaqAccordionBlockSelect<T>;
+        brandExplainer?: T | BrandExplainerBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
       };
   meta?:
     | T
@@ -1880,6 +2040,48 @@ export interface FaqAccordionBlockSelect<T extends boolean = true> {
     | {
         title?: T;
         answer?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandExplainerBlock_select".
+ */
+export interface BrandExplainerBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  content?: T;
+  cta?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock_select".
+ */
+export interface TimelineBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        date?: T;
+        description?: T;
         id?: T;
       };
   id?: T;

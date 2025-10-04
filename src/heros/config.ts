@@ -39,6 +39,7 @@ export const hero: Field = {
           label: 'Low Impact',
           value: 'lowImpact',
         },
+        { label: 'About Header', value: 'aboutHeader' },
       ],
       required: true,
     },
@@ -87,7 +88,7 @@ export const hero: Field = {
       label: false,
       admin: {
         // Only show this field if "type" is "landingHero"
-        condition: (_, { type } = {}) => type !== 'landingHero',
+        condition: (_, { type } = {}) => type !== 'landingHero' && type !== 'aboutHeader',
       },
     },
     linkGroup({
@@ -95,6 +96,51 @@ export const hero: Field = {
         maxRows: 2,
       },
     }),
+    {
+      name: 'aboutHeader',
+      type: 'group',
+      label: 'About Header',
+      admin: { condition: (_, { type } = {}) => type === 'aboutHeader' },
+      fields: [
+        {
+          name: 'image',
+          label: 'Background Image',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          filterOptions: { mimeType: { contains: 'image' } },
+        },
+        {
+          name: 'heading',
+          label: 'Heading',
+          type: 'text',
+          localized: true,
+          required: false,
+        },
+        {
+          name: 'description',
+          label: 'Description',
+          type: 'richText',
+          localized: true,
+          editor: lexicalEditor({
+            features: ({ rootFeatures }) => [
+              ...rootFeatures,
+              HeadingFeature({ enabledHeadingSizes: ['h3', 'h4'] }),
+              FixedToolbarFeature(),
+              InlineToolbarFeature(),
+            ],
+          }),
+        },
+        linkGroup({
+          overrides: {
+            name: 'links',
+            label: 'Buttons',
+            maxRows: 2,
+          },
+        }),
+      ],
+    },
+
     {
       name: 'techStack',
       label: 'Tech Stack',

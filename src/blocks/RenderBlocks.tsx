@@ -14,6 +14,8 @@ import CreativeGrowthScrollerComponent from './CreativeGrowthScroller/component'
 import TeamSectionComponent from './TeamSection/component'
 import VideoTestimonialComponent from './VideoTestimonial/component'
 import FaqAccordionComponent from './FaqSection/component'
+import BrandExplainerBlockComponent from './BrandExplainer/component'
+import TimelineBlockComponent from './Timeline/component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -28,6 +30,8 @@ const blockComponents = {
   teamSection: TeamSectionComponent,
   videoTestimonial: VideoTestimonialComponent,
   faqAccordion: FaqAccordionComponent,
+  brandExplainer: BrandExplainerBlockComponent,
+  timeline: TimelineBlockComponent,
 }
 
 export const RenderBlocks: React.FC<{
