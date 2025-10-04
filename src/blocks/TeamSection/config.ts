@@ -44,7 +44,7 @@ export const TeamSection: Block = {
       name: 'heading',
       type: 'text',
       localized: true,
-      required: true,
+      required: false,
       admin: { description: 'Section title (e.g. “Our team”).' },
     },
     {

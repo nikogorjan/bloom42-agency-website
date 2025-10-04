@@ -37,6 +37,13 @@ export const Timeline: Block = {
   labels: { singular: 'Timeline', plural: 'Timelines' },
   fields: [
     {
+      name: 'heading',
+      type: 'text',
+      localized: true,
+      required: true,
+      admin: { description: 'Section title (e.g. “Our team”).' },
+    },
+    {
       name: 'items',
       label: 'Timeline Items',
       type: 'array',
@@ -44,13 +51,13 @@ export const Timeline: Block = {
       labels: { singular: 'Item', plural: 'Items' },
       admin: { description: 'Add entries (drag to reorder).' },
       fields: [
+        { name: 'image', type: 'upload', relationTo: 'media', required: false, label: 'Photo' },
         {
-          name: 'date',
+          name: 'header',
           type: 'text',
           localized: true,
           required: true,
-          label: 'Date',
-          admin: { placeholder: 'e.g. 2020, Q1 2023, Jan 15' },
+          label: 'Header',
         },
         {
           name: 'description',

@@ -7,6 +7,7 @@ import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import { RichTextCustom } from '@/components/common/rich-text/rich-text'
 import { motion, useMotionValue, useSpring, useReducedMotion } from 'motion/react'
+import { cn } from '@/utilities/ui'
 
 export const AboutHeader: React.FC<Page['hero']> = (props) => {
   // Determine variant first (no early return yet)
@@ -112,17 +113,28 @@ export const AboutHeader: React.FC<Page['hero']> = (props) => {
       {/* Foreground content */}
       <div className="px-[5%]">
         <div className="container relative z-10">
-          <div className="grid grid-rows-1 items-start gap-y-5 py-12 md:grid-cols-2 md:gap-x-12 md:gap-y-8 md:py-18 lg:gap-x-20 lg:gap-y-16 lg:py-20">
+          {/* 1 col on mobile; 3 cols on md+ with fixed middle width */}
+          <div
+            className="
+        grid items-start gap-y-5 py-12
+        md:grid-cols-[240px_minmax(0,560px)_1fr] md:gap-x-12 md:py-18
+        lg:grid-cols-[240px_minmax(0,640px)_1fr] lg:gap-x-20 lg:py-20
+      "
+          >
+            {/* Left column: heading + bullet */}
             {heading ? (
-              <h1 className="text-6xl font-anton text-darkGray md:text-9xl lg:text-10xl">
-                {heading}
-              </h1>
+              <div className="flex items-center gap-3 text-sm leading-relaxed mb-6">
+                <BulletIcon className="h-5 w-5 md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
+                <span className="text-xl md:text-2xl font-semibold text-darkGray">{heading}</span>
+              </div>
             ) : (
               <div />
             )}
-            <div>
+
+            {/* Middle column: rich text + links (auto-clamped by the grid’s middle track) */}
+            <div className="md:col-[2]">
               {description ? (
-                <RichTextCustom text={description} className="text-base md:text-md text-darkGray" />
+                <RichTextCustom text={description} className="text-xl md:text-3xl text-darkGray" />
               ) : null}
 
               <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
@@ -131,9 +143,33 @@ export const AboutHeader: React.FC<Page['hero']> = (props) => {
                 ))}
               </div>
             </div>
+
+            {/* Right column: empty, same width as left (1fr). Hidden on mobile */}
+            <div className="hidden md:block" />
           </div>
         </div>
       </div>
     </section>
+  )
+}
+
+type BulletIconProps = {
+  className?: string
+}
+
+export function BulletIcon({ className }: BulletIconProps) {
+  return (
+    <span
+      aria-hidden
+      className={cn('relative inline-block h-12 w-12 shrink-0 mt-[2px]', className)}
+    >
+      <Media
+        src="/images/bullets/bullet-orange.svg"
+        alt=""
+        fill
+        imgClassName="object-contain"
+        priority={false}
+      />
+    </span>
   )
 }

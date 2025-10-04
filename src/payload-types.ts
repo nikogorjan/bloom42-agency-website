@@ -1093,7 +1093,7 @@ export interface TeamSectionBlock {
   /**
    * Section title (e.g. “Our team”).
    */
-  heading: string;
+  heading?: string | null;
   /**
    * Short description under the heading.
    */
@@ -1357,10 +1357,15 @@ export interface BrandExplainerBlock {
  */
 export interface TimelineBlock {
   /**
+   * Section title (e.g. “Our team”).
+   */
+  heading: string;
+  /**
    * Add entries (drag to reorder).
    */
   items: {
-    date: string;
+    image?: (string | null) | Media;
+    header: string;
     description: {
       root: {
         type: string;
@@ -2077,10 +2082,12 @@ export interface BrandExplainerBlockSelect<T extends boolean = true> {
  * via the `definition` "TimelineBlock_select".
  */
 export interface TimelineBlockSelect<T extends boolean = true> {
+  heading?: T;
   items?:
     | T
     | {
-        date?: T;
+        image?: T;
+        header?: T;
         description?: T;
         id?: T;
       };

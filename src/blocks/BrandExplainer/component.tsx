@@ -95,8 +95,8 @@ const BrandExplainerBlockComponent: React.FC<Props> = ({
             <div>
               {tagline ? (
                 <div className="flex items-center gap-3 text-sm leading-relaxed mb-6">
-                  <BulletIcon className="md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
-                  <span className="text-2xl font-semibold text-darkGray">{tagline}</span>
+                  <BulletIcon className="h-5 w-5 md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
+                  <span className="text-xl md:text-2xl font-semibold text-darkGray">{tagline}</span>
                 </div>
               ) : null}
               {heading ? (
