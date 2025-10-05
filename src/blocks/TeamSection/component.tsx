@@ -1,7 +1,8 @@
+// src/blocks/TeamSection/component.tsx
 'use client'
 
 import React from 'react'
-import type { TeamSectionBlock, Media as MediaDoc } from '@/payload-types'
+import type { TeamSectionBlock, Media as MediaDoc, TeamMember } from '@/payload-types'
 import { Media } from '@/components/Media'
 import { CMSLink } from '@/components/Link'
 import { BiLogoLinkedinSquare, BiLogoFacebook, BiLogoInstagram, BiGlobe } from 'react-icons/bi'
@@ -10,17 +11,17 @@ import { FaXTwitter } from 'react-icons/fa6'
 type Props = TeamSectionBlock
 
 export default function TeamSectionComponent(props: Props) {
-  const { tagline, heading, description, teamMembers, footer } = props
+  const { tagline, heading, description, footer } = props
 
-  // ① Normalize possibly-null array from Payload
-  const members = Array.isArray(teamMembers) ? teamMembers : []
+  // Relationship value can be ids or populated docs; normalize to docs
+  const selected: TeamMember[] = (props.members ?? []).filter(
+    (m): m is TeamMember => typeof m === 'object' && m !== null,
+  )
 
-  // ② Normalize CTA from linkGroup (can be array or single object, depending on your helper)
-  //    Supported shapes:
-  //    - footer?.cta?: { link: Link }[]
-  //    - footer?.cta?: { link: Link }
+  const members: TeamMember[] = selected
+  // Normalize CTA
   let ctaLink: any | undefined
-  const rawCTA = footer?.cta as any
+  const rawCTA = (footer as any)?.cta
   if (rawCTA) {
     if (Array.isArray(rawCTA) && rawCTA.length > 0 && rawCTA[0]?.link) {
       ctaLink = rawCTA[0].link
@@ -29,28 +30,29 @@ export default function TeamSectionComponent(props: Props) {
     }
   }
 
+  if (!members.length && !heading && !description && !tagline) return null
+
   return (
     <section id="team" className="px-[5%] py-16 md:py-24 lg:py-28 bg-eggshell">
       <div className="container">
-        {/* Header */}
-        <div className="rb-12 mb-12 max-w-lg md:mb-18 lg:mb-20">
-          {tagline ? <p className="mb-3 font-semibold md:mb-4">{tagline}</p> : null}
-          {heading ? (
-            <h2 className="rb-5 mb-5 text-5xl font-anton text-darkGray md:mb-6 md:text-7xl lg:text-8xl">
-              {heading}
-            </h2>
-          ) : null}
-          {description ? <p className="md:text-md">{description}</p> : null}
-        </div>
+        {(tagline || heading || description) && (
+          <div className="rb-12 mb-12 max-w-lg md:mb-18 lg:mb-20">
+            {tagline && <p className="mb-3 font-semibold md:mb-4">{tagline}</p>}
+            {heading && (
+              <h2 className="rb-5 mb-5 text-5xl font-anton text-darkGray md:mb-6 md:text-7xl lg:text-8xl">
+                {heading}
+              </h2>
+            )}
+            {description && <p className="md:text-md">{description}</p>}
+          </div>
+        )}
 
-        {/* Grid */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-3 md:gap-x-8 md:gap-y-16 lg:gap-x-12">
-          {members.map((member, i) => (
-            <TeamMemberCard key={member?.id ?? i} member={member} />
+          {members.map((member) => (
+            <TeamMemberCard key={member.id} member={member} />
           ))}
         </div>
 
-        {/* Footer */}
         {(footer?.heading || footer?.description || ctaLink) && (
           <div className="mt-14 w-full max-w-md md:mt-20 lg:mt-24">
             {footer?.heading ? (
@@ -61,7 +63,6 @@ export default function TeamSectionComponent(props: Props) {
             {footer?.description ? <p className="md:text-md">{footer.description}</p> : null}
             {ctaLink ? (
               <div className="mt-6 flex flex-wrap gap-4 md:mt-8">
-                {/* Use CMSLink the same way as in LandingHero */}
                 <CMSLink {...ctaLink} />
               </div>
             ) : null}
@@ -74,8 +75,8 @@ export default function TeamSectionComponent(props: Props) {
 
 /* ---------------- cards ---------------- */
 
-function TeamMemberCard({ member }: { member: NonNullable<Props['teamMembers']>[number] }) {
-  const socials = member?.socials || {}
+function TeamMemberCard({ member }: { member: TeamMember }) {
+  const socials = (member.socials as any) || {}
 
   const socialItems: { href?: string | null; icon: React.ReactNode; label: string }[] = [
     {
@@ -91,25 +92,22 @@ function TeamMemberCard({ member }: { member: NonNullable<Props['teamMembers']>[
 
   return (
     <div className="flex flex-col p-2 bg-white rounded-2xl">
-      {/* Image */}
       <div className="relative mb-2 aspect-square size-full overflow-hidden rounded-[14px] border border-eggshell md:mb-2 md:pt-[100%]">
-        <MemberPhoto media={member.image} />
+        <MemberPhoto media={member.image as any} />
       </div>
 
-      {/* Text */}
-      <div className=" p-4 bg-gray-50 border border-gray-50 rounded-[14px]">
+      <div className="p-4 bg-gray-50 border border-gray-50 rounded-[14px]">
         <div className="mb-3 md:mb-4">
           {member?.name ? (
-            <h5 className="text-md font-semibold md:text-lg">{member.name}</h5>
+            <h5 className="text-md font-semibold md:text-lg">{member.name as unknown as string}</h5>
           ) : null}
           {member?.jobTitle ? (
-            <h6 className="md:text-md text-neutral-700">{member.jobTitle}</h6>
+            <h6 className="md:text-md text-neutral-700">{member.jobTitle as unknown as string}</h6>
           ) : null}
         </div>
 
-        {member?.description ? <p>{member.description}</p> : null}
+        {member?.description ? <p>{member.description as unknown as string}</p> : null}
 
-        {/* Socials */}
         <div className="mt-6 flex items-center gap-[0.875rem] self-start">
           {socialItems
             .filter((s) => !!s.href)

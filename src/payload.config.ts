@@ -21,6 +21,7 @@ import { ProjectCategories } from './collections/ProjectCategories'
 import { Projects } from './collections/Projects'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { CoralHighlightFeature } from './components/common/rich-text/lexical-features/coralHighlight/feature.server'
+import TeamMembers from './collections/TeamMembers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -69,7 +70,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),
-  collections: [Pages, Posts, Projects, Media, Categories, ProjectCategories, Users],
+  collections: [Pages, Posts, Projects, TeamMembers, Media, Categories, ProjectCategories, Users],
   localization: {
     locales: [
       {

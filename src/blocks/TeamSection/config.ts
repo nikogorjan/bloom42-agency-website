@@ -56,34 +56,15 @@ export const TeamSection: Block = {
 
     // Team members
     {
-      name: 'teamMembers',
-      type: 'array',
-      labels: { singular: 'Team member', plural: 'Team members' },
-      minRows: 1,
-      admin: { initCollapsed: false },
-      fields: [
-        { name: 'image', type: 'upload', relationTo: 'media', required: true, label: 'Photo' },
-        { name: 'name', type: 'text', required: true, localized: true },
-        { name: 'jobTitle', type: 'text', localized: true, label: 'Job title' },
-        {
-          name: 'description',
-          type: 'textarea',
-          localized: true,
-          admin: { rows: 3 },
-        },
-        {
-          name: 'socials',
-          type: 'group',
-          admin: { description: 'Optional social links for this member.' },
-          fields: [
-            { name: 'linkedin', type: 'text', localized: true },
-            { name: 'x', type: 'text', label: 'X / Twitter', localized: true },
-            { name: 'facebook', type: 'text', localized: true },
-            { name: 'instagram', type: 'text', localized: true },
-            { name: 'website', type: 'text', localized: true, label: 'Website' },
-          ],
-        },
-      ],
+      name: 'members',
+      type: 'relationship',
+      relationTo: 'team-members',
+      hasMany: true,
+      required: true,
+      admin: {
+        description:
+          'Pick people from Team Members. Drag to reorder (order is respected on the page).',
+      },
     },
 
     // Bottom footer content with CTA

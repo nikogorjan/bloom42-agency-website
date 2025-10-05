@@ -70,6 +70,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     projects: Project;
+    'team-members': TeamMember;
     media: Media;
     categories: Category;
     'project-categories': ProjectCategory;
@@ -88,6 +89,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
@@ -1098,25 +1100,10 @@ export interface TeamSectionBlock {
    * Short description under the heading.
    */
   description?: string | null;
-  teamMembers?:
-    | {
-        image: string | Media;
-        name: string;
-        jobTitle?: string | null;
-        description?: string | null;
-        /**
-         * Optional social links for this member.
-         */
-        socials?: {
-          linkedin?: string | null;
-          x?: string | null;
-          facebook?: string | null;
-          instagram?: string | null;
-          website?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Pick people from Team Members. Drag to reorder (order is respected on the page).
+   */
+  members: (string | TeamMember)[];
   /**
    * Optional block at the bottom (e.g. “About us” or “We’re hiring”).
    */
@@ -1157,6 +1144,51 @@ export interface TeamSectionBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'teamSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members".
+ */
+export interface TeamMember {
+  id: string;
+  image: string | Media;
+  name: string;
+  jobTitle?: string | null;
+  description?: string | null;
+  /**
+   * Rich text shown on the left.
+   */
+  quote?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional social links.
+   */
+  socials?: {
+    linkedin?: string | null;
+    x?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    website?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1572,6 +1604,10 @@ export interface PayloadLockedDocument {
         value: string | Project;
       } | null)
     | ({
+        relationTo: 'team-members';
+        value: string | TeamMember;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -1953,24 +1989,7 @@ export interface TeamSectionBlockSelect<T extends boolean = true> {
   tagline?: T;
   heading?: T;
   description?: T;
-  teamMembers?:
-    | T
-    | {
-        image?: T;
-        name?: T;
-        jobTitle?: T;
-        description?: T;
-        socials?:
-          | T
-          | {
-              linkedin?: T;
-              x?: T;
-              facebook?: T;
-              instagram?: T;
-              website?: T;
-            };
-        id?: T;
-      };
+  members?: T;
   footer?:
     | T
     | {
@@ -2149,6 +2168,32 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   projectCategories?: T;
+  slug?: T;
+  slugLock?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members_select".
+ */
+export interface TeamMembersSelect<T extends boolean = true> {
+  image?: T;
+  name?: T;
+  jobTitle?: T;
+  description?: T;
+  quote?: T;
+  socials?:
+    | T
+    | {
+        linkedin?: T;
+        x?: T;
+        facebook?: T;
+        instagram?: T;
+        website?: T;
+      };
   slug?: T;
   slugLock?: T;
   publishedAt?: T;
@@ -2897,6 +2942,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'projects';
           value: string | Project;
+        } | null)
+      | ({
+          relationTo: 'team-members';
+          value: string | TeamMember;
         } | null);
     global?: string | null;
     user?: (string | null) | User;
