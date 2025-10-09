@@ -29,6 +29,7 @@ export const TeamMembers: CollectionConfig<'team-members'> = {
     name: true,
     jobTitle: true,
     description: true,
+    quote: true,
     socials: true,
     slug: true,
   },

@@ -16,6 +16,8 @@ import VideoTestimonialComponent from './VideoTestimonial/component'
 import FaqAccordionComponent from './FaqSection/component'
 import BrandExplainerBlockComponent from './BrandExplainer/component'
 import TimelineBlockComponent from './Timeline/component'
+import TeamSliderComponent from './TeamSlider/component'
+import AboutUsParalaxComponent from './AboutUsParalax/component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -32,6 +34,8 @@ const blockComponents = {
   faqAccordion: FaqAccordionComponent,
   brandExplainer: BrandExplainerBlockComponent,
   timeline: TimelineBlockComponent,
+  teamSlider: TeamSliderComponent,
+  aboutUsParalax: AboutUsParalaxComponent,
 }
 
 export const RenderBlocks: React.FC<{

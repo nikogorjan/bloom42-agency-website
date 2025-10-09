@@ -271,6 +271,8 @@ export interface Page {
     | FaqAccordionBlock
     | BrandExplainerBlock
     | TimelineBlock
+    | TeamSliderBlock
+    | AboutUsParalaxBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1421,6 +1423,111 @@ export interface TimelineBlock {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSliderBlock".
+ */
+export interface TeamSliderBlock {
+  /**
+   * Optional small line above the heading.
+   */
+  tagline?: string | null;
+  /**
+   * Section title (e.g. “Meet the team”).
+   */
+  heading?: string | null;
+  /**
+   * Short description under the heading.
+   */
+  description?: string | null;
+  /**
+   * Pick people from Team Members. Drag to reorder (order = slide order).
+   */
+  members: (string | TeamMember)[];
+  /**
+   * Optional automatic listing instead of manual selection.
+   */
+  auto?: {
+    enabled?: boolean | null;
+    limit?: number | null;
+  };
+  /**
+   * Optional buttons to repeat for every slide (e.g., “View profile”, “Connect on LinkedIn”).
+   */
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsParalaxBlock".
+ */
+export interface AboutUsParalaxBlock {
+  /**
+   * Top heading + intro copy.
+   */
+  header?: {
+    /**
+     * Rich text shown under the heading.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * Cards that slide in the parallax rows.
+   */
+  products: {
+    /**
+     * Any string (internal path, external URL, hash, etc.)
+     */
+    link?: string | null;
+    /**
+     * Image shown in the card.
+     */
+    thumbnail: string | Media;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutUsParalax';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1767,6 +1874,8 @@ export interface PagesSelect<T extends boolean = true> {
         faqAccordion?: T | FaqAccordionBlockSelect<T>;
         brandExplainer?: T | BrandExplainerBlockSelect<T>;
         timeline?: T | TimelineBlockSelect<T>;
+        teamSlider?: T | TeamSliderBlockSelect<T>;
+        aboutUsParalax?: T | AboutUsParalaxBlockSelect<T>;
       };
   meta?:
     | T
@@ -2108,6 +2217,59 @@ export interface TimelineBlockSelect<T extends boolean = true> {
         image?: T;
         header?: T;
         description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSliderBlock_select".
+ */
+export interface TeamSliderBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  members?: T;
+  auto?:
+    | T
+    | {
+        enabled?: T;
+        limit?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsParalaxBlock_select".
+ */
+export interface AboutUsParalaxBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        intro?: T;
+      };
+  products?:
+    | T
+    | {
+        link?: T;
+        thumbnail?: T;
         id?: T;
       };
   id?: T;
