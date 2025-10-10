@@ -70,6 +70,7 @@ export interface Config {
     pages: Page;
     posts: Post;
     projects: Project;
+    'team-members': TeamMember;
     media: Media;
     categories: Category;
     'project-categories': ProjectCategory;
@@ -88,6 +89,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    'team-members': TeamMembersSelect<false> | TeamMembersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     'project-categories': ProjectCategoriesSelect<false> | ProjectCategoriesSelect<true>;
@@ -153,7 +155,7 @@ export interface Page {
   id: string;
   title: string;
   hero: {
-    type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'landingHero' | 'highImpact' | 'mediumImpact' | 'lowImpact' | 'aboutHeader';
     tagline?: string | null;
     header?: string | null;
     description?: string | null;
@@ -196,6 +198,49 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
+    aboutHeader?: {
+      image: string | Media;
+      heading?: string | null;
+      description?: {
+        root: {
+          type: string;
+          children: {
+            type: string;
+            version: number;
+            [k: string]: unknown;
+          }[];
+          direction: ('ltr' | 'rtl') | null;
+          format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+          indent: number;
+          version: number;
+        };
+        [k: string]: unknown;
+      } | null;
+      links?:
+        | {
+            link: {
+              type?: ('reference' | 'custom') | null;
+              newTab?: boolean | null;
+              reference?:
+                | ({
+                    relationTo: 'pages';
+                    value: string | Page;
+                  } | null)
+                | ({
+                    relationTo: 'posts';
+                    value: string | Post;
+                  } | null);
+              url?: string | null;
+              label: string;
+              /**
+               * Choose how the link should be rendered.
+               */
+              appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+            };
+            id?: string | null;
+          }[]
+        | null;
+    };
     techStack?: {
       label?: string | null;
       items?:
@@ -224,6 +269,10 @@ export interface Page {
     | TeamSectionBlock
     | VideoTestimonialBlock
     | FaqAccordionBlock
+    | BrandExplainerBlock
+    | TimelineBlock
+    | TeamSliderBlock
+    | AboutUsParalaxBlock
   )[];
   meta?: {
     title?: string | null;
@@ -1048,30 +1097,15 @@ export interface TeamSectionBlock {
   /**
    * Section title (e.g. “Our team”).
    */
-  heading: string;
+  heading?: string | null;
   /**
    * Short description under the heading.
    */
   description?: string | null;
-  teamMembers?:
-    | {
-        image: string | Media;
-        name: string;
-        jobTitle?: string | null;
-        description?: string | null;
-        /**
-         * Optional social links for this member.
-         */
-        socials?: {
-          linkedin?: string | null;
-          x?: string | null;
-          facebook?: string | null;
-          instagram?: string | null;
-          website?: string | null;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Pick people from Team Members. Drag to reorder (order is respected on the page).
+   */
+  members: (string | TeamMember)[];
   /**
    * Optional block at the bottom (e.g. “About us” or “We’re hiring”).
    */
@@ -1112,6 +1146,51 @@ export interface TeamSectionBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'teamSection';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members".
+ */
+export interface TeamMember {
+  id: string;
+  image: string | Media;
+  name: string;
+  jobTitle?: string | null;
+  description?: string | null;
+  /**
+   * Rich text shown on the left.
+   */
+  quote?: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Optional social links.
+   */
+  socials?: {
+    linkedin?: string | null;
+    x?: string | null;
+    facebook?: string | null;
+    instagram?: string | null;
+    website?: string | null;
+  };
+  slug?: string | null;
+  slugLock?: boolean | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1245,6 +1324,207 @@ export interface FaqAccordionBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'faqAccordion';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandExplainerBlock".
+ */
+export interface BrandExplainerBlock {
+  tagline?: string | null;
+  heading: string;
+  /**
+   * Rich text shown on the left.
+   */
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Optional bottom CTA (e.g. “View all”).
+   */
+  cta?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Displayed on the right.
+   */
+  image: string | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'brandExplainer';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock".
+ */
+export interface TimelineBlock {
+  /**
+   * Section title (e.g. “Our team”).
+   */
+  heading: string;
+  /**
+   * Add entries (drag to reorder).
+   */
+  items: {
+    image?: (string | null) | Media;
+    header: string;
+    description: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    };
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSliderBlock".
+ */
+export interface TeamSliderBlock {
+  /**
+   * Optional small line above the heading.
+   */
+  tagline?: string | null;
+  /**
+   * Section title (e.g. “Meet the team”).
+   */
+  heading?: string | null;
+  /**
+   * Short description under the heading.
+   */
+  description?: string | null;
+  /**
+   * Pick people from Team Members. Drag to reorder (order = slide order).
+   */
+  members: (string | TeamMember)[];
+  /**
+   * Optional automatic listing instead of manual selection.
+   */
+  auto?: {
+    enabled?: boolean | null;
+    limit?: number | null;
+  };
+  /**
+   * Optional buttons to repeat for every slide (e.g., “View profile”, “Connect on LinkedIn”).
+   */
+  buttons?:
+    | {
+        link: {
+          type?: ('reference' | 'custom') | null;
+          newTab?: boolean | null;
+          reference?:
+            | ({
+                relationTo: 'pages';
+                value: string | Page;
+              } | null)
+            | ({
+                relationTo: 'posts';
+                value: string | Post;
+              } | null);
+          url?: string | null;
+          label: string;
+          /**
+           * Choose how the link should be rendered.
+           */
+          appearance?: ('default' | 'outline' | 'animatedArrow' | 'chevronRight') | null;
+        };
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'teamSlider';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsParalaxBlock".
+ */
+export interface AboutUsParalaxBlock {
+  /**
+   * Top heading + intro copy.
+   */
+  header?: {
+    /**
+     * Rich text shown under the heading.
+     */
+    intro?: {
+      root: {
+        type: string;
+        children: {
+          type: string;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
+  };
+  /**
+   * Cards that slide in the parallax rows.
+   */
+  products: {
+    /**
+     * Any string (internal path, external URL, hash, etc.)
+     */
+    link?: string | null;
+    /**
+     * Image shown in the card.
+     */
+    thumbnail: string | Media;
+    id?: string | null;
+  }[];
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'aboutUsParalax';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1431,6 +1711,10 @@ export interface PayloadLockedDocument {
         value: string | Project;
       } | null)
     | ({
+        relationTo: 'team-members';
+        value: string | TeamMember;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -1537,6 +1821,28 @@ export interface PagesSelect<T extends boolean = true> {
                   };
               id?: T;
             };
+        aboutHeader?:
+          | T
+          | {
+              image?: T;
+              heading?: T;
+              description?: T;
+              links?:
+                | T
+                | {
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          newTab?: T;
+                          reference?: T;
+                          url?: T;
+                          label?: T;
+                          appearance?: T;
+                        };
+                    id?: T;
+                  };
+            };
         techStack?:
           | T
           | {
@@ -1566,6 +1872,10 @@ export interface PagesSelect<T extends boolean = true> {
         teamSection?: T | TeamSectionBlockSelect<T>;
         videoTestimonial?: T | VideoTestimonialBlockSelect<T>;
         faqAccordion?: T | FaqAccordionBlockSelect<T>;
+        brandExplainer?: T | BrandExplainerBlockSelect<T>;
+        timeline?: T | TimelineBlockSelect<T>;
+        teamSlider?: T | TeamSliderBlockSelect<T>;
+        aboutUsParalax?: T | AboutUsParalaxBlockSelect<T>;
       };
   meta?:
     | T
@@ -1788,24 +2098,7 @@ export interface TeamSectionBlockSelect<T extends boolean = true> {
   tagline?: T;
   heading?: T;
   description?: T;
-  teamMembers?:
-    | T
-    | {
-        image?: T;
-        name?: T;
-        jobTitle?: T;
-        description?: T;
-        socials?:
-          | T
-          | {
-              linkedin?: T;
-              x?: T;
-              facebook?: T;
-              instagram?: T;
-              website?: T;
-            };
-        id?: T;
-      };
+  members?: T;
   footer?:
     | T
     | {
@@ -1887,6 +2180,103 @@ export interface FaqAccordionBlockSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BrandExplainerBlock_select".
+ */
+export interface BrandExplainerBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  content?: T;
+  cta?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineBlock_select".
+ */
+export interface TimelineBlockSelect<T extends boolean = true> {
+  heading?: T;
+  items?:
+    | T
+    | {
+        image?: T;
+        header?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TeamSliderBlock_select".
+ */
+export interface TeamSliderBlockSelect<T extends boolean = true> {
+  tagline?: T;
+  heading?: T;
+  description?: T;
+  members?: T;
+  auto?:
+    | T
+    | {
+        enabled?: T;
+        limit?: T;
+      };
+  buttons?:
+    | T
+    | {
+        link?:
+          | T
+          | {
+              type?: T;
+              newTab?: T;
+              reference?: T;
+              url?: T;
+              label?: T;
+              appearance?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutUsParalaxBlock_select".
+ */
+export interface AboutUsParalaxBlockSelect<T extends boolean = true> {
+  header?:
+    | T
+    | {
+        intro?: T;
+      };
+  products?:
+    | T
+    | {
+        link?: T;
+        thumbnail?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -1940,6 +2330,32 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   projectCategories?: T;
+  slug?: T;
+  slugLock?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "team-members_select".
+ */
+export interface TeamMembersSelect<T extends boolean = true> {
+  image?: T;
+  name?: T;
+  jobTitle?: T;
+  description?: T;
+  quote?: T;
+  socials?:
+    | T
+    | {
+        linkedin?: T;
+        x?: T;
+        facebook?: T;
+        instagram?: T;
+        website?: T;
+      };
   slug?: T;
   slugLock?: T;
   publishedAt?: T;
@@ -2688,6 +3104,10 @@ export interface TaskSchedulePublish {
       | ({
           relationTo: 'projects';
           value: string | Project;
+        } | null)
+      | ({
+          relationTo: 'team-members';
+          value: string | TeamMember;
         } | null);
     global?: string | null;
     user?: (string | null) | User;

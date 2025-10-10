@@ -15,7 +15,7 @@ export const NavDropdown: React.FC<NavDropdownProps> = ({ item, index, isOpen, o
     <div className="relative" onMouseEnter={() => onOpen(index)}>
       <button
         type="button"
-        className="flex h-10 items-center px-2 text-base "
+        className="flex h-10 items-center px-2 text-base font-medium"
         aria-haspopup="true"
         aria-expanded={isOpen}
       >

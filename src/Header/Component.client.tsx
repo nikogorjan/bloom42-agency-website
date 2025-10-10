@@ -49,6 +49,15 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerTheme])
 
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <header
       className="fixed inset-x-0 top-0 lg:top-5 z-[1300] px-0 lg:px-[5%]" // was z-[1000]
@@ -58,9 +67,18 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
       <div className="hidden lg:block">
         <div
           className={[
-            'container max-w-[992px] bg-white border-1 border-lightGray shadow-sm overflow-hidden',
+            'container max-w-[992px] bg-white overflow-hidden',
             isOpen ? 'rounded-[28px]' : 'rounded-full',
-            'transition-shadow',
+            // base separation
+            'border border-gray-200',
+            // idle elevation
+            !isOpen && !scrolled
+              ? 'shadow-[0_8px_24px_-10px_rgba(0,0,0,0.20)]'
+              : // raised when open or scrolled
+                'ring-black/10 shadow-[0_16px_48px_-12px_rgba(0,0,0,0.35)]',
+            // gentle hover lift when closed
+            !isOpen ? 'hover:shadow-[0_20px_56px_-16px_rgba(0,0,0,0.40)]' : '',
+            'transition-shadow duration-300',
           ].join(' ')}
           onMouseLeave={() => setOpenIndex(null)}
         >
@@ -123,7 +141,7 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                         <TransitionLink
                           key={i}
                           href={href}
-                          className="text-base px-2 h-10 flex items-center"
+                          className="text-base font-medium px-2 h-10 flex items-center"
                           {...newTabProps}
                           onMouseEnter={() => setOpenIndex(null)}
                         >
@@ -182,11 +200,11 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             href={href}
                             onMouseEnter={() => setPreview(sub?.media || activeItem?.defaultImage)}
                             onClick={() => setOpenIndex(null)}
-                            className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded-[16px] border border-white hover:border-lightGray"
+                            className="flex items-center gap-5 px-2 py-2 hover:bg-gray-50 rounded-[16px] border border-white hover:border-gray-100"
                             {...newTabProps}
                           >
                             {/* icon */}
-                            <div className="relative size-[55px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-lightGray rounded-[12px]">
+                            <div className="relative size-[64px] flex-shrink-0 flex items-center justify-center overflow-hidden bg-gray-200 rounded-[12px]">
                               <div className="relative size-[24px]">
                                 <Media
                                   resource={sub?.icon}
@@ -201,9 +219,11 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
                             {/* text + arrow */}
                             <div className="flex justify-between gap-20 w-full">
                               <div className="flex flex-col w-full">
-                                <h6 className="text-sm leading-snug">{sub?.label}</h6>
+                                <h6 className="text-base font-semibold leading-snug">
+                                  {sub?.label}
+                                </h6>
                                 {sub?.description && (
-                                  <p className="text-xs text-gray-600">{sub.description}</p>
+                                  <p className="text-sm text-gray-600">{sub.description}</p>
                                 )}
                               </div>
                               <div className="flex items-center justify-end">
@@ -242,7 +262,8 @@ export const HeaderClient: React.FC<{ data: Header }> = ({ data }) => {
       <div className="lg:hidden">
         <div
           className="
-      w-full bg-white border-b border-lightGray
+      w-full bg-white border-b border-gray-200
+      shadow-[0_8px_24px_-12px_rgba(0,0,0,0.25)]
       px-[5%] py-4 min-h-14
       flex items-center justify-between
       relative z-[1300]                /* keep the whole bar above overlay */

@@ -223,7 +223,7 @@ export default function VideoTestimonialComponent(props: Props) {
               ) : null}
             </div>
 
-            <div className="relative w-full md:w-[366px]">
+            <div className="relative w-full md:w-[366px] rounded-2xl">
               <VideoWithMuteToggle
                 media={video}
                 autoplay={autoplay ?? true}
@@ -241,7 +241,7 @@ export default function VideoTestimonialComponent(props: Props) {
               {testimonials.map((t, idx) => (
                 <article
                   key={idx}
-                  className="mb-6 inline-block w-full break-inside-avoid rounded-2xl border border-eggshell/15 bg-darkPaper p-6 md:p-7 backdrop-blur-[2px]"
+                  className="mb-6 inline-block w-full break-inside-avoid rounded-xl border border-eggshell/15 bg-darkPaper p-6 md:p-7 backdrop-blur-[2px]"
                 >
                   {/* Stars */}
                   <div className="mb-4 flex">

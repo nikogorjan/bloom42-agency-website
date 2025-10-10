@@ -27,6 +27,10 @@ import { CreativeGrowthScroller } from '@/blocks/CreativeGrowthScroller/config'
 import { TeamSection } from '@/blocks/TeamSection/config'
 import { VideoTestimonial } from '@/blocks/VideoTestimonial/config'
 import { FaqAccordion } from '@/blocks/FaqSection/config'
+import { BrandExplainer } from '@/blocks/BrandExplainer/config'
+import { Timeline } from '@/blocks/Timeline/config'
+import { TeamSlider } from '@/blocks/TeamSlider/config'
+import { AboutUsParalax } from '@/blocks/AboutUsParalax/config'
 
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
@@ -95,6 +99,10 @@ export const Pages: CollectionConfig<'pages'> = {
                 TeamSection,
                 VideoTestimonial,
                 FaqAccordion,
+                BrandExplainer,
+                Timeline,
+                TeamSlider,
+                AboutUsParalax,
               ],
               required: true,
               admin: {

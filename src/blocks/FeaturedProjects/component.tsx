@@ -172,11 +172,7 @@ export const FeaturedProjectsBlockComponent: React.FC<Props> = ({ title, project
 
         {ctaLink ? (
           <div className="mt-10 sm:mt-12 md:mt-20 flex justify-center">
-            <CMSLink
-              {...ctaLink}
-              appearance={ctaLink.appearance ?? 'outline'}
-              className="bg-transparent text-white"
-            />
+            <CMSLink {...ctaLink} appearance={ctaLink.appearance ?? 'outline'} />
           </div>
         ) : null}
       </div>
