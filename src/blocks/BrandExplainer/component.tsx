@@ -14,6 +14,7 @@ import {
 } from 'motion/react'
 import { CMSLink } from '@/components/Link'
 import { cn } from '@/utilities/ui'
+import Squares from '@/components/ui/squares-background-animation' // ⬅️ add this
 
 type Props = BrandExplainerBlock
 
@@ -27,20 +28,26 @@ const BrandExplainerBlockComponent: React.FC<Props> = ({
   const img = image as MediaDoc | null
   const alt = (img as any)?.alt || 'Brand image'
 
-  // --- Parallax: aspect wrapper fixed; inner layer taller & slides up (no scale transform) ---
+  // --- Squares BG (same behavior as FormBlock) ---
+  const [squareSize, setSquareSize] = React.useState(80)
+  React.useEffect(() => {
+    const updateSize = () => setSquareSize(window.innerWidth < 768 ? 64 : 80)
+    updateSize()
+    window.addEventListener('resize', updateSize)
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+
+  // --- Parallax for the image ---
   const wrapperRef = React.useRef<HTMLDivElement>(null)
   const prefersReduced = useReducedMotion()
-
-  // How much taller than the wrapper the inner layer should be
-  const [overflowFactor, setOverflowFactor] = React.useState(1.2) // 120% on mobile
+  const [overflowFactor, setOverflowFactor] = React.useState(1.15)
   React.useEffect(() => {
-    const onResize = () => setOverflowFactor(window.innerWidth >= 768 ? 1.15 : 1.15) // 115% md+ / 120% mobile
+    const onResize = () => setOverflowFactor(window.innerWidth >= 768 ? 1.15 : 1.15)
     onResize()
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  // Drive translateY (pixels) manually
   const yRaw = useMotionValue(0)
   const y = useSpring(yRaw, { stiffness: 120, damping: 22, mass: 0.25 })
   const yTransform = useMotionTemplate`translate3d(0, ${y}px, 0)`
@@ -53,26 +60,19 @@ const BrandExplainerBlockComponent: React.FC<Props> = ({
     const update = () => {
       const r = el.getBoundingClientRect()
       const vh = window.innerHeight || 0
-
-      // progress 0..1 while the wrapper passes through the viewport
       const total = r.height + vh
       const seen = vh - r.top
       let progress = seen / total
       if (progress < 0) progress = 0
       if (progress > 1) progress = 1
 
-      // Extra pixels available to reveal = (overflowFactor - 1) * wrapperHeight
       const extra = Math.max(0, (overflowFactor - 1) * r.height)
-      const shift = prefersReduced ? 0 : -extra * progress // move UP, capped by the extra
+      const shift = prefersReduced ? 0 : -extra * progress
       yRaw.set(shift)
     }
 
     const onScroll = () => {
-      if (!raf)
-        raf = requestAnimationFrame(() => {
-          raf = 0
-          update()
-        })
+      if (!raf) raf = requestAnimationFrame(() => ((raf = 0), update()))
     }
 
     update()
@@ -84,70 +84,78 @@ const BrandExplainerBlockComponent: React.FC<Props> = ({
       if (raf) cancelAnimationFrame(raf)
     }
   }, [overflowFactor, prefersReduced, yRaw])
+
   const ctaLink = cta?.[0]?.link
 
   return (
-    <section className="px-[5%] py-16 md:py-24 lg:py-28 bg-eggshell">
-      <div className="container">
+    <section className="relative bg-eggshell px-[5%] py-16 md:py-24 lg:py-28">
+      {/* Squares background layer */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <Squares
+          speed={0.1}
+          squareSize={squareSize}
+          direction="up"
+          borderColor="#EBE9E4"
+          hoverFillColor="#EBE9E4"
+        />
+      </div>
+
+      <div className="container relative z-10">
         <div className="grid grid-cols-1 gap-y-12 md:grid-cols-2 md:items-center md:gap-x-12 lg:gap-x-20">
-          {/* Left: rich text */}
-          <div className="h-full flex flex-col justify-between md:py-12">
+          {/* Left: copy */}
+          <div className="flex h-full flex-col justify-between md:py-12">
             <div>
               {tagline ? (
-                <div className="flex items-center gap-3 text-sm leading-relaxed mb-6">
+                <div className="mb-6 flex items-center gap-3 text-sm leading-relaxed">
                   <BulletIcon className="h-5 w-5 md:h-6 md:w-6 2xl:h-8 2xl:w-8" />
-                  <span className="text-xl md:text-2xl font-semibold text-darkGray">{tagline}</span>
+                  <span className="text-xl font-semibold text-darkGray md:text-2xl">{tagline}</span>
                 </div>
               ) : null}
               {heading ? (
-                <h2 className="mb-5 text-6xl font-anton leading-tight text-darkGray md:mb-6 md:text-8xl lg:text-[72px]">
+                <h2 className="mb-5 font-anton text-6xl leading-tight text-darkGray md:mb-6 md:text-8xl lg:text-[72px]">
                   {heading}
                 </h2>
               ) : null}
             </div>
+
             <div>
               {content ? (
                 <RichTextCustom
                   text={content}
-                  className="text-xl uppercase font-anton md:text-2xl text-darkSky"
+                  className="font-anton text-xl uppercase text-darkSky md:text-2xl"
                 />
               ) : null}
 
               {ctaLink ? (
-                <div className="mt-10 sm:mt-12 md:mt-20 flex justify-start">
+                <div className="mt-10 flex justify-start sm:mt-12 md:mt-20">
                   <CMSLink {...ctaLink} appearance={ctaLink.appearance ?? 'outline'} />
                 </div>
               ) : null}
             </div>
           </div>
 
+          {/* Right: portrait image with aspect + parallax */}
           <div>
-            {/* Right: portrait image with aspect + parallax */}
             <div className="relative">
               <div
                 ref={wrapperRef}
                 className="
-      relative overflow-hidden rounded-2xl w-full
-      aspect-[9/14]       /* ~0.643, good for 1080x1650 */
-    "
+                  relative w-full overflow-hidden rounded-2xl
+                  aspect-[9/14]
+                "
               >
                 {img ? (
                   <motion.div
                     aria-hidden
-                    // Taller-than-wrapper layer → real overflow to reveal
-                    style={{
-                      transform: yTransform, // ✅ explicit transform string
-                      height: `${overflowFactor * 100}%`,
-                    }}
-                    className="absolute inset-x-0 top-0 will-change-transform pointer-events-none"
+                    style={{ transform: yTransform, height: `${overflowFactor * 100}%` }}
+                    className="pointer-events-none absolute inset-x-0 top-0 will-change-transform"
                   >
-                    {/* Make this the containing block for Media's fill */}
-                    <div className="relative w-full h-full">
+                    <div className="relative h-full w-full">
                       <Media
                         resource={img}
                         alt={alt}
                         className="absolute inset-0"
-                        imgClassName="w-full h-full object-cover object-top"
+                        imgClassName="h-full w-full object-cover object-top"
                         fill
                       />
                     </div>
@@ -162,15 +170,13 @@ const BrandExplainerBlockComponent: React.FC<Props> = ({
   )
 }
 
-type BulletIconProps = {
-  className?: string
-}
+type BulletIconProps = { className?: string }
 
 export function BulletIcon({ className }: BulletIconProps) {
   return (
     <span
       aria-hidden
-      className={cn('relative inline-block h-12 w-12 shrink-0 mt-[2px]', className)}
+      className={cn('relative mt-[2px] inline-block h-12 w-12 shrink-0', className)}
     >
       <Media
         src="/images/bullets/bullet-orange.svg"
