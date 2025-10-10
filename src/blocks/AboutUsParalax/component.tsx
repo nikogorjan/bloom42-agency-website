@@ -31,12 +31,7 @@ function hasMediaDoc(x: Product['thumbnail']): x is MediaDoc {
 /* ---------------- component ---------------- */
 
 export default function AboutUsParalaxComponent(props: Props) {
-  const products: Product[] = Array.isArray(props.products) ? props.products : []
-  const cleaned = products.filter((p) => hasMediaDoc(p.thumbnail))
-  const rows = chunk(cleaned, 5)
-  const hasHeader = !!props.header?.intro
-  if (!rows.flat().length && !hasHeader) return null
-
+  // 🧱 Hooks FIRST (no early returns before these)
   const ref = React.useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -54,14 +49,26 @@ export default function AboutUsParalaxComponent(props: Props) {
   const rotateZ = useSpring(useTransform(scrollYProgress, [0, 0.2], [20, 0]), springConfig)
   const translateY = useSpring(useTransform(scrollYProgress, [0, 0.2], [-700, 500]), springConfig)
 
-  const headerOpacity = useSpring(useTransform(scrollYProgress, [0, 0.18], [1, 0]), springConfig)
-  const headerY = useSpring(useTransform(scrollYProgress, [0, 0.18], [0, -24]), springConfig)
+  // Header anims — now actually used below
+  const headerOpacity = useSpring(
+    useTransform(scrollYProgress, [0, 0.35, 0.65], [1, 1, 0]),
+    springConfig,
+  )
+  const headerY = useSpring(useTransform(scrollYProgress, [0.35, 0.65], [0, -24]), springConfig)
+
+  // Then compute data and *optionally* return null
+  const products: Product[] = Array.isArray(props.products) ? props.products : []
+  const cleaned = products.filter((p) => hasMediaDoc(p.thumbnail))
+  const rows = chunk(cleaned, 5)
+  const hasHeader = !!props.header?.intro
+  const hasSlides = rows.flat().length > 0
+  if (!hasSlides && !hasHeader) return null
 
   const productKey = (p: any, rowIdx: number, i: number) =>
-    p.id ||
-    (p.thumbnail && typeof p.thumbnail === 'object' && 'id' in p.thumbnail
-      ? (p.thumbnail as any).id
-      : '') + `-${rowIdx}-${i}`
+    (p?.id ??
+      (p?.thumbnail && typeof p.thumbnail === 'object' && 'id' in p.thumbnail
+        ? (p.thumbnail as any).id
+        : `thumb`)) + `-${rowIdx}-${i}`
 
   return (
     <section
@@ -73,7 +80,12 @@ export default function AboutUsParalaxComponent(props: Props) {
       )}
     >
       <div className="container">
-        <Header intro={props.header?.intro as any} />
+        {/* motion wrapper so headerOpacity/headerY are used */}
+        {hasHeader ? (
+          <motion.div style={{ opacity: headerOpacity, y: headerY }}>
+            <Header intro={props.header?.intro as any} />
+          </motion.div>
+        ) : null}
       </div>
 
       <motion.div
@@ -81,6 +93,7 @@ export default function AboutUsParalaxComponent(props: Props) {
         className="relative"
         aria-hidden
       >
+        {/* Row 1 */}
         {rows[0]?.length ? (
           <motion.div className="mb-20 flex flex-row-reverse space-x-20 space-x-reverse">
             {rows[0].map((p, i) => (
@@ -89,6 +102,7 @@ export default function AboutUsParalaxComponent(props: Props) {
           </motion.div>
         ) : null}
 
+        {/* Row 2 */}
         {rows[1]?.length ? (
           <motion.div className="mb-20 flex flex-row space-x-20">
             {rows[1].map((p, i) => (
@@ -97,6 +111,7 @@ export default function AboutUsParalaxComponent(props: Props) {
           </motion.div>
         ) : null}
 
+        {/* Row 3 */}
         {rows[2]?.length ? (
           <motion.div className="flex flex-row-reverse space-x-20 space-x-reverse">
             {rows[2].map((p, i) => (
@@ -115,14 +130,12 @@ function Header({ intro }: { intro?: any }) {
   if (!intro) return null
   return (
     <div className="relative left-0 top-0 mx-auto w-full max-w-7xl px-4 py-20 md:py-40">
-      {intro ? (
-        <div className="mt-8 max-w-2xl text-base md:text-xl dark:text-neutral-200 max-w-lg">
-          <RichTextCustom
-            text={intro}
-            className="text-2xl uppercase font-anton md:text-6xl text-eggshell"
-          />
-        </div>
-      ) : null}
+      <div className="mt-8 max-w-lg text-base md:text-xl dark:text-neutral-200">
+        <RichTextCustom
+          text={intro}
+          className="font-anton text-2xl uppercase text-eggshell md:text-6xl"
+        />
+      </div>
     </div>
   )
 }
@@ -165,11 +178,10 @@ function ProductCard({ product, translate }: { product: Product; translate: Moti
         'relative shrink-0 overflow-hidden rounded-2xl',
         // <= 1920px: EXACT original
         'h-96 w-[30rem]',
-        // > 1920px: smooth scale (same as you have now)
+        // > 1920px: smooth scale
         'min-[1921px]:h-[clamp(24rem,20vw,48rem)]',
         'min-[1921px]:w-[clamp(30rem,25vw,60rem)]',
-        // >= 2560px: “a bit larger” (keep ~5:4 ratio by bumping both vw)
-        // 27vw width at 2560 ≈ 691px (~43.2rem); height 21.6vw ≈ 553px (~34.6rem)
+        // >= 2560px: bit larger
         'min-[2560px]:h-[clamp(32rem,21.6vw,56rem)]',
         'min-[2560px]:w-[clamp(40rem,27vw,70rem)]',
       )}
@@ -179,7 +191,7 @@ function ProductCard({ product, translate }: { product: Product; translate: Moti
           resource={thumb}
           alt="Parallax image"
           className="absolute inset-0 h-full w-full"
-          imgClassName="h-full w-full object-cover object-left-top rounded-2xl"
+          imgClassName="h-full w-full rounded-2xl object-cover object-left-top"
           priority={false}
         />
       </Wrapper>

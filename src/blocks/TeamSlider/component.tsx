@@ -36,17 +36,20 @@ function useElementWidth<T extends HTMLElement>() {
 export default function TeamSliderComponent(props: Props) {
   const { tagline, heading, description } = props
   const members: TeamMember[] = (props.members ?? []).filter(isTeamMember)
-  if (!members.length && !tagline && !heading && !description) return null
 
-  const [activeIndex, setActiveIndex] = React.useState<number>(
-    Math.min(1, Math.max(0, members.length - 1)),
+  // ✅ Hooks must be called before any early return
+  const [activeIndex, setActiveIndex] = React.useState<number>(() =>
+    Math.min(1, Math.max(0, (members?.length ?? 0) - 1)),
   )
+
+  const hasAnyContent = (members?.length ?? 0) > 0 || !!(tagline || heading || description)
+  if (!hasAnyContent) return null
 
   return (
     <section id="team" className="px-[5%] py-16 md:py-24 lg:py-28 bg-eggshell">
       <div className="container px-0">
         {(tagline || heading || description) && (
-          <header className="mx-auto mb-10 w-full max-w-3xl text-center md:mb-14">
+          <header className="mx-auto mb-10 w-full max-w-lg text-center md:mb-14">
             {tagline ? <p className="mb-3 font-semibold text-neutral-600">{tagline}</p> : null}
             {heading ? (
               <h2 className="mb-4 text-4xl font-bold leading-tight text-neutral-900 md:text-6xl">
@@ -57,10 +60,10 @@ export default function TeamSliderComponent(props: Props) {
           </header>
         )}
 
-        {/* ---------- MOBILE (vertical, animated height) ---------- */}
+        {/* MOBILE (vertical, animated height) */}
         <MobileAccordion members={members} activeIndex={activeIndex} onActivate={setActiveIndex} />
 
-        {/* ---------- DESKTOP (horizontal accordion, exact as your snippet + grayscale) ---------- */}
+        {/* DESKTOP (horizontal accordion, centered, grayscale inactive) */}
         <DesktopAccordion members={members} activeIndex={activeIndex} onActivate={setActiveIndex} />
       </div>
     </section>
@@ -128,6 +131,24 @@ function MobileAccordion({
                 </motion.div>
               </div>
 
+              {/* bottom shade for readable text (active only) */}
+              <AnimatePresence>
+                {isActive && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="
+                      pointer-events-none absolute inset-x-0 bottom-0 z-10
+                      h-[40%] sm:h-[42%]
+                      bg-gradient-to-t from-black/80 via-black/45 to-transparent
+                    "
+                  />
+                )}
+              </AnimatePresence>
+
+              {/* caption only when active */}
               <AnimatePresence>
                 {isActive && (member.name || member.jobTitle) && (
                   <motion.div
@@ -135,7 +156,7 @@ function MobileAccordion({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.25 }}
-                    className="pointer-events-none absolute inset-x-0 bottom-0 p-4"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 p-4"
                   >
                     {member.name ? (
                       <p className="text-xl font-medium text-white drop-shadow">
@@ -175,17 +196,14 @@ function DesktopAccordion({
         '[--tileH:24rem]',
         '[--activeW:32rem]',
         '[--inactiveW:8rem]',
-
         // regular bumps
         'xl:[--tileH:26rem]',
         '2xl:[--tileH:30rem]',
-
-        // ≥1920 — a little bigger than before
+        // ≥1920 — larger
         'min-[1920px]:[--tileH:34rem]',
         'min-[1920px]:[--activeW:40rem]',
         'min-[1920px]:[--inactiveW:12rem]',
-
-        // ≥2560 — gentle extra bump
+        // ≥2560 — extra bump
         'min-[2560px]:[--tileH:40rem]',
         'min-[2560px]:[--activeW:48rem]',
         'min-[2560px]:[--inactiveW:14rem]',
@@ -216,7 +234,7 @@ function DesktopAccordion({
               >
                 {/* absolute media frame that truly fills the tile */}
                 <div className="absolute inset-0 overflow-hidden rounded-3xl">
-                  {/* scale + grayscale per state (desktop) */}
+                  {/* scale + grayscale per state */}
                   <motion.div
                     className="h-full w-full"
                     initial={{ scale: INACTIVE_SCALE, filter: 'grayscale(100%)' }}
@@ -242,6 +260,23 @@ function DesktopAccordion({
                   </motion.div>
                 </div>
 
+                {/* bottom shade for readable text (active only) */}
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="
+                        pointer-events-none absolute inset-x-0 bottom-0 z-10
+                        h-[38%] xl:h-[40%]
+                        bg-gradient-to-t from-black/80 via-black/45 to-transparent
+                      "
+                    />
+                  )}
+                </AnimatePresence>
+
                 {/* caption only when active */}
                 <AnimatePresence>
                   {isActive && (member.name || member.jobTitle) && (
@@ -250,15 +285,15 @@ function DesktopAccordion({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
                       transition={{ duration: 0.25 }}
-                      className="pointer-events-none absolute inset-x-0 bottom-0 p-4"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 z-20 p-4"
                     >
                       {member.name ? (
-                        <p className="text-sm font-medium text-white drop-shadow">
+                        <p className="text-4xl font-medium text-white drop-shadow">
                           {member.name as string}
                         </p>
                       ) : null}
                       {member.jobTitle ? (
-                        <p className="text-xs text-white/80">{member.jobTitle as string}</p>
+                        <p className="text-2xl text-white/80">{member.jobTitle as string}</p>
                       ) : null}
                     </motion.div>
                   )}
